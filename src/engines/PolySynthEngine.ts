@@ -30,14 +30,12 @@ class PolySynthEngine {
         new Tone.Synth({
           oscillator: { type: osc1Type },
           envelope: envelope,
-          volume: -24,
         }).connect(node)
       );
       this.OSC2Voices.push(
         new Tone.Synth({
           oscillator: { type: osc2Type },
           envelope: envelope,
-          volume: -24,
         }).connect(node)
       );
     }
