@@ -4,7 +4,7 @@ import * as Tone from "tone/build/esm/index";
 import PolySynthEngine from "@/engines/PolySynthEngine";
 import { init } from "next/dist/compiled/webpack/webpack";
 
-type preset = {
+type Preset = {
   osc1: {
     type: "sawtooth" | "sine" | "square" | "triangle";
     detune: number;
@@ -21,10 +21,21 @@ type preset = {
     sustain: number;
     release: number;
   };
+  filter: { type: string; frequency: number; rolloff: number; Q: number };
+  filterEnvelope: {
+    attack: number;
+    decay: number;
+    sustain: number;
+    release: number;
+    baseFrequency: number;
+    octaves: number;
+    exponent: number;
+  };
+  unison: boolean;
   panSpread: number;
 };
 
-const initPreset: preset = {
+const initPreset: Preset = {
   osc1: {
     type: "sine",
     detune: 0,
@@ -41,6 +52,17 @@ const initPreset: preset = {
     sustain: 1,
     release: 0.01,
   },
+  filter: { type: "lowpass", frequency: 20000, rolloff: -12, Q: 0 },
+  filterEnvelope: {
+    attack: 0.01,
+    decay: 0.01,
+    sustain: 1,
+    release: 0.01,
+    baseFrequency: 20000,
+    octaves: 4,
+    exponent: 0,
+  },
+  unison: false,
   panSpread: 0,
 };
 
@@ -48,26 +70,73 @@ const PolySynth = () => {
   const polySynthEngine = useRef<PolySynthEngine>();
 
   // OSC1
-  const [oscillator1Type, setOscillator1Type] = useState(initPreset.osc1.type);
-  const [osc1Detune, setOsc1Detune] = useState(initPreset.osc1.detune);
-  const [osc1Transpose, setOsc1Transpose] = useState(initPreset.osc1.transpose);
+  const [oscillator1Type, setOscillator1Type] = useState<
+    "sawtooth" | "sine" | "square" | "triangle"
+  >();
+  const [osc1Detune, setOsc1Detune] = useState<number>();
+  const [osc1Transpose, setOsc1Transpose] = useState<number>();
 
   // OSC2
-  const [oscillator2Type, setOscillator2Type] = useState(initPreset.osc2.type);
-  const [osc2Detune, setOsc2Detune] = useState(initPreset.osc2.detune);
-  const [osc2Transpose, setOsc2Transpose] = useState(initPreset.osc2.transpose);
+  const [oscillator2Type, setOscillator2Type] = useState<
+    "sawtooth" | "sine" | "square" | "triangle"
+  >();
+  const [osc2Detune, setOsc2Detune] = useState<number>();
+  const [osc2Transpose, setOsc2Transpose] = useState<number>();
 
+  // envelope amplitude
+  const [attack, setAttack] = useState<number>();
+  const [decay, setDecay] = useState<number>();
+  const [sustain, setSustain] = useState<number>();
+  const [release, setRelease] = useState<number>();
 
-  // envelopes
+  // filter
+  const [filterType, setFilterType] = useState<string>();
+  const [filterFrequency, setFilterFrequency] = useState<number>();
+  const [filterRolloff, setFilterRolloff] = useState<number>();
+  const [filterQ, setFilterQ] = useState<number>();
 
-  const [attack, setAttack] = useState(initPreset.envelope.attack);
-  const [decay, setDecay] = useState(initPreset.envelope.decay);
-  const [sustain, setSustain] = useState(initPreset.envelope.sustain);
-  const [release, setRelease] = useState(initPreset.envelope.release);
+  const [filterEnvelopeAttack, setFilterEnvelopeAttack] = useState<number>();
+  const [filterEnvelopeDecay, setFilterEnvelopeDecay] = useState<number>();
+  const [filterEnvelopeSustain, setFilterEnvelopeSustain] = useState<number>();
+  const [filterEnvelopeRelease, setFilterEnvelopeRelease] = useState<number>();
+  const [filterEnvelopeBaseFrequency, setFilterEnvelopeBaseFrequency] =
+    useState<number>();
+  const [filterEnvelopeOctaves, setFilterEnvelopeOctaves] = useState<number>();
+  const [filterEnvelopeExponent, setFilterEnvelopeExponent] =
+    useState<number>();
 
   // fx
+  const [panSpread, setPanSpread] = useState<number>();
 
-  const [panSpread, setPanSpread] = useState(0);
+  function loadPreset(preset: Preset) {
+    setOscillator1Type(preset.osc1.type);
+    setOsc1Detune(preset.osc1.detune);
+    setOsc1Transpose(preset.osc1.transpose);
+
+    setOscillator2Type(preset.osc2.type);
+    setOsc2Detune(preset.osc2.detune);
+    setOsc2Transpose(preset.osc2.transpose);
+
+    setAttack(preset.envelope.attack);
+    setDecay(preset.envelope.decay);
+    setSustain(preset.envelope.sustain);
+    setRelease(preset.envelope.release);
+
+    setFilterType(preset.filter.type);
+    setFilterFrequency(preset.filter.frequency);
+    setFilterRolloff(preset.filter.rolloff);
+    setFilterQ(preset.filter.Q);
+
+    setFilterEnvelopeAttack(preset.filterEnvelope.attack);
+    setFilterEnvelopeDecay(preset.filterEnvelope.decay);
+    setFilterEnvelopeSustain(preset.filterEnvelope.sustain);
+    setFilterEnvelopeRelease(preset.filterEnvelope.release);
+    setFilterEnvelopeBaseFrequency(preset.filterEnvelope.baseFrequency);
+    setFilterEnvelopeOctaves(preset.filterEnvelope.octaves);
+    setFilterEnvelopeExponent(preset.filterEnvelope.exponent);
+
+    setPanSpread(preset.panSpread);
+  }
 
   // initialize synth
   useEffect(() => {
@@ -77,69 +146,93 @@ const PolySynth = () => {
     }).toDestination();
 
     polySynthEngine.current = new PolySynthEngine(filterNode);
+
+    loadPreset(initPreset);
   }, []);
 
   // update oscilators types
   useEffect(() => {
-    polySynthEngine.current?.setOsc1TypeEngine(oscillator1Type);
-    console.log("osc1 type changed to: ", oscillator1Type);
+    if (oscillator1Type) {
+      polySynthEngine.current?.setOsc1TypeEngine(oscillator1Type);
+      console.log("osc1 type changed to: ", oscillator1Type);
+    }
   }, [oscillator1Type]);
 
   useEffect(() => {
-    polySynthEngine.current?.setOsc2TypeEngine(oscillator2Type);
-    console.log("osc2 type changed to: ", oscillator2Type);
+    if (oscillator2Type) {
+      polySynthEngine.current?.setOsc2TypeEngine(oscillator2Type);
+      console.log("osc2 type changed to: ", oscillator2Type);
+    }
   }, [oscillator2Type]);
 
   // update detune
 
   useEffect(() => {
-    polySynthEngine.current?.setOsc1DetuneEngine(osc1Detune);
-    console.log("osc1 detune changed to: ", osc1Detune);
+    if (osc1Detune) {
+      polySynthEngine.current?.setOsc1DetuneEngine(osc1Detune);
+      console.log("osc1 detune changed to: ", osc1Detune);
+    }
   }, [osc1Detune]);
 
   useEffect(() => {
-    polySynthEngine.current?.setOsc2DetuneEngine(osc2Detune);
-    console.log("osc2 detune changed to: ", osc2Detune);
+    if (osc2Detune) {
+      polySynthEngine.current?.setOsc2DetuneEngine(osc2Detune);
+      console.log("osc2 detune changed to: ", osc2Detune);
+    }
   }, [osc2Detune]);
 
   // update transpose
 
   useEffect(() => {
-    polySynthEngine.current?.setOsc1TransposeEngine(osc1Transpose);
-    console.log("osc1 transpose changed to: ", osc1Transpose);
+    if (osc1Transpose) {
+      polySynthEngine.current?.setOsc1TransposeEngine(osc1Transpose);
+      console.log("osc1 transpose changed to: ", osc1Transpose);
+    }
   }, [osc1Transpose]);
 
   useEffect(() => {
-    polySynthEngine.current?.setOsc2TransposeEngine(osc2Transpose);
-    console.log("osc2 transpose changed to: ", osc2Transpose);
+    if (osc2Transpose) {
+      polySynthEngine.current?.setOsc2TransposeEngine(osc2Transpose);
+      console.log("osc2 transpose changed to: ", osc2Transpose);
+    }
   }, [osc2Transpose]);
 
   // update envelopes
   useEffect(() => {
-    polySynthEngine.current?.setAttackEngine(attack);
-    console.log("attack changed to: ", attack);
+    if (attack) {
+      polySynthEngine.current?.setAttackEngine(attack);
+      console.log("attack changed to: ", attack);
+    }
   }, [attack]);
 
   useEffect(() => {
-    polySynthEngine.current?.setDecayEngine(decay);
-    console.log("decay changed to: ", decay);
+    if (decay) {
+      polySynthEngine.current?.setDecayEngine(decay);
+      console.log("decay changed to: ", decay);
+    }
   }, [decay]);
 
   useEffect(() => {
-    polySynthEngine.current?.setSustainEngine(sustain);
-    console.log("sustain changed to: ", sustain);
+    if (sustain) {
+      polySynthEngine.current?.setSustainEngine(sustain);
+      console.log("sustain changed to: ", sustain);
+    }
   }, [sustain]);
 
   useEffect(() => {
-    polySynthEngine.current?.setReleaseEngine(release);
-    console.log("release changed to: ", release);
+    if (release) {
+      polySynthEngine.current?.setReleaseEngine(release);
+      console.log("release changed to: ", release);
+    }
   }, [release]);
 
   // update fx
 
   useEffect(() => {
-    polySynthEngine.current?.setPanSpreadEngine(panSpread);
-    console.log("panSpread changed to: ", panSpread);
+    if (panSpread) {
+      polySynthEngine.current?.setPanSpreadEngine(panSpread);
+      console.log("panSpread changed to: ", panSpread);
+    }
   }, [panSpread]);
 
   return (
@@ -319,7 +412,7 @@ const PolySynth = () => {
           <input
             type="range"
             min="0"
-            max="99"
+            max="100"
             step="1"
             defaultValue={panSpread}
             onChange={(e) => setPanSpread(Number(e.target.value))}
