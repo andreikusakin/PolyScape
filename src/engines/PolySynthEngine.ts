@@ -94,6 +94,22 @@ class PolySynthEngine {
     this.OSC2Voices.forEach((v) => v.set({ oscillator: { type: waveform } }));
   }
 
+  //Set Detune
+
+  setOsc1Detune(v1: number, v2: number, v3: number, v4: number, v5: number, v6: number, v7: number, v8: number,) {
+    for (let i = 0; i < this.OSC1Voices.length; i++) {
+      const variable = eval(`v${i + 1}`);
+      this.OSC1Voices[i].detune.value = variable;
+    }
+  }
+
+  setOsc2Detune(v1: number, v2: number, v3: number, v4: number, v5: number, v6: number, v7: number, v8: number,) {
+    for (let i = 0; i < this.OSC2Voices.length; i++) {
+      const variable = eval(`v${i + 1}`);
+      this.OSC2Voices[i].detune.value = variable;
+    }
+  }
+
   //Set Envelope
 
   setAttackEngine(newAttack: number) {
