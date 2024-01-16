@@ -5,63 +5,49 @@ import PolySynthEngine from "@/engines/PolySynthEngine";
 
 type preset = {
   osc1: {
-    oscillator: {
-      type: "sawtooth" | "sine" | "square" | "triangle";
-    };
-    envelope: {
-      attack: number;
-      decay: number;
-      sustain: number;
-      release: number;
-    };
+    type: "sawtooth" | "sine" | "square" | "triangle";
   };
   osc2: {
-    oscillator: {
-      type: "sawtooth" | "sine" | "square" | "triangle";
-    };
-    envelope: {
-      attack: number;
-      decay: number;
-      sustain: number;
-      release: number;
-    };
+    type: "sawtooth" | "sine" | "square" | "triangle";
+  };
+  envelope: {
+    attack: number;
+    decay: number;
+    sustain: number;
+    release: number;
   };
 };
 
 const initPreset: preset = {
   osc1: {
-    oscillator: {
-      type: "square",
-    },
-    envelope: {
-      attack: 0.001,
-      decay: 0.1,
-      sustain: 1,
-      release: 0.1,
-    },
+    type: "square",
   },
   osc2: {
-    oscillator: {
-      type: "square",
-    },
-    envelope: {
-      attack: 0.001,
-      decay: 0.1,
-      sustain: 1,
-      release: 0.1,
-    },
+    type: "square",
+  },
+  envelope: {
+    attack: 0.01,
+    decay: 0.01,
+    sustain: 1,
+    release: 0.01,
   },
 };
 
 const PolySynth = () => {
   const polySynthEngine = useRef<PolySynthEngine>();
-  const [oscillator1Type, setOscillator1Type] = useState(
-    initPreset.osc1.oscillator.type
-  );
-  const [oscillator2Type, setOscillator2Type] = useState(
-    initPreset.osc2.oscillator.type
-  );
 
+  // waveforms
+  const [oscillator1Type, setOscillator1Type] = useState(initPreset.osc1.type);
+  const [oscillator2Type, setOscillator2Type] = useState(initPreset.osc2.type);
+
+  // envelopes
+
+  const [attack, setAttack] = useState(initPreset.envelope.attack);
+  const [decay, setDecay] = useState(initPreset.envelope.decay);
+  const [sustain, setSustain] = useState(initPreset.envelope.sustain);
+  const [release, setRelease] = useState(initPreset.envelope.release);
+
+  // iniiialize synth
   useEffect(() => {
     const filterNode = new Tone.Gain({
       gain: 1,
@@ -71,14 +57,18 @@ const PolySynth = () => {
     polySynthEngine.current = new PolySynthEngine(
       8,
       filterNode,
-      initPreset.osc1.oscillator.type,
-      initPreset.osc2.oscillator.type
+      initPreset.osc1.type,
+      initPreset.osc2.type,
+      {
+        attack: attack,
+        decay: decay,
+        sustain: sustain,
+        release: release,
+      }
     );
-
-    // polySynthEngine.current?.setOsc1Type("sine");
-    // polySynthEngine.current?.setOsc2Type("sine");
   }, []);
 
+  // update oscilators types
   useEffect(() => {
     polySynthEngine.current?.setOsc1Type(oscillator1Type);
     console.log("osc1 type changed to: ", oscillator1Type);
@@ -88,7 +78,28 @@ const PolySynth = () => {
     polySynthEngine.current?.setOsc2Type(oscillator2Type);
     console.log("osc2 type changed to: ", oscillator2Type);
   }, [oscillator2Type]);
-  console.log(polySynthEngine);
+
+  // update envelopes
+  useEffect(() => {
+    polySynthEngine.current?.setAttackEngine(attack);
+    console.log("attack changed to: ", attack);
+  }, [attack]);
+
+  useEffect(() => {
+    polySynthEngine.current?.setDecayEngine(decay);
+    console.log("decay changed to: ", decay);
+  }, [decay]);
+
+  useEffect(() => {
+    polySynthEngine.current?.setSustainEngine(sustain);
+    console.log("sustain changed to: ", sustain);
+  }, [sustain]);
+
+  useEffect(() => {
+    polySynthEngine.current?.setReleaseEngine(release);
+    console.log("release changed to: ", release);
+  }, [release]);
+
   return (
     <div>
       <button onClick={() => Tone.start()}>Start</button>
@@ -123,6 +134,50 @@ const PolySynth = () => {
           type="checkbox"
           checked={oscillator2Type === "square"}
           onChange={() => setOscillator2Type("square")}
+        />
+      </label>
+      <label>
+        Attack
+        <input
+          type="range"
+          min="0.01"
+          max="10"
+          step="0.01"
+          defaultValue={attack}
+          onChange={(e) => setAttack(Number(e.target.value))}
+        />
+      </label>
+      <label>
+        Decay
+        <input
+          type="range"
+          min="0.01"
+          max="10"
+          step="0.01"
+          defaultValue={decay}
+          onChange={(e) => setDecay(Number(e.target.value))}
+        />
+      </label>
+      <label>
+        Sustain
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          defaultValue={sustain}
+          onChange={(e) => setSustain(Number(e.target.value))}
+        />
+      </label>
+      <label>
+        Release
+        <input
+          type="range"
+          min="0.01"
+          max="10"
+          step='0.01'
+          defaultValue={release}
+          onChange={(e) => setRelease(Number(e.target.value))}
         />
       </label>
     </div>
