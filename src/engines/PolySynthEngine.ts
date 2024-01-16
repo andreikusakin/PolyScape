@@ -3,11 +3,8 @@ import * as Tone from "tone/build/esm/index";
 import AudioKeys from "audiokeys";
 
 class PolySynthEngine {
-  private voiceCount: number;
   public OSC1Voices: Tone.Synth[];
   private OSC2Voices: Tone.Synth[];
-  private osc1Type: "sawtooth" | "sine" | "square" | "triangle";
-  private osc2Type: "sawtooth" | "sine" | "square" | "triangle";
   private activeVoicesOSC1: Map<Tone.Synth, number>;
   private activeVoicesOSC2: Map<Tone.Synth, number>;
   private keyboard: AudioKeys;
@@ -16,31 +13,36 @@ class PolySynthEngine {
     voiceCount: number,
     node: Tone.Gain<"decibels" | "gain" | "normalRange">,
     osc1Type: "sawtooth" | "sine" | "square" | "triangle",
-    osc2Type: "sawtooth" | "sine" | "square" | "triangle"
+    osc2Type: "sawtooth" | "sine" | "square" | "triangle",
+    envelope: {
+      attack: number;
+      decay: number;
+      sustain: number;
+      release: number;
+    }
   ) {
-    this.voiceCount = voiceCount;
     this.OSC1Voices = [];
     this.OSC2Voices = [];
-    this.osc1Type = osc1Type;
-    this.osc2Type = osc2Type;
     this.activeVoicesOSC1 = new Map();
     this.activeVoicesOSC2 = new Map();
     for (let i = 0; i < voiceCount; i++) {
       this.OSC1Voices.push(
         new Tone.Synth({
-          oscillator: { type: this.osc1Type },
+          oscillator: { type: osc1Type },
+          envelope: envelope,
           volume: -24,
         }).connect(node)
       );
       this.OSC2Voices.push(
         new Tone.Synth({
-          oscillator: { type: this.osc2Type },
+          oscillator: { type: osc2Type },
+          envelope: envelope,
           volume: -24,
         }).connect(node)
       );
     }
     this.keyboard = new AudioKeys({
-      polyphony: this.voiceCount,
+      polyphony: voiceCount,
       rows: 1,
       priority: "last",
     });
@@ -96,24 +98,32 @@ class PolySynthEngine {
 
   //Set Envelope
 
-  setAttack(attack: number) {
-    this.OSC1Voices.forEach((v) => v.set({ envelope: { attack } }));
-    this.OSC2Voices.forEach((v) => v.set({ envelope: { attack } }));
+  setAttackEngine(newAttack: number) {
+    this.OSC1Voices.forEach((v) => v.set({ envelope: { attack: newAttack } }));
+    this.OSC2Voices.forEach((v) => v.set({ envelope: { attack: newAttack } }));
   }
 
-  setDecay(decay: number) {
-    this.OSC1Voices.forEach((v) => v.set({ envelope: { decay } }));
-    this.OSC2Voices.forEach((v) => v.set({ envelope: { decay } }));
+  setDecayEngine(newDecay: number) {
+    this.OSC1Voices.forEach((v) => v.set({ envelope: { decay: newDecay } }));
+    this.OSC2Voices.forEach((v) => v.set({ envelope: { decay: newDecay } }));
   }
 
-  setSustain(sustain: number) {
-    this.OSC1Voices.forEach((v) => v.set({ envelope: { sustain } }));
-    this.OSC2Voices.forEach((v) => v.set({ envelope: { sustain } }));
+  setSustainEngine(newSustain: number) {
+    this.OSC1Voices.forEach((v) =>
+      v.set({ envelope: { sustain: newSustain } })
+    );
+    this.OSC2Voices.forEach((v) =>
+      v.set({ envelope: { sustain: newSustain } })
+    );
   }
 
-  setRelease(release: number) {
-    this.OSC1Voices.forEach((v) => v.set({ envelope: { release } }));
-    this.OSC2Voices.forEach((v) => v.set({ envelope: { release } }));
+  setReleaseEngine(newRelease: number) {
+    this.OSC1Voices.forEach((v) =>
+      v.set({ envelope: { release: newRelease } })
+    );
+    this.OSC2Voices.forEach((v) =>
+      v.set({ envelope: { release: newRelease } })
+    );
   }
 }
 
