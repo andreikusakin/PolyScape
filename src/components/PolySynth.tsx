@@ -184,7 +184,7 @@ const PolySynth = () => {
           <input
             type="range"
             min="0"
-            max="99"
+            max="100"
             step="1"
             defaultValue={osc1Detune}
             onChange={(e) => {
