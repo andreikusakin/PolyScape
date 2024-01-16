@@ -86,27 +86,29 @@ class PolySynthEngine {
 
   //Set Waveforms
 
-  setOsc1Type(waveform: "sawtooth" | "sine" | "square" | "triangle") {
+  setOsc1TypeEngine(waveform: "sawtooth" | "sine" | "square" | "triangle") {
     this.OSC1Voices.forEach((v) => v.set({ oscillator: { type: waveform } }));
   }
 
-  setOsc2Type(waveform: "sawtooth" | "sine" | "square" | "triangle") {
+  setOsc2TypeEngine(waveform: "sawtooth" | "sine" | "square" | "triangle") {
     this.OSC2Voices.forEach((v) => v.set({ oscillator: { type: waveform } }));
   }
 
   //Set Detune
 
-  setOsc1Detune(v1: number, v2: number, v3: number, v4: number, v5: number, v6: number, v7: number, v8: number,) {
+  setOsc1DetuneEngine(detune: number) {
     for (let i = 0; i < this.OSC1Voices.length; i++) {
-      const variable = eval(`v${i + 1}`);
-      this.OSC1Voices[i].detune.value = variable;
+      const detunedValue = Math.floor((Math.random() * 60 - 30) * detune / 100);
+      console.log(detunedValue);
+      this.OSC1Voices[i].detune.value = detunedValue;
     }
   }
 
-  setOsc2Detune(v1: number, v2: number, v3: number, v4: number, v5: number, v6: number, v7: number, v8: number,) {
+  setOsc2DetuneEngine(detune: number) {
     for (let i = 0; i < this.OSC2Voices.length; i++) {
-      const variable = eval(`v${i + 1}`);
-      this.OSC2Voices[i].detune.value = variable;
+      const detunedValue = Math.floor((Math.random() * 60 - 30) * detune / 100);
+      console.log(detunedValue);
+      this.OSC2Voices[i].detune.value = detunedValue;
     }
   }
 
