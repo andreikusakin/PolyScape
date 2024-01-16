@@ -8,15 +8,20 @@ import AudioKeys from "audiokeys";
 // filters for each voices
 // Tone.Channel as mixer
 // unison
+// portamento
+// pulse width
+// make IRs for reverb
+// noise
+// midi and midi mapping
 
 //mimick detune and panspread
 
 class PolySynthEngine {
   private voiceCount: number = 8;
-  private OSC1Voices: Tone.Synth[];
-  private OSC2Voices: Tone.Synth[];
-  private activeVoicesOSC1: Map<Tone.Synth, number>;
-  private activeVoicesOSC2: Map<Tone.Synth, number>;
+  private OSC1Voices: Tone.MonoSynth[];
+  private OSC2Voices: Tone.MonoSynth[];
+  private activeVoicesOSC1: Map<Tone.MonoSynth, number>;
+  private activeVoicesOSC2: Map<Tone.MonoSynth, number>;
   private OSC1Transpose: number = 0;
   private OSC2Transpose: number = 0;
   private OSC1Panners: Tone.Panner[];
@@ -40,14 +45,14 @@ class PolySynthEngine {
     for (let i = 0; i < this.voiceCount; i++) {
       this.OSC1Panners.push(new Tone.Panner().connect(node));
       this.OSC1Voices.push(
-        new Tone.Synth({
+        new Tone.MonoSynth({
           oscillator: { type: "sine" },
           envelope: { attack: 0.01, decay: 0.01, sustain: 1, release: 0.01 },
         }).connect(this.OSC1Panners[i])
       );
       this.OSC2Panners.push(new Tone.Panner().connect(node));
       this.OSC2Voices.push(
-        new Tone.Synth({
+        new Tone.MonoSynth({
           oscillator: { type: "sine" },
           envelope: { attack: 0.01, decay: 0.01, sustain: 1, release: 0.01 },
         }).connect(this.OSC2Panners[i])
@@ -116,7 +121,7 @@ class PolySynthEngine {
   //Set Waveforms
 
   setOsc1TypeEngine(waveform: "sawtooth" | "sine" | "square" | "triangle") {
-    this.OSC1Voices.forEach((v: Tone.Synth) =>
+    this.OSC1Voices.forEach((v: Tone.MonoSynth) =>
       v.set({ oscillator: { type: waveform } })
     );
   }
