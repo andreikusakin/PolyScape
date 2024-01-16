@@ -20,10 +20,10 @@ type preset = {
 
 const initPreset: preset = {
   osc1: {
-    type: "square",
+    type: "sine",
   },
   osc2: {
-    type: "square",
+    type: "sine",
   },
   envelope: {
     attack: 0.01,
@@ -47,10 +47,10 @@ const PolySynth = () => {
   const [sustain, setSustain] = useState(initPreset.envelope.sustain);
   const [release, setRelease] = useState(initPreset.envelope.release);
 
-  // iniiialize synth
+  // initialize synth
   useEffect(() => {
     const filterNode = new Tone.Gain({
-      gain: 1,
+      gain: 0.06,
       units: "normalRange",
     }).toDestination();
 
@@ -103,39 +103,76 @@ const PolySynth = () => {
   return (
     <div>
       <button onClick={() => Tone.start()}>Start</button>
-      <label>
-        Sine OSC1
-        <input
-          type="checkbox"
-          checked={oscillator1Type === "sine"}
-          onChange={() => setOscillator1Type("sine")}
-        />
-      </label>
-      <label>
-        Square OSC1
-        <input
-          type="checkbox"
-          checked={oscillator1Type === "square"}
-          onChange={() => setOscillator1Type("square")}
-        />
-      </label>
-      <label>
-        Sine OSC2
-        <input
-          type="checkbox"
-          checked={oscillator2Type === "sine"}
-          onChange={() => setOscillator2Type("sine")}
-        />
-      </label>
-
-      <label>
-        Square OSC2
-        <input
-          type="checkbox"
-          checked={oscillator2Type === "square"}
-          onChange={() => setOscillator2Type("square")}
-        />
-      </label>
+      <div>
+        OSC1
+        <label>
+          Sine
+          <input
+            type="checkbox"
+            checked={oscillator1Type === "sine"}
+            onChange={() => setOscillator1Type("sine")}
+          />
+        </label>
+        <label>
+          Sawtooth
+          <input
+            type="checkbox"
+            checked={oscillator1Type === "sawtooth"}
+            onChange={() => setOscillator1Type("sawtooth")}
+          />
+        </label>
+        <label>
+          Square
+          <input
+            type="checkbox"
+            checked={oscillator1Type === "square"}
+            onChange={() => setOscillator1Type("square")}
+          />
+        </label>
+        <label>
+          Triangle
+          <input
+            type="checkbox"
+            checked={oscillator1Type === "triangle"}
+            onChange={() => setOscillator1Type("triangle")}
+          />
+        </label>
+      </div>
+      <div>
+        OSC2
+        <label>
+          Sine
+          <input
+            type="checkbox"
+            checked={oscillator2Type === "sine"}
+            onChange={() => setOscillator2Type("sine")}
+          />
+        </label>
+        <label>
+          Sawtooth
+          <input
+            type="checkbox"
+            checked={oscillator2Type === "sawtooth"}
+            onChange={() => setOscillator2Type("sawtooth")}
+          />
+        </label>
+        <label>
+          Square
+          <input
+            type="checkbox"
+            checked={oscillator2Type === "square"}
+            onChange={() => setOscillator2Type("square")}
+          />
+        </label>
+        <label>
+          Triangle
+          <input
+            type="checkbox"
+            checked={oscillator2Type === "triangle"}
+            onChange={() => setOscillator2Type("triangle")}
+          />
+        </label>
+      </div>
       <label>
         Attack
         <input
@@ -175,7 +212,7 @@ const PolySynth = () => {
           type="range"
           min="0.01"
           max="10"
-          step='0.01'
+          step="0.01"
           defaultValue={release}
           onChange={(e) => setRelease(Number(e.target.value))}
         />
