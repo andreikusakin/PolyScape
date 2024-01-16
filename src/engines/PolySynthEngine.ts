@@ -48,6 +48,8 @@ class PolySynthEngine {
         new Tone.MonoSynth({
           oscillator: { type: "sine" },
           envelope: { attack: 0.01, decay: 0.01, sustain: 1, release: 0.01 },
+          filter: { type: "lowpass", frequency: 20000, rolloff: -12, Q: 0 },
+          filterEnvelope: { attack: 0.01, decay: 0.01, sustain: 1, release: 0.01, baseFrequency: 20000, octaves: 4, exponent: 0 }
         }).connect(this.OSC1Panners[i])
       );
       this.OSC2Panners.push(new Tone.Panner().connect(node));
@@ -55,6 +57,8 @@ class PolySynthEngine {
         new Tone.MonoSynth({
           oscillator: { type: "sine" },
           envelope: { attack: 0.01, decay: 0.01, sustain: 1, release: 0.01 },
+          filter: { type: "lowpass", frequency: 20000, rolloff: -12, Q: 0 },
+          filterEnvelope: { attack: 0.01, decay: 0.01, sustain: 1, release: 0.01, baseFrequency: 20000, octaves: 4, exponent: 0 }
         }).connect(this.OSC2Panners[i])
       );
     }
@@ -193,7 +197,7 @@ class PolySynthEngine {
     }
   }
 
-  //Set Envelope
+  //Set Envelope Amplitude
 
   setAttackEngine(newAttack: number) {
     this.OSC1Voices.forEach((v) => v.set({ envelope: { attack: newAttack } }));
@@ -222,6 +226,13 @@ class PolySynthEngine {
       v.set({ envelope: { release: newRelease } })
     );
   }
+
+  //Set Envelope Filter
+
+
+  //Set Filter
+ 
+
 }
 
 export default PolySynthEngine;
