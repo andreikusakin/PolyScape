@@ -21,7 +21,12 @@ type Preset = {
     sustain: number;
     release: number;
   };
-  filter: { type: string; frequency: number; rolloff: number; Q: number };
+  filter: {
+    type: "lowpass" | "highpass" | "bandpass" | "notch";
+    frequency: number;
+    rolloff: Tone.FilterRollOff;
+    Q: number;
+  };
   filterEnvelope: {
     attack: number;
     decay: number;
@@ -52,14 +57,14 @@ const initPreset: Preset = {
     sustain: 1,
     release: 0.01,
   },
-  filter: { type: "lowpass", frequency: 20000, rolloff: -12, Q: 0 },
+  filter: { type: "lowpass", frequency: 0, rolloff: -12, Q: 0 },
   filterEnvelope: {
-    attack: 0.01,
+    attack: 0,
     decay: 0.01,
-    sustain: 1,
-    release: 0.01,
-    baseFrequency: 20000,
-    octaves: 4,
+    sustain: 0,
+    release: 0,
+    baseFrequency: 15000,
+    octaves: 0,
     exponent: 0,
   },
   unison: false,
@@ -90,9 +95,11 @@ const PolySynth = () => {
   const [release, setRelease] = useState<number>();
 
   // filter
-  const [filterType, setFilterType] = useState<string>();
+  const [filterType, setFilterType] = useState<
+    "lowpass" | "highpass" | "bandpass" | "notch"
+  >();
   const [filterFrequency, setFilterFrequency] = useState<number>();
-  const [filterRolloff, setFilterRolloff] = useState<number>();
+  const [filterRolloff, setFilterRolloff] = useState<Tone.FilterRollOff>();
   const [filterQ, setFilterQ] = useState<number>();
 
   const [filterEnvelopeAttack, setFilterEnvelopeAttack] = useState<number>();
@@ -132,7 +139,7 @@ const PolySynth = () => {
     setFilterEnvelopeSustain(preset.filterEnvelope.sustain);
     setFilterEnvelopeRelease(preset.filterEnvelope.release);
     setFilterEnvelopeBaseFrequency(preset.filterEnvelope.baseFrequency);
-    setFilterEnvelopeOctaves(preset.filterEnvelope.octaves);
+    // setFilterEnvelopeOctaves(preset.filterEnvelope.octaves);
     setFilterEnvelopeExponent(preset.filterEnvelope.exponent);
 
     setPanSpread(preset.panSpread);
@@ -226,6 +233,116 @@ const PolySynth = () => {
     }
   }, [release]);
 
+  // update filter
+
+  useEffect(() => {
+    if (filterType) {
+      polySynthEngine.current?.setFilterTypeEngine(filterType);
+      console.log("filter type changed to: ", filterType);
+    }
+  }, [filterType]);
+
+  useEffect(() => {
+    if (filterFrequency) {
+      polySynthEngine.current?.setFilterFrequencyEngine(filterFrequency);
+      console.log("filter frequency changed to: ", filterFrequency);
+    }
+  }, [filterFrequency]);
+
+  useEffect(() => {
+    if (filterRolloff) {
+      polySynthEngine.current?.setFilterRollOffEngine(filterRolloff);
+      console.log("filter rolloff changed to: ", filterRolloff);
+    }
+  }, [filterRolloff]);
+
+  useEffect(() => {
+    if (filterQ) {
+      polySynthEngine.current?.setFilterQEngine(filterQ);
+      console.log("filter Q changed to: ", filterQ);
+    }
+  }, [filterQ]);
+
+  // update filter envelope
+
+  useEffect(() => {
+    if (filterEnvelopeAttack) {
+      polySynthEngine.current?.setFilterEnvelopeAttackEngine(
+        filterEnvelopeAttack
+      );
+      console.log("filter envelope attack changed to: ", filterEnvelopeAttack);
+    }
+  }, [filterEnvelopeAttack]);
+
+  useEffect(() => {
+    if (filterEnvelopeDecay) {
+      polySynthEngine.current?.setFilterEnvelopeDecayEngine(
+        filterEnvelopeDecay
+      );
+      console.log("filter envelope decay changed to: ", filterEnvelopeDecay);
+    }
+  }, [filterEnvelopeDecay]);
+
+  useEffect(() => {
+    if (filterEnvelopeSustain) {
+      polySynthEngine.current?.setFilterEnvelopeSustainEngine(
+        filterEnvelopeSustain
+      );
+      console.log(
+        "filter envelope sustain changed to: ",
+        filterEnvelopeSustain
+      );
+    }
+  }, [filterEnvelopeSustain]);
+
+  useEffect(() => {
+    if (filterEnvelopeRelease) {
+      polySynthEngine.current?.setFilterEnvelopeReleaseEngine(
+        filterEnvelopeRelease
+      );
+      console.log(
+        "filter envelope release changed to: ",
+        filterEnvelopeRelease
+      );
+    }
+  }, [filterEnvelopeRelease]);
+
+  useEffect(() => {
+    if (filterEnvelopeBaseFrequency) {
+      polySynthEngine.current?.setFilterEnvelopeFrequencyEngine(
+        filterEnvelopeBaseFrequency
+      );
+      console.log(
+        "filter envelope base frequency changed to: ",
+        filterEnvelopeBaseFrequency
+      );
+    }
+  }, [filterEnvelopeBaseFrequency]);
+
+  useEffect(() => {
+    if (filterEnvelopeExponent) {
+      polySynthEngine.current?.setFilterEnvelopeExponentEngine(
+        filterEnvelopeExponent
+      );
+      console.log(
+        "filter envelope exponent changed to: ",
+        filterEnvelopeExponent
+      );
+    }
+  }, [filterEnvelopeExponent]);
+
+  useEffect(() => {
+    if (filterEnvelopeOctaves) {
+      polySynthEngine.current?.setFilterEnvelopeOctavesEngine(
+        filterEnvelopeOctaves
+      );
+      console.log(
+        "filter envelope octaves changed to: ",
+        filterEnvelopeOctaves
+      );
+    }
+  }, [filterEnvelopeOctaves]);
+
   // update fx
 
   useEffect(() => {
@@ -236,177 +353,358 @@ const PolySynth = () => {
   }, [panSpread]);
 
   return (
-    <div>
+    <div className="flex w-full h-full gap-10">
       <button onClick={() => Tone.start()}>Start</button>
-      <div>
-        OSC1
+      <div className="flex flex-col gap-10">
+        <div className="flex gap-5 flex-col">
+          OSC1
+          <div className="flex gap-5">
+            <label>
+              Sine
+              <input
+                type="checkbox"
+                checked={oscillator1Type === "sine"}
+                onChange={() => setOscillator1Type("sine")}
+              />
+            </label>
+            <label>
+              Sawtooth
+              <input
+                type="checkbox"
+                checked={oscillator1Type === "sawtooth"}
+                onChange={() => setOscillator1Type("sawtooth")}
+              />
+            </label>
+            <label>
+              Square
+              <input
+                type="checkbox"
+                checked={oscillator1Type === "square"}
+                onChange={() => setOscillator1Type("square")}
+              />
+            </label>
+            <label>
+              Triangle
+              <input
+                type="checkbox"
+                checked={oscillator1Type === "triangle"}
+                onChange={() => setOscillator1Type("triangle")}
+              />
+            </label>
+          </div>
+          <label>
+            Detune
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              defaultValue={osc1Detune}
+              onChange={(e) => {
+                setOsc1Detune(Number(e.target.value));
+              }}
+            />
+          </label>
+          <label>
+            Transpose
+            <input
+              type="range"
+              min="-24"
+              max="24"
+              step="1"
+              defaultValue={osc1Transpose}
+              onChange={(e) => {
+                setOsc1Transpose(Number(e.target.value));
+              }}
+            />
+          </label>
+        </div>
+        <div className="flex gap-5 flex-col">
+          OSC2
+          <div className="flex gap-5">
+            <label>
+              Sine
+              <input
+                type="checkbox"
+                checked={oscillator2Type === "sine"}
+                onChange={() => setOscillator2Type("sine")}
+              />
+            </label>
+            <label>
+              Sawtooth
+              <input
+                type="checkbox"
+                checked={oscillator2Type === "sawtooth"}
+                onChange={() => setOscillator2Type("sawtooth")}
+              />
+            </label>
+            <label>
+              Square
+              <input
+                type="checkbox"
+                checked={oscillator2Type === "square"}
+                onChange={() => setOscillator2Type("square")}
+              />
+            </label>
+            <label>
+              Triangle
+              <input
+                type="checkbox"
+                checked={oscillator2Type === "triangle"}
+                onChange={() => setOscillator2Type("triangle")}
+              />
+            </label>
+          </div>
+          <label>
+            Detune
+            <input
+              type="range"
+              min="0"
+              max="99"
+              step="1"
+              defaultValue={osc2Detune}
+              onChange={(e) => {
+                setOsc2Detune(Number(e.target.value));
+              }}
+            />
+          </label>
+          <label>
+            Transpose
+            <input
+              type="range"
+              min="-24"
+              max="24"
+              step="1"
+              defaultValue={osc2Transpose}
+              onChange={(e) => {
+                setOsc2Transpose(Number(e.target.value));
+              }}
+            />
+          </label>
+        </div>
+      </div>
+      <div className="flex gap-5 flex-col">
+        FILTER
+        <div className="flex gap-5">
+          <label>
+            Lowpass
+            <input
+              type="checkbox"
+              checked={filterType === "lowpass"}
+              onChange={() => setFilterType("lowpass")}
+            />
+          </label>
+          <label>
+            Highpass
+            <input
+              type="checkbox"
+              checked={filterType === "highpass"}
+              onChange={() => setFilterType("highpass")}
+            />
+          </label>
+          <label>
+            Bandpass
+            <input
+              type="checkbox"
+              checked={filterType === "bandpass"}
+              onChange={() => setFilterType("bandpass")}
+            />
+          </label>
+          <label>
+            Notch
+            <input
+              type="checkbox"
+              checked={filterType === "notch"}
+              onChange={() => setFilterType("notch")}
+            />
+          </label>
+        </div>
         <label>
-          Sine
-          <input
-            type="checkbox"
-            checked={oscillator1Type === "sine"}
-            onChange={() => setOscillator1Type("sine")}
-          />
-        </label>
-        <label>
-          Sawtooth
-          <input
-            type="checkbox"
-            checked={oscillator1Type === "sawtooth"}
-            onChange={() => setOscillator1Type("sawtooth")}
-          />
-        </label>
-        <label>
-          Square
-          <input
-            type="checkbox"
-            checked={oscillator1Type === "square"}
-            onChange={() => setOscillator1Type("square")}
-          />
-        </label>
-        <label>
-          Triangle
-          <input
-            type="checkbox"
-            checked={oscillator1Type === "triangle"}
-            onChange={() => setOscillator1Type("triangle")}
-          />
-        </label>
-        <label>
-          Detune
+          Frequency
           <input
             type="range"
             min="0"
-            max="100"
+            max="15000"
             step="1"
-            defaultValue={osc1Detune}
-            onChange={(e) => {
-              setOsc1Detune(Number(e.target.value));
-            }}
+            defaultValue={filterFrequency}
+            onChange={(e) => setFilterFrequency(Number(e.target.value))}
           />
         </label>
+        <div className="flex gap-5">
+          Rolloff
+          <label>
+            12
+            <input
+              type="checkbox"
+              checked={filterRolloff === -12}
+              onChange={() => setFilterRolloff(-12)}
+            />
+          </label>
+          <label>
+            24
+            <input
+              type="checkbox"
+              checked={filterRolloff === -24}
+              onChange={() => setFilterRolloff(-24)}
+            />
+          </label>
+          <label>
+            48
+            <input
+              type="checkbox"
+              checked={filterRolloff === -48}
+              onChange={() => setFilterRolloff(-48)}
+            />
+          </label>
+        </div>
         <label>
-          Transpose
-          <input
-            type="range"
-            min="-24"
-            max="24"
-            step="1"
-            defaultValue={osc1Transpose}
-            onChange={(e) => {
-              setOsc1Transpose(Number(e.target.value));
-            }}
-          />
-        </label>
-      </div>
-      <div>
-        OSC2
-        <label>
-          Sine
-          <input
-            type="checkbox"
-            checked={oscillator2Type === "sine"}
-            onChange={() => setOscillator2Type("sine")}
-          />
-        </label>
-        <label>
-          Sawtooth
-          <input
-            type="checkbox"
-            checked={oscillator2Type === "sawtooth"}
-            onChange={() => setOscillator2Type("sawtooth")}
-          />
-        </label>
-        <label>
-          Square
-          <input
-            type="checkbox"
-            checked={oscillator2Type === "square"}
-            onChange={() => setOscillator2Type("square")}
-          />
-        </label>
-        <label>
-          Triangle
-          <input
-            type="checkbox"
-            checked={oscillator2Type === "triangle"}
-            onChange={() => setOscillator2Type("triangle")}
-          />
-        </label>
-        <label>
-          Detune
+          Q
           <input
             type="range"
             min="0"
-            max="99"
-            step="1"
-            defaultValue={osc2Detune}
-            onChange={(e) => {
-              setOsc2Detune(Number(e.target.value));
-            }}
-          />
-        </label>
-        <label>
-          Transpose
-          <input
-            type="range"
-            min="-24"
-            max="24"
-            step="1"
-            defaultValue={osc2Transpose}
-            onChange={(e) => {
-              setOsc2Transpose(Number(e.target.value));
-            }}
+            max="15"
+            step="0.1"
+            defaultValue={filterQ}
+            onChange={(e) => setFilterQ(Number(e.target.value))}
           />
         </label>
       </div>
-      <div>
-        <label>
-          Attack
-          <input
-            type="range"
-            min="0.01"
-            max="10"
-            step="0.01"
-            defaultValue={attack}
-            onChange={(e) => setAttack(Number(e.target.value))}
-          />
-        </label>
-        <label>
-          Decay
-          <input
-            type="range"
-            min="0.01"
-            max="10"
-            step="0.01"
-            defaultValue={decay}
-            onChange={(e) => setDecay(Number(e.target.value))}
-          />
-        </label>
-        <label>
-          Sustain
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            defaultValue={sustain}
-            onChange={(e) => setSustain(Number(e.target.value))}
-          />
-        </label>
-        <label>
-          Release
-          <input
-            type="range"
-            min="0.01"
-            max="10"
-            step="0.01"
-            defaultValue={release}
-            onChange={(e) => setRelease(Number(e.target.value))}
-          />
-        </label>
+      <div className="flex gap-5 flex-col">
+        <div className="flex gap-5 flex-col">
+          AMPLITUDE ENVELOPE
+          <label>
+            Attack
+            <input
+              type="range"
+              min="0.01"
+              max="10"
+              step="0.01"
+              defaultValue={attack}
+              onChange={(e) => setAttack(Number(e.target.value))}
+            />
+          </label>
+          <label>
+            Decay
+            <input
+              type="range"
+              min="0.01"
+              max="10"
+              step="0.01"
+              defaultValue={decay}
+              onChange={(e) => setDecay(Number(e.target.value))}
+            />
+          </label>
+          <label>
+            Sustain
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              defaultValue={sustain}
+              onChange={(e) => setSustain(Number(e.target.value))}
+            />
+          </label>
+          <label>
+            Release
+            <input
+              type="range"
+              min="0.01"
+              max="10"
+              step="0.01"
+              defaultValue={release}
+              onChange={(e) => setRelease(Number(e.target.value))}
+            />
+          </label>
+        </div>
+        <div className="flex gap-5 flex-col">
+          FILTER ENVELOPE
+          <label>
+            Attack
+            <input
+              type="range"
+              min="0.01"
+              max="10"
+              step="0.01"
+              defaultValue={filterEnvelopeAttack}
+              onChange={(e) => setFilterEnvelopeAttack(Number(e.target.value))}
+            />
+          </label>
+          <label>
+            Decay
+            <input
+              type="range"
+              min="0.01"
+              max="100"
+              step="0.01"
+              defaultValue={filterEnvelopeDecay}
+              onChange={(e) => setFilterEnvelopeDecay(Number(e.target.value))}
+            />
+          </label>
+          <label>
+            Sustain
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              defaultValue={filterEnvelopeSustain}
+              onChange={(e) => setFilterEnvelopeSustain(Number(e.target.value))}
+            />
+          </label>
+          <label>
+            Release
+            <input
+              type="range"
+              min="0.01"
+              max="10"
+              step="0.01"
+              defaultValue={filterEnvelopeRelease}
+              onChange={(e) => setFilterEnvelopeRelease(Number(e.target.value))}
+            />
+          </label>
+          <label>
+            Base Frequency
+            <input
+              type="range"
+              min="0"
+              max="15000"
+              step="1"
+              defaultValue={filterEnvelopeBaseFrequency}
+              onChange={(e) =>
+                setFilterEnvelopeBaseFrequency(Number(e.target.value))
+              }
+            />
+          </label>
+          <label>
+            Exponent
+            <input
+              type="range"
+              min="0"
+              max="10"
+              step="1"
+              defaultValue={filterEnvelopeExponent}
+              onChange={(e) =>
+                setFilterEnvelopeExponent(Number(e.target.value))
+              }
+            />
+          </label>
+          <label>
+            Octaves
+            <input
+              type="range"
+              min="0"
+              max="7"
+              step="0.01"
+              defaultValue={filterEnvelopeOctaves}
+              onChange={(e) => setFilterEnvelopeOctaves(Number(e.target.value))}
+            />
+          </label>
+        </div>
       </div>
-      <div>
+
+      <div className="flex gap-5 flex-col">
+        FX
         <label>
           Pan Spread
           <input
