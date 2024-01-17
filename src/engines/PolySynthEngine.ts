@@ -30,10 +30,15 @@ class PolySynthEngine {
   private unison: boolean = false;
   // private phaseLFO: Tone.LFO;
 
-  private currentDetuneOSC1Values: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
-  private currentDetuneOSC2Values: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
-  private maxDetuneOSC1: number[] = [31, -49, 49, -45, 24, -40, 42, -32];
-  private maxDetuneOSC2: number[] = [-41, 38, -25, 49, 15, -49, 18, 39];
+  private currentDetuneOSCValues: number[][] = [
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+  ];
+  private maxDetuneOSC: number[][] = [
+    [31, -49, 49, -45, 24, -40, 42, -32],
+    [-41, 38, -25, 49, 15, -49, 18, 39],
+  ];
+  
 
   constructor(node: Tone.Gain<"decibels" | "gain" | "normalRange">) {
     this.voices = [];
@@ -137,66 +142,43 @@ class PolySynthEngine {
 
   //Set Waveforms
 
-  setOsc1TypeEngine(waveform: "sawtooth" | "sine" | "square" | "triangle") {
-    this.voices.forEach(([osc1, osc2]) =>
-      osc1.set({ oscillator: { type: waveform } })
-    );
-  }
-
-  setOsc2TypeEngine(waveform: "sawtooth" | "sine" | "square" | "triangle") {
-    this.voices.forEach(([osc1, osc2]) =>
-      osc2.set({ oscillator: { type: waveform } })
-    );
+  setOscTypeEngine(
+    waveform: "sawtooth" | "sine" | "square" | "triangle",
+    osc: number
+  ) {
+    this.voices.forEach(([osc1, osc2]) => {
+      if (osc === 1) {
+        osc1.set({ oscillator: { type: waveform } });
+      } else {
+        osc2.set({ oscillator: { type: waveform } });
+      }
+    });
   }
 
   //Set Detune
 
-  setOsc1DetuneEngine(detune: number, osc: number) {
+  setOscDetuneEngine(detune: number, osc: number) {
+    const oscIndex = osc - 1;
     for (let i = 0; i < this.voiceCount; i++) {
-      const maxDetune = this.maxDetuneOSC1[i];
-      const currentDetune = this.voices[i][0].detune.value;
+      const maxDetune = this.maxDetuneOSC[oscIndex][i];
+      const currentDetune = this.voices[i][oscIndex].detune.value;
       const step = Math.round(currentDetune / 100);
       const detuneAmount = maxDetune * (detune / 100);
-      this.currentDetuneOSC1Values[i] = detuneAmount;
-      this.voices[i][0].detune.value = detuneAmount + step * 100;
-      console.log(this.voices[i][0].detune.value + " detuned value OSC1");
-    }
-  }
-
-  setOsc2DetuneEngine(detune: number) {
-    for (let i = 0; i < this.voiceCount; i++) {
-      const maxDetune = this.maxDetuneOSC2[i];
-      const currentDetune = this.voices[i][1].detune.value;
-      const step = Math.round(currentDetune / 100);
-      const detuneAmount = maxDetune * (detune / 100);
-      this.currentDetuneOSC2Values[i] = detuneAmount;
-      this.voices[i][1].detune.value = detuneAmount + step * 100;
-      console.log(this.voices[i][1].detune.value + " detuned value OSC2");
+      this.currentDetuneOSCValues[oscIndex][i] = detuneAmount;
+      this.voices[i][oscIndex].detune.value = detuneAmount + step * 100;
+      console.log(this.voices[i][0].detune.value + " detuned value OSC" + osc);
     }
   }
 
   //Set Transpose
 
-  setOsc1TransposeEngine(transpose: number) {
+  setOscTransposeEngine(transpose: number, osc: number) {
+    const oscIndex = osc - 1;
     for (let i = 0; i < this.voices.length; i++) {
-      // const currentDetune = this.voices[i][0].detune.value % 100;
-      // console.log("CURRENT DETUNE " + currentDetune);
-      const transposedValue = transpose * 100 + this.currentDetuneOSC1Values[i];
-      this.voices[i][0].detune.value = transposedValue;
-      // console.log(
-      //   "OSC1 transposed by " + transpose + " semitones"
-      // );
-    }
-  }
-
-  setOsc2TransposeEngine(transpose: number ) {
-    for (let i = 0; i < this.voices.length; i++) {
-      const currentDetune = this.voices[i].detune.value;
-      const detune = currentDetune % 100;
-      console.log("CURRENT DETUNE " + currentDetune);
-      const transposedValue = transpose * 100 + detune;
-      this.voices[i].detune.value = transposedValue;
-      console.log(this.voices[i].detune.value + " transposed");
+      const transposedValue =
+        transpose * 100 + this.currentDetuneOSCValues[oscIndex][i];
+      this.voices[i][oscIndex].detune.value = transposedValue;
+      console.log(`OSC${oscIndex} transposed by ${transpose} semitones`);
     }
   }
 
