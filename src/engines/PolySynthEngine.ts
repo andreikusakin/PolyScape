@@ -4,13 +4,15 @@ import AudioKeys from "audiokeys";
 
 //TODO
 
+//FIX when holding down multiple keys it stops playing if you press a new keys but not holding them, exciding 8 voices
+
 // transpose for each oscillator
 // filters for each voices
 // Tone.Channel as mixer
 // unison/ fix unison release
 
 // portamento
-// pulse width
+// mimick pulse width
 // make IRs for reverb
 // noise
 // midi and midi mapping
@@ -20,6 +22,10 @@ import AudioKeys from "audiokeys";
 //mimick detune and panspread
 
 //mixer mimick
+
+//lfos
+
+//tone start
 
 class PolySynthEngine {
   private voiceCount: number = 8;
