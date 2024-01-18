@@ -47,7 +47,12 @@ class PolySynthEngine {
     -0.7, 0.1, -1, 0.9, -0.7, 0.2, -0.8, 1,
   ];
 
-  constructor(node: Tone.Gain<"decibels" | "gain" | "normalRange">) {
+  constructor(node: Tone.Gain) {
+    this.initializeVoices(node);
+    this.setupKeyboard();
+  }
+
+  private initializeVoices(node: Tone.Gain) {
     for (let i = 0; i < this.voiceCount; i++) {
       this.panners.push(new Tone.Panner().connect(node));
       this.voices.push([
@@ -82,9 +87,9 @@ class PolySynthEngine {
         }).connect(this.panners[i]),
       ]);
     }
+  }
 
-    console.log(this.voices);
-
+  private setupKeyboard() {
     this.keyboard = new AudioKeys({
       polyphony: this.voiceCount,
       rows: 1,
