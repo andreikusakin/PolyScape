@@ -95,6 +95,11 @@ class PolySynthEngine {
   }
 
   setUnisonEngine(value: boolean) {
+    //stop all voices when switching unison
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.triggerRelease();
+      osc2.triggerRelease();
+    });
     this.unison = value;
   }
 
@@ -148,6 +153,17 @@ class PolySynthEngine {
         osc1.set({ oscillator: { type: waveform } });
       } else {
         osc2.set({ oscillator: { type: waveform } });
+      }
+    });
+  }
+
+  //Set Pulse Width
+  setPulseWidthEngine(pulseWidth: number, osc: number) {
+    this.voices.forEach(([osc1, osc2]) => {
+      if (osc === 1 && osc1.oscillator.type === "pulse") {
+        osc1.set({ oscillator: { width: pulseWidth } });
+      } else if (osc === 2 && osc2.oscillator.type === "pulse") {
+        osc2.set({ oscillator: { width: pulseWidth } });
       }
     });
   }
