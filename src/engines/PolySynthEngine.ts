@@ -22,13 +22,12 @@ import AudioKeys from "audiokeys";
 
 class PolySynthEngine {
   private voiceCount: number = 8;
-  private voices: [Tone.MonoSynth, Tone.MonoSynth][];
-  private panners: Tone.Panner[];
-  private activeVoices: Map<number, number>;
+  private voices: [Tone.MonoSynth, Tone.MonoSynth][] = [];
+  private panners: Tone.Panner[] = [];
+  private activeVoices: Map<number, number> = new Map();
   private lastPlayedVoice: number = 0;
   private keyboard: AudioKeys;
   private unison: boolean = false;
-  // private phaseLFO: Tone.LFO;
   private maxDetuneOSC: number[][] = [
     [31, -49, 49, -45, 24, -40, 42, -32],
     [-41, 38, -25, 49, 15, -49, 18, 39],
@@ -37,23 +36,11 @@ class PolySynthEngine {
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
   ];
-  private maxPanSpreadPerVoice: number[] = [-0.7, 0.1, -1, 0.9, -0.7, 0.2, -0.8, 1]
- 
-  
+  private maxPanSpreadPerVoice: number[] = [
+    -0.7, 0.1, -1, 0.9, -0.7, 0.2, -0.8, 1,
+  ];
 
   constructor(node: Tone.Gain<"decibels" | "gain" | "normalRange">) {
-    this.voices = [];
-    this.panners = [];
-    this.activeVoices = new Map();
-
-    this.unison;
-    // this.phaseLFO = new Tone.LFO({
-    //   type: "sine",
-    //   min: -0.1,
-    //   max: 0.1,
-    //   frequency: 0.3,
-    // });
-
     for (let i = 0; i < this.voiceCount; i++) {
       this.panners.push(new Tone.Panner().connect(node));
       this.voices.push([
@@ -106,7 +93,15 @@ class PolySynthEngine {
     });
   }
 
-  private triggerAttackEngine(frequency: number, time, velocity: number) {
+  setUnisonEngine(value: boolean) {
+    this.unison = value;
+  }
+
+  private triggerAttackEngine(
+    frequency: number,
+    time: Tone.Unit.Time,
+    velocity: number
+  ) {
     if (this.unison) {
       this.voices.forEach(([osc1, osc2]) => {
         osc1.triggerAttack(frequency, time, velocity);
@@ -195,23 +190,31 @@ class PolySynthEngine {
   //Set Envelope Amplitude
 
   setAttackEngine(newAttack: number) {
-    this.voices.forEach((v) => v.set({ envelope: { attack: newAttack } }));
-    this.voices.forEach((v) => v.set({ envelope: { attack: newAttack } }));
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ envelope: { attack: newAttack } });
+      osc2.set({ envelope: { attack: newAttack } });
+    });
   }
 
   setDecayEngine(newDecay: number) {
-    this.voices.forEach((v) => v.set({ envelope: { decay: newDecay } }));
-    this.voices.forEach((v) => v.set({ envelope: { decay: newDecay } }));
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ envelope: { decay: newDecay } });
+      osc2.set({ envelope: { decay: newDecay } });
+    });
   }
 
   setSustainEngine(newSustain: number) {
-    this.voices.forEach((v) => v.set({ envelope: { sustain: newSustain } }));
-    this.voices.forEach((v) => v.set({ envelope: { sustain: newSustain } }));
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ envelope: { sustain: newSustain } });
+      osc2.set({ envelope: { sustain: newSustain } });
+    });
   }
 
   setReleaseEngine(newRelease: number) {
-    this.voices.forEach((v) => v.set({ envelope: { release: newRelease } }));
-    this.voices.forEach((v) => v.set({ envelope: { release: newRelease } }));
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ envelope: { release: newRelease } });
+      osc2.set({ envelope: { release: newRelease } });
+    });
   }
 
   //Set Filter
@@ -219,85 +222,82 @@ class PolySynthEngine {
   setFilterTypeEngine(
     filterType: "lowpass" | "highpass" | "bandpass" | "notch"
   ) {
-    this.voices.forEach((v) => v.set({ filter: { type: filterType } }));
-    this.voices.forEach((v) => v.set({ filter: { type: filterType } }));
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ filter: { type: filterType } });
+      osc2.set({ filter: { type: filterType } });
+    });
   }
 
   setFilterFrequencyEngine(newFrequency: number) {
-    this.voices.forEach((v) => v.set({ filter: { frequency: newFrequency } }));
-    console.log(newFrequency);
-    this.voices.forEach((v) => v.set({ filter: { frequency: newFrequency } }));
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ filter: { frequency: newFrequency } });
+      osc2.set({ filter: { frequency: newFrequency } });
+    });
   }
 
   setFilterQEngine(newQ: number) {
-    this.voices.forEach((v) => v.set({ filter: { Q: newQ } }));
-    this.voices.forEach((v) => v.set({ filter: { Q: newQ } }));
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ filter: { Q: newQ } });
+      osc2.set({ filter: { Q: newQ } });
+    });
   }
 
   setFilterRollOffEngine(newRollOff: Tone.FilterRollOff) {
-    this.voices.forEach((v) => v.set({ filter: { rolloff: newRollOff } }));
-    this.voices.forEach((v) => v.set({ filter: { rolloff: newRollOff } }));
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ filter: { rolloff: newRollOff } });
+      osc2.set({ filter: { rolloff: newRollOff } });
+    });
   }
 
   //Set Envelope Filter
 
   setFilterEnvelopeAttackEngine(newAttack: number) {
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { attack: newAttack } })
-    );
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { attack: newAttack } })
-    );
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ filterEnvelope: { attack: newAttack } });
+      osc2.set({ filterEnvelope: { attack: newAttack } });
+    });
   }
 
   setFilterEnvelopeDecayEngine(newDecay: number) {
-    this.voices.forEach((v) => v.set({ filterEnvelope: { decay: newDecay } }));
-    this.voices.forEach((v) => v.set({ filterEnvelope: { decay: newDecay } }));
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ filterEnvelope: { decay: newDecay } });
+      osc2.set({ filterEnvelope: { decay: newDecay } });
+    });
   }
 
   setFilterEnvelopeSustainEngine(newSustain: number) {
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { sustain: newSustain } })
-    );
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { sustain: newSustain } })
-    );
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ filterEnvelope: { sustain: newSustain } });
+      osc2.set({ filterEnvelope: { sustain: newSustain } });
+    });
   }
 
   setFilterEnvelopeReleaseEngine(newRelease: number) {
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { release: newRelease } })
-    );
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { release: newRelease } })
-    );
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ filterEnvelope: { release: newRelease } });
+      osc2.set({ filterEnvelope: { release: newRelease } });
+    });
   }
 
   setFilterEnvelopeFrequencyEngine(newFrequency: number) {
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { baseFrequency: newFrequency } })
-    );
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { baseFrequency: newFrequency } })
-    );
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ filterEnvelope: { baseFrequency: newFrequency } });
+      osc2.set({ filterEnvelope: { baseFrequency: newFrequency } });
+    });
   }
 
   setFilterEnvelopeExponentEngine(newExponent: number) {
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { exponent: newExponent } })
-    );
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { exponent: newExponent } })
-    );
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ filterEnvelope: { exponent: newExponent } });
+      osc2.set({ filterEnvelope: { exponent: newExponent } });
+    });
   }
 
   setFilterEnvelopeOctavesEngine(newOctaves: number) {
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { octaves: newOctaves } })
-    );
-    this.voices.forEach((v) =>
-      v.set({ filterEnvelope: { octaves: newOctaves } })
-    );
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.set({ filterEnvelope: { octaves: newOctaves } });
+      osc2.set({ filterEnvelope: { octaves: newOctaves } });
+    });
   }
 }
 
