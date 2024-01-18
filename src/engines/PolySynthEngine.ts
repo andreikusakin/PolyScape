@@ -29,15 +29,16 @@ class PolySynthEngine {
   private keyboard: AudioKeys;
   private unison: boolean = false;
   // private phaseLFO: Tone.LFO;
-
-  private currentDetuneOSCValues: number[][] = [
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-  ];
   private maxDetuneOSC: number[][] = [
     [31, -49, 49, -45, 24, -40, 42, -32],
     [-41, 38, -25, 49, 15, -49, 18, 39],
   ];
+  private currentDetuneOSCValues: number[][] = [
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+  ];
+  private maxPanSpreadPerVoice: number[] = [-0.7, 0.1, -1, 0.9, -0.7, 0.2, -0.8, 1]
+ 
   
 
   constructor(node: Tone.Gain<"decibels" | "gain" | "normalRange">) {
@@ -186,12 +187,8 @@ class PolySynthEngine {
 
   setPanSpreadEngine(panSpread: number) {
     for (let i = 0; i < this.voiceCount; i++) {
-      const randomNumber = (Math.random() * 2 - 1) * (panSpread / 100);
-
-      // this.OSC1Panners[i].pan.linearRampTo(randomNumber1, 0.01);
-      // this.OSC2Panners[i].pan.linearRampTo(randomNumber2, 0.01);
-
-      this.panners[i].pan.linearRampTo(randomNumber, 0.01);
+      const panValue = this.maxPanSpreadPerVoice[i] * (panSpread / 100);
+      this.panners[i].pan.linearRampTo(panValue, 0.01);
     }
   }
 
