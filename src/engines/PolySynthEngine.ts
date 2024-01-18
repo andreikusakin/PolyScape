@@ -7,7 +7,8 @@ import AudioKeys from "audiokeys";
 // transpose for each oscillator
 // filters for each voices
 // Tone.Channel as mixer
-// unison
+// unison/ fix unison release
+
 // portamento
 // pulse width
 // make IRs for reverb
@@ -55,7 +56,7 @@ class PolySynthEngine {
             release: 0,
             baseFrequency: 15000,
             octaves: 0,
-            exponent: 1,
+            exponent: 5,
           },
         }).connect(this.panners[i]),
         new Tone.MonoSynth({
@@ -69,7 +70,7 @@ class PolySynthEngine {
             release: 0,
             baseFrequency: 15000,
             octaves: 0,
-            exponent: 1,
+            exponent: 5,
           },
           detune: 0,
         }).connect(this.panners[i]),
@@ -139,7 +140,7 @@ class PolySynthEngine {
   //Set Waveforms
 
   setOscTypeEngine(
-    waveform: "sawtooth" | "sine" | "square" | "triangle",
+    waveform: "sawtooth" | "sine" | "pulse" | "triangle",
     osc: number
   ) {
     this.voices.forEach(([osc1, osc2]) => {
