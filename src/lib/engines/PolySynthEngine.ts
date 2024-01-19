@@ -1,6 +1,7 @@
 import * as Tone from "tone/build/esm/index";
 // @ts-ignore
 import AudioKeys from "audiokeys";
+import { Preset } from "../types/types";
 
 //TODO
 
@@ -47,43 +48,35 @@ class PolySynthEngine {
     -0.7, 0.1, -1, 0.9, -0.7, 0.2, -0.8, 1,
   ];
 
-  constructor(node: Tone.Gain) {
-    this.initializeVoices(node);
+  constructor(node: Tone.Gain<"normalRange">, preset: Preset) {
+    this.initializeVoices(node, preset);
     this.setupKeyboard();
+    this.unison = preset.unison;
   }
 
-  private initializeVoices(node: Tone.Gain) {
+  private initializeVoices(node: Tone.Gain<"normalRange">, preset: Preset) {
     for (let i = 0; i < this.voiceCount; i++) {
       this.panners.push(new Tone.Panner().connect(node));
       this.voices.push([
         new Tone.MonoSynth({
-          oscillator: { type: "sine" },
-          envelope: { attack: 0.01, decay: 0.01, sustain: 1, release: 0.01 },
-          filter: { type: "lowpass", frequency: 0, rolloff: -12, Q: 0 },
-          filterEnvelope: {
-            attack: 0,
-            decay: 0,
-            sustain: 0,
-            release: 0,
-            baseFrequency: 15000,
-            octaves: 0,
-            exponent: 5,
-          },
+          oscillator:
+            preset.osc1.type === "pulse"
+              ? { type: "pulse", width: preset.osc1.pulseWidth }
+              : { type: preset.osc1.type },
+          envelope: preset.envelope,
+          filter: preset.filter,
+          filterEnvelope: preset.filterEnvelope,
+          detune: preset.osc1.detune,
         }).connect(this.panners[i]),
         new Tone.MonoSynth({
-          oscillator: { type: "sine", phase: 0 },
-          envelope: { attack: 0.01, decay: 0.01, sustain: 1, release: 0.01 },
-          filter: { type: "lowpass", frequency: 0, rolloff: -12, Q: 0 },
-          filterEnvelope: {
-            attack: 0,
-            decay: 0,
-            sustain: 0,
-            release: 0,
-            baseFrequency: 15000,
-            octaves: 0,
-            exponent: 5,
-          },
-          detune: 0,
+          oscillator:
+            preset.osc2.type === "pulse"
+              ? { type: "pulse", width: preset.osc2.pulseWidth }
+              : { type: preset.osc2.type },
+          envelope: preset.envelope,
+          filter: preset.filter,
+          filterEnvelope: preset.filterEnvelope,
+          detune: preset.osc2.detune,
         }).connect(this.panners[i]),
       ]);
     }
@@ -103,15 +96,6 @@ class PolySynthEngine {
     this.keyboard.up((key: any) => {
       this.triggerReleaseEngine(key.frequency);
     });
-  }
-
-  setUnisonEngine(value: boolean) {
-    //stop all voices when switching unison
-    this.voices.forEach(([osc1, osc2]) => {
-      osc1.triggerRelease();
-      osc2.triggerRelease();
-    });
-    this.unison = value;
   }
 
   private triggerAttackEngine(
@@ -151,6 +135,17 @@ class PolySynthEngine {
         }
       });
     }
+  }
+
+  //Set Unison
+
+  setUnisonEngine(value: boolean) {
+    //stop all voices when switching unison
+    this.voices.forEach(([osc1, osc2]) => {
+      osc1.triggerRelease();
+      osc2.triggerRelease();
+    });
+    this.unison = value;
   }
 
   //Set Waveforms
