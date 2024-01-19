@@ -1,55 +1,21 @@
 "use-client";
 import { useState, useEffect, useRef, use } from "react";
 import * as Tone from "tone/build/esm/index";
-import PolySynthEngine from "@/engines/PolySynthEngine";
-import { init } from "next/dist/compiled/webpack/webpack";
-
-type Preset = {
-  osc1: {
-    type: "sawtooth" | "sine" | "square" | "triangle";
-    detune: number;
-    transpose: number;
-  };
-  osc2: {
-    type: "sawtooth" | "sine" | "square" | "triangle";
-    detune: number;
-    transpose: number;
-  };
-  envelope: {
-    attack: number;
-    decay: number;
-    sustain: number;
-    release: number;
-  };
-  filter: {
-    type: "lowpass" | "highpass" | "bandpass" | "notch";
-    frequency: number;
-    rolloff: Tone.FilterRollOff;
-    Q: number;
-  };
-  filterEnvelope: {
-    attack: number;
-    decay: number;
-    sustain: number;
-    release: number;
-    baseFrequency: number;
-    octaves: number;
-    exponent: number;
-  };
-  unison: boolean;
-  panSpread: number;
-};
+import PolySynthEngine from "@/lib/engines/PolySynthEngine";
+import { Preset } from "@/lib/types/types";
 
 const initPreset: Preset = {
   osc1: {
     type: "sine",
     detune: 0,
     transpose: 0,
+    pulseWidth: 0,
   },
   osc2: {
     type: "sine",
     detune: 0,
     transpose: 0,
+    pulseWidth: 0,
   },
   envelope: {
     attack: 0.01,
@@ -65,64 +31,71 @@ const initPreset: Preset = {
     release: 0,
     baseFrequency: 15000,
     octaves: 0,
-    exponent: 0,
+    exponent: 5,
   },
   unison: false,
   panSpread: 0,
 };
 
 const PolySynth = () => {
+  const [preset, setPreset] = useState<Preset>(initPreset);
+
   const polySynthEngine = useRef<PolySynthEngine>();
 
   // OSC1
   const [oscillator1Type, setOscillator1Type] = useState<
-    "sawtooth" | "sine" | "square" | "triangle"
-  >();
-  const [osc1Detune, setOsc1Detune] = useState<number>();
-  const [osc1Transpose, setOsc1Transpose] = useState<number>();
+    "sawtooth" | "sine" | "pulse" | "triangle"
+  >("sine");
+  const [osc1Detune, setOsc1Detune] = useState<number>(0);
+  const [osc1Transpose, setOsc1Transpose] = useState<number>(0);
+  const [osc1PulseWidth, setOsc1PulseWidth] = useState<number>(0);
 
   // OSC2
   const [oscillator2Type, setOscillator2Type] = useState<
-    "sawtooth" | "sine" | "square" | "triangle"
-  >();
-  const [osc2Detune, setOsc2Detune] = useState<number>();
-  const [osc2Transpose, setOsc2Transpose] = useState<number>();
+    "sawtooth" | "sine" | "pulse" | "triangle"
+  >("sine");
+  const [osc2Detune, setOsc2Detune] = useState<number>(0);
+  const [osc2Transpose, setOsc2Transpose] = useState<number>(0);
+  const [osc2PulseWidth, setOsc2PulseWidth] = useState<number>(0);
 
   // envelope amplitude
-  const [attack, setAttack] = useState<number>();
-  const [decay, setDecay] = useState<number>();
-  const [sustain, setSustain] = useState<number>();
-  const [release, setRelease] = useState<number>();
+  const [attack, setAttack] = useState<number>(0);
+  const [decay, setDecay] = useState<number>(0);
+  const [sustain, setSustain] = useState<number>(0);
+  const [release, setRelease] = useState<number>(0);
 
   // filter
   const [filterType, setFilterType] = useState<
     "lowpass" | "highpass" | "bandpass" | "notch"
-  >();
-  const [filterFrequency, setFilterFrequency] = useState<number>();
-  const [filterRolloff, setFilterRolloff] = useState<Tone.FilterRollOff>();
-  const [filterQ, setFilterQ] = useState<number>();
+  >("lowpass");
+  const [filterFrequency, setFilterFrequency] = useState<number>(0);
+  const [filterRolloff, setFilterRolloff] = useState<Tone.FilterRollOff>(-12);
+  const [filterQ, setFilterQ] = useState<number>(0);
 
-  const [filterEnvelopeAttack, setFilterEnvelopeAttack] = useState<number>();
-  const [filterEnvelopeDecay, setFilterEnvelopeDecay] = useState<number>();
-  const [filterEnvelopeSustain, setFilterEnvelopeSustain] = useState<number>();
-  const [filterEnvelopeRelease, setFilterEnvelopeRelease] = useState<number>();
+  const [filterEnvelopeAttack, setFilterEnvelopeAttack] = useState<number>(0);
+  const [filterEnvelopeDecay, setFilterEnvelopeDecay] = useState<number>(0);
+  const [filterEnvelopeSustain, setFilterEnvelopeSustain] = useState<number>(0);
+  const [filterEnvelopeRelease, setFilterEnvelopeRelease] = useState<number>(0);
   const [filterEnvelopeBaseFrequency, setFilterEnvelopeBaseFrequency] =
-    useState<number>();
-  const [filterEnvelopeOctaves, setFilterEnvelopeOctaves] = useState<number>();
+    useState<number>(0);
+  const [filterEnvelopeOctaves, setFilterEnvelopeOctaves] = useState<number>(0);
   const [filterEnvelopeExponent, setFilterEnvelopeExponent] =
-    useState<number>();
+    useState<number>(0);
 
   // fx
-  const [panSpread, setPanSpread] = useState<number>();
+  const [panSpread, setPanSpread] = useState<number>(0);
+  const [unison, setUnison] = useState<boolean>(false);
 
   function loadPreset(preset: Preset) {
     setOscillator1Type(preset.osc1.type);
     setOsc1Detune(preset.osc1.detune);
     setOsc1Transpose(preset.osc1.transpose);
+    setOsc1PulseWidth(preset.osc1.pulseWidth);
 
     setOscillator2Type(preset.osc2.type);
     setOsc2Detune(preset.osc2.detune);
     setOsc2Transpose(preset.osc2.transpose);
+    setOsc2PulseWidth(preset.osc2.pulseWidth);
 
     setAttack(preset.envelope.attack);
     setDecay(preset.envelope.decay);
@@ -139,11 +112,18 @@ const PolySynth = () => {
     setFilterEnvelopeSustain(preset.filterEnvelope.sustain);
     setFilterEnvelopeRelease(preset.filterEnvelope.release);
     setFilterEnvelopeBaseFrequency(preset.filterEnvelope.baseFrequency);
-    // setFilterEnvelopeOctaves(preset.filterEnvelope.octaves);
+    setFilterEnvelopeOctaves(preset.filterEnvelope.octaves);
     setFilterEnvelopeExponent(preset.filterEnvelope.exponent);
 
     setPanSpread(preset.panSpread);
+    setUnison(preset.unison);
   }
+  useEffect(() => {
+    loadPreset(preset);
+  }, []);
+
+  console.log("preset: ", preset);
+  console.log("sustain: ", sustain);
 
   // initialize synth
   useEffect(() => {
@@ -152,57 +132,64 @@ const PolySynth = () => {
       units: "normalRange",
     }).toDestination();
 
-    polySynthEngine.current = new PolySynthEngine(filterNode);
-
-    loadPreset(initPreset);
-  }, []);
+    polySynthEngine.current = new PolySynthEngine(filterNode, initPreset);
+  }, [preset]);
 
   // update oscilators types
   useEffect(() => {
     if (oscillator1Type) {
-      polySynthEngine.current?.setOsc1TypeEngine(oscillator1Type);
+      polySynthEngine.current?.setOscTypeEngine(oscillator1Type, 1);
       console.log("osc1 type changed to: ", oscillator1Type);
     }
   }, [oscillator1Type]);
 
   useEffect(() => {
     if (oscillator2Type) {
-      polySynthEngine.current?.setOsc2TypeEngine(oscillator2Type);
+      polySynthEngine.current?.setOscTypeEngine(oscillator2Type, 2);
       console.log("osc2 type changed to: ", oscillator2Type);
     }
   }, [oscillator2Type]);
 
   // update detune
-
   useEffect(() => {
-    if (osc1Detune) {
-      polySynthEngine.current?.setOsc1DetuneEngine(osc1Detune);
-      console.log("osc1 detune changed to: ", osc1Detune);
-    }
+    const detuneValue = osc1Detune ?? 0;
+    polySynthEngine.current?.setOscDetuneEngine(detuneValue, 1);
+    console.log("osc1 detune changed to: ", detuneValue);
   }, [osc1Detune]);
 
   useEffect(() => {
-    if (osc2Detune) {
-      polySynthEngine.current?.setOsc2DetuneEngine(osc2Detune);
-      console.log("osc2 detune changed to: ", osc2Detune);
-    }
+    const detuneValue = osc2Detune ?? 0;
+    polySynthEngine.current?.setOscDetuneEngine(detuneValue, 2);
+    console.log("osc2 detune changed to: ", detuneValue);
   }, [osc2Detune]);
 
   // update transpose
 
   useEffect(() => {
-    if (osc1Transpose) {
-      polySynthEngine.current?.setOsc1TransposeEngine(osc1Transpose);
-      console.log("osc1 transpose changed to: ", osc1Transpose);
-    }
+    const transposeValue = osc1Transpose ?? 0;
+    polySynthEngine.current?.setOscTransposeEngine(transposeValue, 1);
+    console.log("osc1Transpose state changed to: ", transposeValue);
   }, [osc1Transpose]);
 
   useEffect(() => {
-    if (osc2Transpose) {
-      polySynthEngine.current?.setOsc2TransposeEngine(osc2Transpose);
-      console.log("osc2 transpose changed to: ", osc2Transpose);
-    }
+    const transposeValue = osc2Transpose ?? 0;
+    polySynthEngine.current?.setOscTransposeEngine(transposeValue, 2);
+    console.log("osc2Transpose state changed to: ", transposeValue);
   }, [osc2Transpose]);
+
+  // update pulse width
+
+  useEffect(() => {
+    const pulseWidthValue = osc1PulseWidth ?? 0;
+    polySynthEngine.current?.setPulseWidthEngine(pulseWidthValue, 1);
+    console.log("osc1PulseWidth state changed to: ", pulseWidthValue);
+  }, [osc1PulseWidth]);
+
+  useEffect(() => {
+    const pulseWidthValue = osc2PulseWidth ?? 0;
+    polySynthEngine.current?.setPulseWidthEngine(pulseWidthValue, 2);
+    console.log("osc2PulseWidth state changed to: ", pulseWidthValue);
+  }, [osc2PulseWidth]);
 
   // update envelopes
   useEffect(() => {
@@ -220,10 +207,9 @@ const PolySynth = () => {
   }, [decay]);
 
   useEffect(() => {
-    if (sustain) {
-      polySynthEngine.current?.setSustainEngine(sustain);
-      console.log("sustain changed to: ", sustain);
-    }
+    const sustainValue = sustain ?? 0;
+    polySynthEngine.current?.setSustainEngine(sustainValue);
+    console.log("sustain changed to: ", sustain);
   }, [sustain]);
 
   useEffect(() => {
@@ -284,15 +270,10 @@ const PolySynth = () => {
   }, [filterEnvelopeDecay]);
 
   useEffect(() => {
-    if (filterEnvelopeSustain) {
-      polySynthEngine.current?.setFilterEnvelopeSustainEngine(
-        filterEnvelopeSustain
-      );
-      console.log(
-        "filter envelope sustain changed to: ",
-        filterEnvelopeSustain
-      );
-    }
+    const sustain = filterEnvelopeSustain ?? 0;
+    polySynthEngine.current?.setFilterEnvelopeSustainEngine(sustain);
+
+    console.log("filter envelope sustain changed to: ", filterEnvelopeSustain);
   }, [filterEnvelopeSustain]);
 
   useEffect(() => {
@@ -332,25 +313,24 @@ const PolySynth = () => {
   }, [filterEnvelopeExponent]);
 
   useEffect(() => {
-    if (filterEnvelopeOctaves) {
-      polySynthEngine.current?.setFilterEnvelopeOctavesEngine(
-        filterEnvelopeOctaves
-      );
-      console.log(
-        "filter envelope octaves changed to: ",
-        filterEnvelopeOctaves
-      );
-    }
+    const octaves = filterEnvelopeOctaves ?? 0;
+    polySynthEngine.current?.setFilterEnvelopeOctavesEngine(octaves);
+    console.log("filter envelope octaves changed to: ", filterEnvelopeOctaves);
   }, [filterEnvelopeOctaves]);
 
   // update fx
 
   useEffect(() => {
-    if (panSpread) {
-      polySynthEngine.current?.setPanSpreadEngine(panSpread);
-      console.log("panSpread changed to: ", panSpread);
-    }
+    const panValue = panSpread ?? 0;
+    polySynthEngine.current?.setPanSpreadEngine(panValue);
+    console.log("panSpread changed to: ", panValue);
   }, [panSpread]);
+
+  useEffect(() => {
+    const unisonValue = unison ?? false;
+    polySynthEngine.current?.setUnisonEngine(unisonValue);
+    console.log("unison changed to: ", unisonValue);
+  }, [unison]);
 
   return (
     <div className="flex w-full h-full gap-10">
@@ -379,8 +359,8 @@ const PolySynth = () => {
               Square
               <input
                 type="checkbox"
-                checked={oscillator1Type === "square"}
-                onChange={() => setOscillator1Type("square")}
+                checked={oscillator1Type === "pulse"}
+                onChange={() => setOscillator1Type("pulse")}
               />
             </label>
             <label>
@@ -418,6 +398,19 @@ const PolySynth = () => {
               }}
             />
           </label>
+          <label>
+            Pulse Width
+            <input
+              type="range"
+              min="-1"
+              max="1"
+              step="0.01"
+              defaultValue={osc1PulseWidth}
+              onChange={(e) => {
+                setOsc1PulseWidth(Number(e.target.value));
+              }}
+            />
+          </label>
         </div>
         <div className="flex gap-5 flex-col">
           OSC2
@@ -442,8 +435,8 @@ const PolySynth = () => {
               Square
               <input
                 type="checkbox"
-                checked={oscillator2Type === "square"}
-                onChange={() => setOscillator2Type("square")}
+                checked={oscillator2Type === "pulse"}
+                onChange={() => setOscillator2Type("pulse")}
               />
             </label>
             <label>
@@ -460,7 +453,7 @@ const PolySynth = () => {
             <input
               type="range"
               min="0"
-              max="99"
+              max="100"
               step="1"
               defaultValue={osc2Detune}
               onChange={(e) => {
@@ -478,6 +471,19 @@ const PolySynth = () => {
               defaultValue={osc2Transpose}
               onChange={(e) => {
                 setOsc2Transpose(Number(e.target.value));
+              }}
+            />
+          </label>
+          <label>
+            Pulse Width
+            <input
+              type="range"
+              min="-1"
+              max="1"
+              step="0.01"
+              defaultValue={osc2PulseWidth}
+              onChange={(e) => {
+                setOsc2PulseWidth(Number(e.target.value));
               }}
             />
           </label>
@@ -714,6 +720,14 @@ const PolySynth = () => {
             step="1"
             defaultValue={panSpread}
             onChange={(e) => setPanSpread(Number(e.target.value))}
+          />
+        </label>
+        <label>
+          Unison
+          <input
+            type="checkbox"
+            checked={unison}
+            onChange={() => setUnison(!unison)}
           />
         </label>
       </div>
