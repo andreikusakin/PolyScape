@@ -10,9 +10,9 @@ export const Sine = () => {
       <path
         d="M1 13C3.25 7 5.5 1 8.5 1C14.5 1 17.5 25 23.5 25C29.5 25 32.5 1 38.5 1C44.5 1 47.5 25 53.5 25C59.5 25 62.5 1 68.5 1C74.5 1 77.5 25 83.5 25C86.5 25 88.75 19 91 13"
         stroke="#FF543D"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
       />
     </svg>
   );
@@ -30,9 +30,9 @@ export const Sawtooth = () => {
       <path
         d="M1 13L16 1V25L46 1V25L76 1V25L91 13"
         stroke="#49FF92"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
       />
     </svg>
   );
@@ -50,9 +50,9 @@ export const Square = () => {
       <path
         d="M1 1H16V25H31V1H46V25H61V1H76V25H91"
         stroke="#2A99FF"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
       />
     </svg>
   );
@@ -70,9 +70,9 @@ export const Triangle = () => {
       <path
         d="M1 13L8.5 1L23.5 25L38.5 1L53.5 25L68.5 1L83.5 25L91 13"
         stroke="#E859FF"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
       />
     </svg>
   );
