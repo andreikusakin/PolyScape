@@ -13,7 +13,7 @@ type DialProps = {
 };
 
 interface KnobProps extends DialProps {
-  name: string;
+  label: string;
   interactive?: boolean;
 }
 
@@ -85,8 +85,9 @@ const Dial: React.FC<DialProps> = ({
 const Knob: React.FC<KnobProps> = ({
   radius,
   percent = 50,
+  lfoPercent,
   startingPoint,
-  name,
+  label,
   interactive,
 }) => {
   const strokeWidth = radius * 0.1;
@@ -99,15 +100,15 @@ const Knob: React.FC<KnobProps> = ({
   const percentNormalized = Math.min(Math.max(percent, 0), 100);
   const offset = arc - (percentNormalized / 100) * arc;
   return (
-    <div className={interactive ? styles.circle : styles.circleInteractive}>
+    <div className={interactive ? styles.knob : styles.knobNotInteractive}>
       <Dial
         radius={radius}
         percent={percent}
         lfo={1}
-        lfoPercent={50}
+        lfoPercent={lfoPercent}
         startingPoint={startingPoint}
       />
-      <div className={styles.name}>{name}</div>
+      <div className={styles.label}>{label}</div>
     </div>
   );
 };
