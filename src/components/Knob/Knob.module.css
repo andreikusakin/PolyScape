@@ -1,16 +1,16 @@
-.name {
+.label {
     text-wrap: nowrap;
     padding-left: calc(var(--main-synth-ui-font-size) * 0.2);
 }
 
-.circle {
+.knob {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.circleInteractive {
+.knobNotInteractive {
     pointer-events: none;
     display: flex;
     flex-direction: column;
