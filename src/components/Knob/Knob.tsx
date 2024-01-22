@@ -13,7 +13,7 @@ type DialProps = {
 };
 
 interface KnobProps extends DialProps {
-  startingPoint: "beginning" | "middle";
+  name: string;
 }
 
 const Dial: React.FC<DialProps> = ({
@@ -24,9 +24,8 @@ const Dial: React.FC<DialProps> = ({
   startingPoint,
 }) => {
   const strokeWidth = radius * 0.1;
-  const innerRadius = radius - (strokeWidth / 2);
-
-  const circumference = innerRadius * 2 * Math.PI;
+  const innerRadius = radius - strokeWidth / 2;
+  const circumference = 2 * Math.PI * innerRadius;
   const arc = circumference * (270 / 360);
   const dashArray = `${arc} ${circumference}`;
   const transform = `rotate(135, ${radius}, ${radius})`;
@@ -82,12 +81,12 @@ const Knob: React.FC<KnobProps> = ({
   percent = 50,
   dialColor,
   dialPercentColor,
-  startingPoint
+  startingPoint,
+  name
 }) => {
   const strokeWidth = radius * 0.1;
   const innerRadius = radius - strokeWidth / 2;
-
-  const circumference = innerRadius * 2 * Math.PI;
+  const circumference = 2 * Math.PI * innerRadius;
   const arc = circumference * (270 / 360);
   const dashArray = `${arc} ${circumference}`;
   const transform = `rotate(135, ${radius}, ${radius})`;
@@ -104,8 +103,9 @@ const Knob: React.FC<KnobProps> = ({
           dialPercentColor={dialPercentColor}
           startingPoint={startingPoint}
         />
+        <div className={styles.name}>{name.toUpperCase()}</div>
       </div>
-      Knob
+      
     </div>
   );
 };

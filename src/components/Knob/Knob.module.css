@@ -1,0 +1,13 @@
+.name {
+    font-size: var(--main-synth-ui-font-size);
+    letter-spacing: calc(var(--main-synth-ui-font-size) * 0.2);
+    text-align: center;
+    
+}
+
+.circle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
