@@ -1,8 +1,6 @@
 .name {
-    font-size: var(--main-synth-ui-font-size);
-    letter-spacing: calc(var(--main-synth-ui-font-size) * 0.2);
-    text-align: center;
-    
+    text-wrap: nowrap;
+    padding-left: calc(var(--main-synth-ui-font-size) * 0.2);
 }
 
 .circle {
@@ -10,4 +8,13 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.circleInteractive {
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.2;
 }

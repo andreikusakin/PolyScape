@@ -7,20 +7,21 @@ import { start } from "repl";
 type DialProps = {
   radius: number;
   percent: number;
-  dialColor: string;
-  dialPercentColor: string;
+  lfoPercent?: number;
+  lfo?: 1 | 2;
   startingPoint: "beginning" | "middle";
 };
 
 interface KnobProps extends DialProps {
   name: string;
+  interactive?: boolean;
 }
 
 const Dial: React.FC<DialProps> = ({
   radius,
   percent,
-  dialColor,
-  dialPercentColor,
+  lfo,
+  lfoPercent,
   startingPoint,
 }) => {
   const strokeWidth = radius * 0.1;
@@ -28,50 +29,55 @@ const Dial: React.FC<DialProps> = ({
   const circumference = 2 * Math.PI * innerRadius;
   const arc = circumference * (270 / 360);
   const dashArray = `${arc} ${circumference}`;
+  const outerInnerRadius = innerRadius * 1.22;
+  const outerCircumference = 2 * Math.PI * outerInnerRadius;
+  const outerArc = outerCircumference * (270 / 360);
+  const outerDashArray = `${outerArc} ${outerCircumference}`;
   const transform = `rotate(135, ${radius}, ${radius})`;
-
   const percentNormalized = Math.min(Math.max(percent, 0), 100);
+  let lfoOffset;
+  if (lfoPercent) {
+    const lfoPercentNormalized = Math.min(Math.max(lfoPercent, 0), 100);
+    lfoOffset = arc - (lfoPercentNormalized / 100) * arc;
+  }
   const offset = arc - (percentNormalized / 100) * arc;
 
-  
-  
-  
   return (
-    <svg height={radius * 2} width={radius * 2}>
+    <svg height={radius * 2.44} width={radius * 2.44}>
       <circle
         cx={radius}
-        cy={radius}
+        cy={radius / 1.44}
         fill="transparent"
         r={innerRadius}
-        stroke={dialColor}
+        stroke="rgba(255,255,255, 0.3)"
         strokeWidth={strokeWidth}
         strokeDasharray={dashArray}
         transform={transform}
       />
       <circle
         cx={radius}
-        cy={radius}
+        cy={radius / 1.44}
         fill="transparent"
         r={innerRadius}
-        stroke={dialPercentColor}
+        stroke="rgba(255,255,255, 0.95)"
         strokeWidth={strokeWidth}
         strokeDasharray={dashArray}
         strokeDashoffset={offset}
         transform={transform}
-      /> 
-      {/* <circle
-        cx={radius}
-        cy={radius}
-        fill="transparent"
-        r={innerRadius}
-        stroke={dialPercentColor}
-        strokeWidth={strokeWidth}
-        strokeDasharray="2 200"
-        strokeDashoffset={offset}
-        transform="rotate(280, 24, 24)"
-      />  */}
-     
-    
+      />
+      {lfo === 1 ? (
+        <circle
+          cx={radius}
+          cy={radius / 1.44}
+          fill="transparent"
+          r={outerInnerRadius}
+          stroke="rgba(255,235,132, 0.95)"
+          strokeWidth={strokeWidth}
+          strokeDasharray={outerDashArray}
+          strokeDashoffset={lfoOffset}
+          transform={transform}
+        />
+      ) : null}
     </svg>
   );
 };
@@ -79,10 +85,9 @@ const Dial: React.FC<DialProps> = ({
 const Knob: React.FC<KnobProps> = ({
   radius,
   percent = 50,
-  dialColor,
-  dialPercentColor,
   startingPoint,
-  name
+  name,
+  interactive,
 }) => {
   const strokeWidth = radius * 0.1;
   const innerRadius = radius - strokeWidth / 2;
@@ -94,18 +99,15 @@ const Knob: React.FC<KnobProps> = ({
   const percentNormalized = Math.min(Math.max(percent, 0), 100);
   const offset = arc - (percentNormalized / 100) * arc;
   return (
-    <div>
-      <div className={styles.circle}>
-        <Dial
-          radius={radius}
-          percent={percent}
-          dialColor={dialColor}
-          dialPercentColor={dialPercentColor}
-          startingPoint={startingPoint}
-        />
-        <div className={styles.name}>{name.toUpperCase()}</div>
-      </div>
-      
+    <div className={interactive ? styles.circle : styles.circleInteractive}>
+      <Dial
+        radius={radius}
+        percent={percent}
+        lfo={1}
+        lfoPercent={50}
+        startingPoint={startingPoint}
+      />
+      <div className={styles.name}>{name}</div>
     </div>
   );
 };
