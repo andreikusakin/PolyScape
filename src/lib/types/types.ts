@@ -38,4 +38,5 @@ export type Preset = {
     panSpread: number;
   };
   
+export type LFOTarget = "osc1Detune" | "osc2Detune" | "filter" | "attack";
   
