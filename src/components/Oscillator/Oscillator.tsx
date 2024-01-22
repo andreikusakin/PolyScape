@@ -11,7 +11,11 @@ type OscillatorProps = {
   ) => void;
 };
 
-const OscillatorWaveform = ({ oscType }: { oscType: "sine" | "sawtooth" | "pulse" | "triangle" }) => {
+const OscillatorWaveform = ({
+  oscType,
+}: {
+  oscType: "sine" | "sawtooth" | "pulse" | "triangle";
+}) => {
   switch (oscType) {
     case "sine":
       return <Sine />;
@@ -63,7 +67,9 @@ const Oscillator: React.FC<OscillatorProps> = ({
         </ul>
 
         <div className={styles.waveform}>
-          <OscillatorWaveform oscType={oscType} />
+          <div className={styles.waveformAnimation}>
+            <OscillatorWaveform oscType={oscType} />
+          </div>
         </div>
         <Knob
           label={"pulse width"}
