@@ -6,12 +6,14 @@ export type Preset = {
       detune: number;
       transpose: number;
       pulseWidth: number;
+      volume: number;
     };
     osc2: {
       type: "sawtooth" | "sine" | "pulse" | "triangle";
       detune: number;
       transpose: number;
       pulseWidth: number;
+      volume: number;
     };
     envelope: {
       attack: number;
