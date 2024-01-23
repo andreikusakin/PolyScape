@@ -9,6 +9,14 @@ type OscillatorProps = {
   setOscillatorType: (
     oscType: "sine" | "sawtooth" | "pulse" | "triangle"
   ) => void;
+  coarse: number;
+  setCoarse: (coarse: number) => void;
+  detune: number;
+  setDetune: (detune: number) => void;
+  pulseWidth: number;
+  setPulseWidth: (pulseWidth: number) => void;
+  volume: number;
+  setVolume: (volume: number) => void;
 };
 
 const OscillatorWaveform = ({
@@ -34,6 +42,14 @@ const Oscillator: React.FC<OscillatorProps> = ({
   name,
   oscType,
   setOscillatorType,
+  coarse,
+  setCoarse,
+  detune,
+  setDetune,
+  pulseWidth,
+  setPulseWidth,
+  volume,
+  setVolume,
 }) => {
   return (
     <div className={styles.oscillator}>
@@ -74,8 +90,12 @@ const Oscillator: React.FC<OscillatorProps> = ({
         <Knob
           label={"pulse width"}
           radius={24}
-          percent={50}
-          lfo={1}
+          minValue={-1}
+          maxValue={1}
+          currentValue={pulseWidth}
+          step={0.01}
+          updateValue={setPulseWidth}
+          lfo={false}
           lfoPercent={100}
           startingPoint={"middle"}
           interactive={oscType === "pulse" ? true : false}
@@ -83,25 +103,37 @@ const Oscillator: React.FC<OscillatorProps> = ({
 
         <Knob
           label={"coarse"}
+          minValue={-24}
+          maxValue={24}
+          currentValue={coarse}
+          step={1}
+          updateValue={setCoarse}
           radius={24}
-          percent={45}
-          lfo={1}
+          lfo={false}
           startingPoint={"middle"}
           interactive={true}
         />
         <Knob
           label={"detune"}
+          minValue={0}
+          maxValue={100}
+          currentValue={detune}
+          step={1}
+          updateValue={setDetune}
           radius={24}
-          percent={45}
-          lfo={1}
-          startingPoint={"middle"}
+          lfo={false}
+          startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
           label={"volume"}
+          minValue={-96}
+          maxValue={6}
+          currentValue={volume}
+          step={0.5}
+          updateValue={setVolume}
           radius={24}
-          percent={45}
-          lfo={1}
+          lfo={false}
           startingPoint={"middle"}
           interactive={true}
         />
