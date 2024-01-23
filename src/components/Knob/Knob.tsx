@@ -7,14 +7,18 @@ import { start } from "repl";
 type DialProps = {
   radius: number;
   percent: number;
+  lfo?: false | 1 | 2;
   lfoPercent?: number;
-  lfo?: 1 | 2;
   startingPoint: "beginning" | "middle";
+  
 };
 
 interface KnobProps extends DialProps {
   label: string;
   interactive?: boolean;
+  minValue: number;
+  maxValue: number;
+  step: number;
 }
 
 const Dial: React.FC<DialProps> = ({
@@ -65,13 +69,15 @@ const Dial: React.FC<DialProps> = ({
         strokeDashoffset={offset}
         transform={transform}
       />
-      {lfo === 1 ? (
+      {lfo ? (
         <circle
           cx={radius}
           cy={radius / 1.44}
           fill="transparent"
           r={outerInnerRadius}
-          stroke="rgba(255,235,132, 0.95)"
+          stroke={
+            lfo === 1 ? "rgba(255,235,132, 0.95)" : "rgba(255,132,132, 0.95)"
+          }
           strokeWidth={strokeWidth}
           strokeDasharray={outerDashArray}
           strokeDashoffset={lfoOffset}
@@ -85,6 +91,7 @@ const Dial: React.FC<DialProps> = ({
 const Knob: React.FC<KnobProps> = ({
   radius,
   percent = 50,
+  lfo,
   lfoPercent,
   startingPoint,
   label,
@@ -104,7 +111,7 @@ const Knob: React.FC<KnobProps> = ({
       <Dial
         radius={radius}
         percent={percent}
-        lfo={1}
+        lfo={lfo}
         lfoPercent={lfoPercent}
         startingPoint={startingPoint}
       />
