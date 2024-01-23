@@ -3,19 +3,23 @@ import { useState, useEffect, useRef, use } from "react";
 import * as Tone from "tone/build/esm/index";
 import PolySynthEngine from "@/lib/engines/PolySynthEngine";
 import { Preset } from "@/lib/types/types";
+import Knob from "./Knob/Knob";
+import Oscillator from "./Oscillator/Oscillator";
 
 const initPreset: Preset = {
   osc1: {
-    type: "sine",
+    type: "pulse",
     detune: 0,
     transpose: 0,
     pulseWidth: 0,
+    volume: 0,
   },
   osc2: {
     type: "sine",
     detune: 0,
     transpose: 0,
     pulseWidth: 0,
+    volume: 0,
   },
   envelope: {
     attack: 0.01,
@@ -49,6 +53,7 @@ const PolySynth = () => {
   const [osc1Detune, setOsc1Detune] = useState<number>(0);
   const [osc1Transpose, setOsc1Transpose] = useState<number>(0);
   const [osc1PulseWidth, setOsc1PulseWidth] = useState<number>(0);
+  const [osc1Volume, setOsc1Volume] = useState<number>(0);
 
   // OSC2
   const [oscillator2Type, setOscillator2Type] = useState<
@@ -57,6 +62,7 @@ const PolySynth = () => {
   const [osc2Detune, setOsc2Detune] = useState<number>(0);
   const [osc2Transpose, setOsc2Transpose] = useState<number>(0);
   const [osc2PulseWidth, setOsc2PulseWidth] = useState<number>(0);
+  const [osc2Volume, setOsc2Volume] = useState<number>(0);
 
   // envelope amplitude
   const [attack, setAttack] = useState<number>(0);
@@ -91,11 +97,13 @@ const PolySynth = () => {
     setOsc1Detune(preset.osc1.detune);
     setOsc1Transpose(preset.osc1.transpose);
     setOsc1PulseWidth(preset.osc1.pulseWidth);
+    setOsc1Volume(preset.osc1.volume);
 
     setOscillator2Type(preset.osc2.type);
     setOsc2Detune(preset.osc2.detune);
     setOsc2Transpose(preset.osc2.transpose);
     setOsc2PulseWidth(preset.osc2.pulseWidth);
+    setOsc2Volume(preset.osc2.volume);
 
     setAttack(preset.envelope.attack);
     setDecay(preset.envelope.decay);
@@ -122,9 +130,6 @@ const PolySynth = () => {
     loadPreset(preset);
   }, []);
 
-  console.log("preset: ", preset);
-  console.log("sustain: ", sustain);
-
   // initialize synth
   useEffect(() => {
     const filterNode = new Tone.Gain({
@@ -149,6 +154,20 @@ const PolySynth = () => {
       console.log("osc2 type changed to: ", oscillator2Type);
     }
   }, [oscillator2Type]);
+
+  // update volume 
+
+  useEffect(() => {
+    const volumeValue = osc1Volume ?? 0;
+    polySynthEngine.current?.setOscVolumeEngine(volumeValue, 1);
+    console.log("osc1 volume changed to: ", volumeValue);
+  }, [osc1Volume]);
+
+  useEffect(() => {
+    const volumeValue = osc2Volume ?? 0;
+    polySynthEngine.current?.setOscVolumeEngine(volumeValue, 2);
+    console.log("osc2 volume changed to: ", volumeValue);
+  }, [osc2Volume]);
 
   // update detune
   useEffect(() => {
@@ -333,7 +352,34 @@ const PolySynth = () => {
   }, [unison]);
 
   return (
-    <div className="flex w-full h-full gap-10">
+    <div className="flex w-full h-full gap-10 ">
+      <Oscillator
+        name={"osc1"}
+        oscType={oscillator1Type}
+        setOscillatorType={setOscillator1Type}
+        coarse={osc1Transpose}
+        setCoarse={setOsc1Transpose}
+        detune={osc1Detune}
+        setDetune={setOsc1Detune}
+        pulseWidth={osc1PulseWidth}
+        setPulseWidth={setOsc1PulseWidth}
+        volume={osc1Volume}
+        setVolume={setOsc1Volume}
+      />
+      <Oscillator
+        name={"osc2"}
+        oscType={oscillator2Type}
+        setOscillatorType={setOscillator2Type}
+        coarse={osc2Transpose}
+        setCoarse={setOsc2Transpose}
+        detune={osc2Detune}
+        setDetune={setOsc2Detune}
+        pulseWidth={osc2PulseWidth}
+        setPulseWidth={setOsc2PulseWidth}
+        volume={osc2Volume}
+        setVolume={setOsc2Volume} 
+      />
+      
       <button onClick={() => Tone.start()}>Start</button>
       <div className="flex flex-col gap-10">
         <div className="flex gap-5 flex-col">
@@ -373,13 +419,26 @@ const PolySynth = () => {
             </label>
           </div>
           <label>
+            Volume
+            <input
+              type="range"
+              min="-96"
+              max="6"
+              step="1"
+              value={osc1Volume}
+              onChange={(e) => {
+                setOsc1Volume(Number(e.target.value));
+              }}
+            />
+          </label>
+          <label>
             Detune
             <input
               type="range"
               min="0"
               max="100"
               step="1"
-              defaultValue={osc1Detune}
+              value={osc1Detune}
               onChange={(e) => {
                 setOsc1Detune(Number(e.target.value));
               }}
@@ -392,7 +451,7 @@ const PolySynth = () => {
               min="-24"
               max="24"
               step="1"
-              defaultValue={osc1Transpose}
+              value={osc1Transpose}
               onChange={(e) => {
                 setOsc1Transpose(Number(e.target.value));
               }}
@@ -405,7 +464,7 @@ const PolySynth = () => {
               min="-1"
               max="1"
               step="0.01"
-              defaultValue={osc1PulseWidth}
+              value={osc1PulseWidth}
               onChange={(e) => {
                 setOsc1PulseWidth(Number(e.target.value));
               }}
@@ -449,13 +508,26 @@ const PolySynth = () => {
             </label>
           </div>
           <label>
+            Volume
+            <input
+              type="range"
+              min="-96"
+              max="6"
+              step="1"
+              value={osc2Volume}
+              onChange={(e) => {
+                setOsc2Volume(Number(e.target.value));
+              }}
+            />
+          </label>
+          <label>
             Detune
             <input
               type="range"
               min="0"
               max="100"
               step="1"
-              defaultValue={osc2Detune}
+              value={osc2Detune}
               onChange={(e) => {
                 setOsc2Detune(Number(e.target.value));
               }}
@@ -468,7 +540,7 @@ const PolySynth = () => {
               min="-24"
               max="24"
               step="1"
-              defaultValue={osc2Transpose}
+              value={osc2Transpose}
               onChange={(e) => {
                 setOsc2Transpose(Number(e.target.value));
               }}
@@ -481,7 +553,7 @@ const PolySynth = () => {
               min="-1"
               max="1"
               step="0.01"
-              defaultValue={osc2PulseWidth}
+              value={osc2PulseWidth}
               onChange={(e) => {
                 setOsc2PulseWidth(Number(e.target.value));
               }}
@@ -532,7 +604,7 @@ const PolySynth = () => {
             min="0"
             max="15000"
             step="1"
-            defaultValue={filterFrequency}
+            value={filterFrequency}
             onChange={(e) => setFilterFrequency(Number(e.target.value))}
           />
         </label>
@@ -570,7 +642,7 @@ const PolySynth = () => {
             min="0"
             max="15"
             step="0.1"
-            defaultValue={filterQ}
+            value={filterQ}
             onChange={(e) => setFilterQ(Number(e.target.value))}
           />
         </label>
@@ -585,7 +657,7 @@ const PolySynth = () => {
               min="0.01"
               max="10"
               step="0.01"
-              defaultValue={attack}
+              value={attack}
               onChange={(e) => setAttack(Number(e.target.value))}
             />
           </label>
@@ -596,7 +668,7 @@ const PolySynth = () => {
               min="0.01"
               max="10"
               step="0.01"
-              defaultValue={decay}
+              value={decay}
               onChange={(e) => setDecay(Number(e.target.value))}
             />
           </label>
@@ -607,7 +679,7 @@ const PolySynth = () => {
               min="0"
               max="1"
               step="0.01"
-              defaultValue={sustain}
+              value={sustain}
               onChange={(e) => setSustain(Number(e.target.value))}
             />
           </label>
@@ -618,7 +690,7 @@ const PolySynth = () => {
               min="0.01"
               max="10"
               step="0.01"
-              defaultValue={release}
+              value={release}
               onChange={(e) => setRelease(Number(e.target.value))}
             />
           </label>
@@ -632,7 +704,7 @@ const PolySynth = () => {
               min="0.01"
               max="10"
               step="0.01"
-              defaultValue={filterEnvelopeAttack}
+              value={filterEnvelopeAttack}
               onChange={(e) => setFilterEnvelopeAttack(Number(e.target.value))}
             />
           </label>
@@ -643,7 +715,7 @@ const PolySynth = () => {
               min="0.01"
               max="100"
               step="0.01"
-              defaultValue={filterEnvelopeDecay}
+              value={filterEnvelopeDecay}
               onChange={(e) => setFilterEnvelopeDecay(Number(e.target.value))}
             />
           </label>
@@ -654,7 +726,7 @@ const PolySynth = () => {
               min="0"
               max="1"
               step="0.01"
-              defaultValue={filterEnvelopeSustain}
+              value={filterEnvelopeSustain}
               onChange={(e) => setFilterEnvelopeSustain(Number(e.target.value))}
             />
           </label>
@@ -665,7 +737,7 @@ const PolySynth = () => {
               min="0.01"
               max="10"
               step="0.01"
-              defaultValue={filterEnvelopeRelease}
+              value={filterEnvelopeRelease}
               onChange={(e) => setFilterEnvelopeRelease(Number(e.target.value))}
             />
           </label>
@@ -676,7 +748,7 @@ const PolySynth = () => {
               min="0"
               max="15000"
               step="1"
-              defaultValue={filterEnvelopeBaseFrequency}
+              value={filterEnvelopeBaseFrequency}
               onChange={(e) =>
                 setFilterEnvelopeBaseFrequency(Number(e.target.value))
               }
@@ -689,7 +761,7 @@ const PolySynth = () => {
               min="0"
               max="10"
               step="1"
-              defaultValue={filterEnvelopeExponent}
+              value={filterEnvelopeExponent}
               onChange={(e) =>
                 setFilterEnvelopeExponent(Number(e.target.value))
               }
@@ -702,7 +774,7 @@ const PolySynth = () => {
               min="0"
               max="7"
               step="0.01"
-              defaultValue={filterEnvelopeOctaves}
+              value={filterEnvelopeOctaves}
               onChange={(e) => setFilterEnvelopeOctaves(Number(e.target.value))}
             />
           </label>
@@ -718,7 +790,7 @@ const PolySynth = () => {
             min="0"
             max="100"
             step="1"
-            defaultValue={panSpread}
+            value={panSpread}
             onChange={(e) => setPanSpread(Number(e.target.value))}
           />
         </label>
