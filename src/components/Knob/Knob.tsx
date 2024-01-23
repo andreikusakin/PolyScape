@@ -1,25 +1,31 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Knob.module.css";
 import { start } from "repl";
+import { useDrag } from "@use-gesture/react";
 
 type DialProps = {
   radius: number;
   percent: number;
-  lfo?: false | 1 | 2;
+  lfo: false | 1 | 2;
   lfoPercent?: number;
   startingPoint: "beginning" | "middle";
-  
 };
 
-interface KnobProps extends DialProps {
+type KnobProps = {
+  radius: number;
   label: string;
+  lfo: false | 1 | 2;
+  lfoPercent?: number;
+  startingPoint: "beginning" | "middle";
   interactive?: boolean;
   minValue: number;
   maxValue: number;
+  currentValue: number;
   step: number;
-}
+  updateValue?: (value: number) => void;
+};
 
 const Dial: React.FC<DialProps> = ({
   radius,
@@ -90,24 +96,79 @@ const Dial: React.FC<DialProps> = ({
 
 const Knob: React.FC<KnobProps> = ({
   radius,
-  percent = 50,
+  minValue,
+  maxValue,
+  currentValue,
+  step,
   lfo,
   lfoPercent,
   startingPoint,
   label,
   interactive,
+  updateValue,
 }) => {
-  const strokeWidth = radius * 0.1;
-  const innerRadius = radius - strokeWidth / 2;
-  const circumference = 2 * Math.PI * innerRadius;
-  const arc = circumference * (270 / 360);
-  const dashArray = `${arc} ${circumference}`;
-  const transform = `rotate(135, ${radius}, ${radius})`;
+  const adjustToStep = (value: number) => Math.round(value / step) * step;
 
-  const percentNormalized = Math.min(Math.max(percent, 0), 100);
-  const offset = arc - (percentNormalized / 100) * arc;
+  const valueToPercent = (value: number) => {
+    const adjustedValue = adjustToStep(value);
+    return ((adjustedValue - minValue) / (maxValue - minValue)) * 100;
+  };
+
+  const percentToValue = (percent: number) => {
+    const value = minValue + (percent / 100) * (maxValue - minValue);
+    return adjustToStep(value);
+  };
+
+  const [percent, setPercent] = useState<number>(valueToPercent(currentValue));
+  const [displayLabel, setDisplayLabel] = useState(label);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleMouseDown = () => {
+    setIsDragging(true);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      setDisplayLabel(`${Math.round(currentValue)}`);
+    } else {
+      setDisplayLabel(label);
+    }
+  }, [isDragging, percent, label]);
+
+  useEffect(() => {
+    setPercent(valueToPercent(currentValue));
+  }, [currentValue]);
+
+  const bind = useDrag(
+    ({ delta }) => {
+      const dragSensitivity = -0.6;
+      let newPercent = percent + delta[1] * dragSensitivity;
+      newPercent = Math.max(0, Math.min(newPercent, 100));
+      const newValue = percentToValue(newPercent);
+      const newPercentAdjusted = valueToPercent(newValue);
+      setPercent(newPercentAdjusted);
+      if (updateValue) {
+        updateValue(newValue);
+      }
+    },
+    {
+      pointer: {
+        keys: false,
+      },
+    }
+  );
   return (
-    <div className={interactive ? styles.knob : styles.knobNotInteractive}>
+    <div
+      {...bind()}
+      className={interactive ? styles.knob : styles.knobNotInteractive}
+      onDoubleClick={() => updateValue && updateValue(0)}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+    >
       <Dial
         radius={radius}
         percent={percent}
@@ -115,9 +176,8 @@ const Knob: React.FC<KnobProps> = ({
         lfoPercent={lfoPercent}
         startingPoint={startingPoint}
       />
-      <div className={styles.label}>{label}</div>
+      <div className={styles.label}>{displayLabel}</div>
     </div>
   );
 };
-
 export default Knob;
