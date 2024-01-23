@@ -1,7 +1,7 @@
 import * as Tone from "tone/build/esm/index";
 // @ts-ignore
 import AudioKeys from "audiokeys";
-import { Preset } from "../types/types";
+import { Preset, LFOTarget } from "../types/types";
 
 //TODO
 
@@ -24,11 +24,15 @@ import { Preset } from "../types/types";
 
 //mixer mimick
 
-//lfos
+//lfos // LFO CHAIN
 
 //tone start
 
+//https://github.com/Tonejs/Tone.js/wiki/Arpeggiator
+
 class PolySynthEngine {
+  private LFO1Destinations: Tone.LFO[] = [];
+
   private voiceCount: number = 8;
   private voices: [Tone.MonoSynth, Tone.MonoSynth][] = [];
   private panners: Tone.Panner[] = [];
@@ -47,6 +51,8 @@ class PolySynthEngine {
   private maxPanSpreadPerVoice: number[] = [
     -0.7, 0.1, -1, 0.9, -0.7, 0.2, -0.8, 1,
   ];
+  // private LFO1: Tone.LFO = new Tone.LFO("4n", 400, 4000).start();
+  // private LFO2: Tone.LFO = new Tone.LFO("4n", 400, 4000).start();
 
   constructor(node: Tone.Gain<"normalRange">, preset: Preset) {
     this.initializeVoices(node, preset);
@@ -67,6 +73,7 @@ class PolySynthEngine {
           filter: preset.filter,
           filterEnvelope: preset.filterEnvelope,
           detune: preset.osc1.detune,
+          volume: preset.osc1.volume,
         }).connect(this.panners[i]),
         new Tone.MonoSynth({
           oscillator:
@@ -77,9 +84,11 @@ class PolySynthEngine {
           filter: preset.filter,
           filterEnvelope: preset.filterEnvelope,
           detune: preset.osc2.detune,
+          volume: preset.osc2.volume,
         }).connect(this.panners[i]),
       ]);
     }
+    // this.LFO1.chain(this.voices[0][0].detune, this.voices[1][0].detune, this.voices[2][0].detune);
   }
 
   private setupKeyboard() {
@@ -159,6 +168,16 @@ class PolySynthEngine {
         osc1.set({ oscillator: { type: waveform } });
       } else {
         osc2.set({ oscillator: { type: waveform } });
+      }
+    });
+  }
+
+  setOscVolumeEngine(volume: number, osc: number) {
+    this.voices.forEach(([osc1, osc2]) => {
+      if (osc === 1) {
+        osc1.volume.value = volume;
+      } else {
+        osc2.volume.value = volume;
       }
     });
   }
@@ -321,6 +340,10 @@ class PolySynthEngine {
       osc1.set({ filterEnvelope: { octaves: newOctaves } });
       osc2.set({ filterEnvelope: { octaves: newOctaves } });
     });
+  }
+  //LFO1
+  setLFO1DestinationEngine(target: string) {
+    this.LFO1.connect(target as any);
   }
 }
 
