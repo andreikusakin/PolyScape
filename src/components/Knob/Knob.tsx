@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import styles from "./Knob.module.css";
-import { start } from "repl";
 import { useDrag } from "@use-gesture/react";
 
 type DialProps = {
