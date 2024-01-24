@@ -1,39 +1,39 @@
 import * as Tone from "tone/build/esm/index";
 
 type NoiseOptions = {
-  type: "white" | "pink" | "brown";
-  volume: number;
+  type?: "white" | "pink" | "brown";
+  volume?: number;
 };
 
 type EnvelopeOptions = {
-  attack: number;
-  decay: number;
-  sustain: number;
-  release: number;
+  attack?: number;
+  decay?: number;
+  sustain?: number;
+  release?: number;
 };
 
 type FilterOptions = {
-  type: "lowpass" | "highpass" | "bandpass" | "notch";
-  frequency: number;
-  rolloff: Tone.FilterRollOff;
-  Q: number;
+  type?: "lowpass" | "highpass" | "bandpass" | "notch";
+  frequency?: number;
+  rolloff?: Tone.FilterRollOff;
+  Q?: number;
 };
 
 type FilterEnvelopeOptions = {
-  attack: number;
-  decay: number;
-  sustain: number;
-  release: number;
-  baseFrequency: number;
-  octaves: number;
-  exponent: number;
+  attack?: number;
+  decay?: number;
+  sustain?: number;
+  release?: number;
+  baseFrequency?: number;
+  octaves?: number;
+  exponent?: number;
 };
 
 type NoiseEngineOptions = {
-  noise: NoiseOptions;
-  envelope: EnvelopeOptions;
-  filter: FilterOptions;
-  filterEnvelope: FilterEnvelopeOptions;
+  noise?: NoiseOptions;
+  envelope?: EnvelopeOptions;
+  filter?: FilterOptions;
+  filterEnvelope?: FilterEnvelopeOptions;
 };
 
 export default class NoiseEngine {
@@ -50,6 +50,7 @@ export default class NoiseEngine {
     this.noise.connect(this.envelope);
     this.envelope.connect(this.filter);
     this.filterEnvelope.connect(this.filter.frequency);
+    console.log(this.noise.get());
   }
 
   start() {
@@ -72,5 +73,12 @@ export default class NoiseEngine {
 
   connect(destination: Tone.InputNode) {
     this.filter.connect(destination);
+  }
+
+  set(options: NoiseEngineOptions) {
+    this.noise.set(options.noise ?? {});
+    this.envelope.set(options.envelope ?? {});
+    this.filter.set(options.filter ?? {});
+    this.filterEnvelope.set(options.filterEnvelope ?? {});
   }
 }
