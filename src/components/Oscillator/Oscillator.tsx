@@ -1,7 +1,7 @@
 import React from "react";
 import Knob from "../Knob/Knob";
 import styles from "./Oscillator.module.css";
-import { Sawtooth, Sine, Square, Triangle } from "./Shapes";
+import { Sawtooth, Sine, Square, Triangle } from "../Shapes";
 
 type OscillatorProps = {
   name: string;
