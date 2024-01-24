@@ -127,8 +127,9 @@ const Oscillator: React.FC<OscillatorProps> = ({
         />
         <Knob
           label={"volume"}
-          minValue={-96}
-          maxValue={6}
+          minValue={-70}
+          maxValue={12}
+          unit={"db"}
           currentValue={volume}
           step={0.5}
           updateValue={setVolume}
