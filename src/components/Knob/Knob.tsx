@@ -8,7 +8,10 @@ import Dial from "../Dial/Dial";
 type KnobProps = {
   radius: number;
   label: string;
+  label2?: string;
+  unit?: string;
   lfo: false | 1 | 2;
+  lfoTarget?: "string";
   lfoPercent?: number;
   startingPoint: "beginning" | "middle";
   interactive?: boolean;
@@ -27,8 +30,11 @@ const Knob: React.FC<KnobProps> = ({
   step,
   lfo,
   lfoPercent,
+  lfoTarget,
   startingPoint,
   label,
+  label2,
+  unit,
   interactive,
   updateValue,
 }) => {
@@ -45,7 +51,8 @@ const Knob: React.FC<KnobProps> = ({
   };
 
   const [percent, setPercent] = useState<number>(valueToPercent(currentValue));
-  const [displayLabel, setDisplayLabel] = useState(label);
+  const [displayLabel, setDisplayLabel] = useState<string>(label);
+  const [displayLabel2, setDisplayLabel2] = useState(label2);
   const [isDragging, setIsDragging] = useState(false);
 
   const handleMouseDown = () => {
@@ -58,9 +65,11 @@ const Knob: React.FC<KnobProps> = ({
 
   useEffect(() => {
     if (isDragging) {
-      setDisplayLabel(`${Math.round(currentValue)}`);
+      setDisplayLabel(`${Math.round(currentValue)} ${unit ? unit : ""}`);
+      setDisplayLabel2("")
     } else {
       setDisplayLabel(label);
+      setDisplayLabel2(label2);
     }
   }, [isDragging, percent, label]);
 
@@ -101,7 +110,7 @@ const Knob: React.FC<KnobProps> = ({
         lfoPercent={lfoPercent}
         startingPoint={startingPoint}
       />
-      <div className={styles.label}>{displayLabel}</div>
+      <div className={styles.labels}><span>{displayLabel}</span><span>{displayLabel2}</span></div>
     </div>
   );
 };
