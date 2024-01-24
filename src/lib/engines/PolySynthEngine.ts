@@ -173,7 +173,7 @@ class PolySynthEngine {
     this.unison = value;
   }
 
-  //Set Waveforms
+  //Set Osc Waveforms
 
   setOscTypeEngine(
     waveform: "sawtooth" | "sine" | "pulse" | "triangle",
@@ -188,15 +188,30 @@ class PolySynthEngine {
     });
   }
 
-  setOscVolumeEngine(volume: number, osc: number) {
-    this.voices.forEach(([osc1, osc2]) => {
-      if (osc === 1) {
-        osc1.volume.value = volume;
-      } else {
-        osc2.volume.value = volume;
+  //Set Osc and Noise Volume
+
+  setVolumeEngine(volumeDb: number, source: number | "noise") {
+    this.voices.forEach(([osc1, osc2, noise]) => {
+      if (source === 1) {
+        osc1.volume.value = volumeDb;
+      } else if (source === 2){
+        osc2.volume.value = volumeDb;
+      } else if (source === "noise") {
+        noise.noise.volume.value = volumeDb;
       }
     });
   }
+
+  //Set Noise Type
+
+  setNoiseTypeEngine(type: "white" | "brown" | "pink") {
+    this.voices.forEach(([osc1, osc2, noise]) => {
+      noise.set({noise: { type: type }});
+    });
+  }
+
+  //Set Noise Volume
+
 
   //Set Pulse Width
   setPulseWidthEngine(pulseWidth: number, osc: number) {
@@ -248,30 +263,34 @@ class PolySynthEngine {
   //Set Envelope Amplitude
 
   setAttackEngine(newAttack: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ envelope: { attack: newAttack } });
       osc2.set({ envelope: { attack: newAttack } });
+      noise.set({ envelope: { attack: newAttack } });
     });
   }
 
   setDecayEngine(newDecay: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ envelope: { decay: newDecay } });
       osc2.set({ envelope: { decay: newDecay } });
+      noise.set({ envelope: { decay: newDecay } });
     });
   }
 
   setSustainEngine(newSustain: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ envelope: { sustain: newSustain } });
       osc2.set({ envelope: { sustain: newSustain } });
+      noise.set({ envelope: { sustain: newSustain } });
     });
   }
 
   setReleaseEngine(newRelease: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ envelope: { release: newRelease } });
       osc2.set({ envelope: { release: newRelease } });
+      noise.set({ envelope: { release: newRelease } });
     });
   }
 
@@ -280,81 +299,92 @@ class PolySynthEngine {
   setFilterTypeEngine(
     filterType: "lowpass" | "highpass" | "bandpass" | "notch"
   ) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ filter: { type: filterType } });
       osc2.set({ filter: { type: filterType } });
+      noise.set({ filter: { type: filterType } });
     });
   }
 
   setFilterFrequencyEngine(newFrequency: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ filter: { frequency: newFrequency } });
       osc2.set({ filter: { frequency: newFrequency } });
+      noise.set({ filter: { frequency: newFrequency } });
     });
   }
 
   setFilterQEngine(newQ: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ filter: { Q: newQ } });
       osc2.set({ filter: { Q: newQ } });
+      noise.set({ filter: { Q: newQ } });
     });
   }
 
   setFilterRollOffEngine(newRollOff: Tone.FilterRollOff) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ filter: { rolloff: newRollOff } });
       osc2.set({ filter: { rolloff: newRollOff } });
+      noise.set({ filter: { rolloff: newRollOff } });
     });
   }
 
   //Set Envelope Filter
 
   setFilterEnvelopeAttackEngine(newAttack: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ filterEnvelope: { attack: newAttack } });
       osc2.set({ filterEnvelope: { attack: newAttack } });
+      noise.set({ filterEnvelope: { attack: newAttack } });
     });
   }
 
   setFilterEnvelopeDecayEngine(newDecay: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ filterEnvelope: { decay: newDecay } });
       osc2.set({ filterEnvelope: { decay: newDecay } });
+      noise.set({ filterEnvelope: { decay: newDecay } });
     });
   }
 
   setFilterEnvelopeSustainEngine(newSustain: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ filterEnvelope: { sustain: newSustain } });
       osc2.set({ filterEnvelope: { sustain: newSustain } });
+      noise.set({ filterEnvelope: { sustain: newSustain } });
     });
   }
 
   setFilterEnvelopeReleaseEngine(newRelease: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ filterEnvelope: { release: newRelease } });
       osc2.set({ filterEnvelope: { release: newRelease } });
+      noise.set({ filterEnvelope: { release: newRelease } });
     });
   }
 
   setFilterEnvelopeFrequencyEngine(newFrequency: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ filterEnvelope: { baseFrequency: newFrequency } });
       osc2.set({ filterEnvelope: { baseFrequency: newFrequency } });
+      noise.set({ filterEnvelope: { baseFrequency: newFrequency } });
     });
   }
 
   setFilterEnvelopeExponentEngine(newExponent: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ filterEnvelope: { exponent: newExponent } });
       osc2.set({ filterEnvelope: { exponent: newExponent } });
+      noise.set({ filterEnvelope: { exponent: newExponent } });
     });
   }
 
   setFilterEnvelopeOctavesEngine(newOctaves: number) {
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.set({ filterEnvelope: { octaves: newOctaves } });
       osc2.set({ filterEnvelope: { octaves: newOctaves } });
+      noise.set({ filterEnvelope: { octaves: newOctaves } });
     });
   }
   //LFO1
