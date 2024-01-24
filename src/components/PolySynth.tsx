@@ -6,6 +6,7 @@ import { Preset } from "@/lib/types/types";
 import Knob from "./Knob/Knob";
 import Oscillator from "./Oscillator/Oscillator";
 import Noise from "./Noise/Noise";
+import { Filter } from "./Filter/Filter";
 
 const initPreset: Preset = {
   osc1: {
@@ -380,6 +381,7 @@ const PolySynth = () => {
 
   return (
     <div className="flex w-full h-full gap-10 ">
+      <div>
       <Oscillator
         name={"osc1"}
         oscType={oscillator1Type}
@@ -412,7 +414,30 @@ const PolySynth = () => {
         setType={setNoiseType}
         volume={noiseVolume}
         setVolume={setNoiseVolume}
-      />
+      /></div>
+      <div>
+        <Filter 
+          name={"filter"}
+          filterType={filterType}
+          setFilterType={setFilterType}
+          frequency={filterEnvelopeBaseFrequency}
+          setFrequency={setFilterEnvelopeBaseFrequency}
+          rolloff={filterRolloff}
+          setRolloff={setFilterRolloff}
+          resonance={filterQ}
+          setResonance={setFilterQ}
+          envAmount={filterEnvelopeOctaves}
+          setEnvAmount={setFilterEnvelopeOctaves}
+          attack={filterEnvelopeAttack}
+          setAttack={setFilterEnvelopeAttack}
+          decay={filterEnvelopeDecay}
+          setDecay={setFilterEnvelopeDecay}
+          sustain={filterEnvelopeSustain}
+          setSustain={setFilterEnvelopeSustain}
+          release={filterEnvelopeRelease}
+          setRelease={setFilterEnvelopeRelease}
+        />
+      </div>
       <button onClick={() => Tone.start()}>Start</button>
       <div className="flex flex-col gap-10">
         <div className="flex gap-5 flex-col">
