@@ -2,6 +2,7 @@ import * as Tone from "tone/build/esm/index";
 // @ts-ignore
 import AudioKeys from "audiokeys";
 import { Preset, LFOTarget } from "../types/types";
+import NoiseEngine from "./NoiseEngine";
 
 //TODO
 
@@ -32,9 +33,8 @@ import { Preset, LFOTarget } from "../types/types";
 
 class PolySynthEngine {
   private LFO1Destinations: Tone.LFO[] = [];
-
   private voiceCount: number = 8;
-  private voices: [Tone.MonoSynth, Tone.MonoSynth][] = [];
+  private voices: [Tone.MonoSynth, Tone.MonoSynth, NoiseEngine][] = [];
   private panners: Tone.Panner[] = [];
   private activeVoices: Map<number, number> = new Map();
   private lastPlayedVoice: number = 0;
@@ -63,30 +63,40 @@ class PolySynthEngine {
   private initializeVoices(node: Tone.Gain<"normalRange">, preset: Preset) {
     for (let i = 0; i < this.voiceCount; i++) {
       this.panners.push(new Tone.Panner().connect(node));
-      this.voices.push([
-        new Tone.MonoSynth({
-          oscillator:
-            preset.osc1.type === "pulse"
-              ? { type: "pulse", width: preset.osc1.pulseWidth }
-              : { type: preset.osc1.type },
-          envelope: preset.envelope,
-          filter: preset.filter,
-          filterEnvelope: preset.filterEnvelope,
-          detune: preset.osc1.detune,
-          volume: preset.osc1.volume,
-        }).connect(this.panners[i]),
-        new Tone.MonoSynth({
-          oscillator:
-            preset.osc2.type === "pulse"
-              ? { type: "pulse", width: preset.osc2.pulseWidth }
-              : { type: preset.osc2.type },
-          envelope: preset.envelope,
-          filter: preset.filter,
-          filterEnvelope: preset.filterEnvelope,
-          detune: preset.osc2.detune,
-          volume: preset.osc2.volume,
-        }).connect(this.panners[i]),
-      ]);
+      
+      const monoSynth1 = new Tone.MonoSynth({
+        oscillator:
+          preset.osc1.type === "pulse"
+            ? { type: "pulse", width: preset.osc1.pulseWidth }
+            : { type: preset.osc1.type },
+        envelope: preset.envelope,
+        filter: preset.filter,
+        filterEnvelope: preset.filterEnvelope,
+        detune: preset.osc1.detune,
+        volume: preset.osc1.volume,
+      }).connect(this.panners[i], 0, 0);
+      
+      const monoSynth2 = new Tone.MonoSynth({
+        oscillator:
+          preset.osc2.type === "pulse"
+            ? { type: "pulse", width: preset.osc2.pulseWidth }
+            : { type: preset.osc2.type },
+        envelope: preset.envelope,
+        filter: preset.filter,
+        filterEnvelope: preset.filterEnvelope,
+        detune: preset.osc2.detune,
+        volume: preset.osc2.volume,
+      }).connect(this.panners[i]);
+
+      const noiseEngine = new NoiseEngine({
+        noise: preset.noise,
+        envelope: preset.envelope,
+        filter: preset.filter,
+        filterEnvelope: preset.filterEnvelope,
+      })
+      noiseEngine.connect(this.panners[i]);
+
+      this.voices.push([monoSynth1, monoSynth2, noiseEngine]);
     }
     // this.LFO1.chain(this.voices[0][0].detune, this.voices[1][0].detune, this.voices[2][0].detune);
   }
@@ -113,33 +123,38 @@ class PolySynthEngine {
     velocity: number
   ) {
     if (this.unison) {
-      this.voices.forEach(([osc1, osc2]) => {
+      this.voices.forEach(([osc1, osc2, noise]) => {
         osc1.triggerAttack(frequency, time, velocity);
         osc2.triggerAttack(frequency, time, velocity);
+        noise.triggerAttack(time, velocity);
       });
     } else {
       this.lastPlayedVoice = (this.lastPlayedVoice + 1) % this.voiceCount;
       const voicePair = this.voices[this.lastPlayedVoice];
-      const [osc1, osc2] = voicePair;
+      const [osc1, osc2, noise] = voicePair;
       osc1.triggerAttack(frequency, time, velocity);
       osc2.triggerAttack(frequency, time, velocity);
+      noise.triggerAttack(time, velocity);
+      
       this.activeVoices.set(this.lastPlayedVoice, frequency);
     }
   }
 
   private triggerReleaseEngine(frequency: number) {
     if (this.unison) {
-      this.voices.forEach(([osc1, osc2]) => {
+      this.voices.forEach(([osc1, osc2, noise]) => {
         osc1.triggerRelease();
         osc2.triggerRelease();
+        noise.triggerRelease();
       });
     } else {
       this.activeVoices.forEach((freq, voiceIndex) => {
         if (freq === frequency) {
           const voicePair = this.voices[voiceIndex];
-          const [osc1, osc2] = voicePair;
+          const [osc1, osc2, noise] = voicePair;
           osc1.triggerRelease();
           osc2.triggerRelease();
+          noise.triggerRelease();
           this.activeVoices.delete(voiceIndex);
         }
       });
@@ -150,9 +165,10 @@ class PolySynthEngine {
 
   setUnisonEngine(value: boolean) {
     //stop all voices when switching unison
-    this.voices.forEach(([osc1, osc2]) => {
+    this.voices.forEach(([osc1, osc2, noise]) => {
       osc1.triggerRelease();
       osc2.triggerRelease();
+      noise.triggerRelease();
     });
     this.unison = value;
   }
