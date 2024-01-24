@@ -5,6 +5,7 @@ import PolySynthEngine from "@/lib/engines/PolySynthEngine";
 import { Preset } from "@/lib/types/types";
 import Knob from "./Knob/Knob";
 import Oscillator from "./Oscillator/Oscillator";
+import Noise from "./Noise/Noise";
 
 const initPreset: Preset = {
   osc1: {
@@ -21,13 +22,17 @@ const initPreset: Preset = {
     pulseWidth: 0,
     volume: 0,
   },
+  noise: {
+    type: "white",
+    volume: 0,
+  },
   envelope: {
     attack: 0.01,
     decay: 0.01,
     sustain: 1,
     release: 0.01,
   },
-  filter: { type: "lowpass", frequency: 0, rolloff: -12, Q: 0 },
+  filter: { type: "lowpass", frequency: 0, rolloff: -12, Q: 0.01 },
   filterEnvelope: {
     attack: 0,
     decay: 0.01,
@@ -64,6 +69,11 @@ const PolySynth = () => {
   const [osc2PulseWidth, setOsc2PulseWidth] = useState<number>(0);
   const [osc2Volume, setOsc2Volume] = useState<number>(0);
 
+  // Noise
+
+  const [noiseType, setNoiseType] = useState<"white" | "pink" | "brown">("white")
+  const [noiseVolume, setNoiseVolume] = useState<number>(0)
+
   // envelope amplitude
   const [attack, setAttack] = useState<number>(0);
   const [decay, setDecay] = useState<number>(0);
@@ -93,28 +103,32 @@ const PolySynth = () => {
   const [unison, setUnison] = useState<boolean>(false);
 
   function loadPreset(preset: Preset) {
+    // OSC1
     setOscillator1Type(preset.osc1.type);
     setOsc1Detune(preset.osc1.detune);
     setOsc1Transpose(preset.osc1.transpose);
     setOsc1PulseWidth(preset.osc1.pulseWidth);
     setOsc1Volume(preset.osc1.volume);
-
+    // OSC2
     setOscillator2Type(preset.osc2.type);
     setOsc2Detune(preset.osc2.detune);
     setOsc2Transpose(preset.osc2.transpose);
     setOsc2PulseWidth(preset.osc2.pulseWidth);
     setOsc2Volume(preset.osc2.volume);
-
+    // Noise
+    setNoiseType(preset.noise.type)
+    setNoiseVolume(preset.noise.volume)
+    // Envelope
     setAttack(preset.envelope.attack);
     setDecay(preset.envelope.decay);
     setSustain(preset.envelope.sustain);
     setRelease(preset.envelope.release);
-
+    // Filter
     setFilterType(preset.filter.type);
     setFilterFrequency(preset.filter.frequency);
     setFilterRolloff(preset.filter.rolloff);
     setFilterQ(preset.filter.Q);
-
+    // Filter Envelope
     setFilterEnvelopeAttack(preset.filterEnvelope.attack);
     setFilterEnvelopeDecay(preset.filterEnvelope.decay);
     setFilterEnvelopeSustain(preset.filterEnvelope.sustain);
@@ -122,7 +136,7 @@ const PolySynth = () => {
     setFilterEnvelopeBaseFrequency(preset.filterEnvelope.baseFrequency);
     setFilterEnvelopeOctaves(preset.filterEnvelope.octaves);
     setFilterEnvelopeExponent(preset.filterEnvelope.exponent);
-
+    // FX
     setPanSpread(preset.panSpread);
     setUnison(preset.unison);
   }
@@ -140,7 +154,7 @@ const PolySynth = () => {
     polySynthEngine.current = new PolySynthEngine(filterNode, initPreset);
   }, [preset]);
 
-  // update oscilators types
+  // update oscilators and noise types
   useEffect(() => {
     if (oscillator1Type) {
       polySynthEngine.current?.setOscTypeEngine(oscillator1Type, 1);
@@ -155,19 +169,32 @@ const PolySynth = () => {
     }
   }, [oscillator2Type]);
 
+  useEffect(() => {
+    if (noiseType) {
+      polySynthEngine.current?.setNoiseTypeEngine(noiseType);
+      console.log("noise type changed to: ", noiseType);
+    }
+  }, [noiseType]);
+
   // update volume 
 
   useEffect(() => {
     const volumeValue = osc1Volume ?? 0;
-    polySynthEngine.current?.setOscVolumeEngine(volumeValue, 1);
+    polySynthEngine.current?.setVolumeEngine(volumeValue, 1);
     console.log("osc1 volume changed to: ", volumeValue);
   }, [osc1Volume]);
 
   useEffect(() => {
     const volumeValue = osc2Volume ?? 0;
-    polySynthEngine.current?.setOscVolumeEngine(volumeValue, 2);
+    polySynthEngine.current?.setVolumeEngine(volumeValue, 2);
     console.log("osc2 volume changed to: ", volumeValue);
   }, [osc2Volume]);
+
+  useEffect(() => {
+    const volumeValue = noiseVolume ?? 0;
+    polySynthEngine.current?.setVolumeEngine(volumeValue, "noise");
+    console.log("noise volume changed to: ", volumeValue);
+  }, [noiseVolume]);
 
   // update detune
   useEffect(() => {
@@ -379,7 +406,13 @@ const PolySynth = () => {
         volume={osc2Volume}
         setVolume={setOsc2Volume} 
       />
-      
+      <Noise
+        name={"noise"}
+        type={noiseType}
+        setType={setNoiseType}
+        volume={noiseVolume}
+        setVolume={setNoiseVolume}
+      />
       <button onClick={() => Tone.start()}>Start</button>
       <div className="flex flex-col gap-10">
         <div className="flex gap-5 flex-col">
