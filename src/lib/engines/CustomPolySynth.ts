@@ -1,80 +1,27 @@
 import * as Tone from "tone/build/esm/index";
 // @ts-ignore
 import AudioKeys from "audiokeys";
-import { Preset, LFOTarget } from "../types/types";
+import { Preset, LFOTarget, LFODestination } from "../types/types";
 import NoiseEngine from "./NoiseEngine";
 import { CustomVoice } from "./CustomVoice";
 
 //TODO
 
-// custom monosynth with noise and 2 oscs
-
-//FIX when holding down multiple keys it stops playing if you press a new keys but not holding them, exciding 8 voices
-
-// transpose for each oscillator
-// filters for each voices
-// Tone.Channel as mixer
-// unison/ fix unison release
-
-// portamento
-// mimick pulse width
-// make IRs for reverb
-// noise
-// midi and midi mapping
-
-//lfos // LFO CHAIN
-
-//tone start
-
 //https://github.com/Tonejs/Tone.js/wiki/Arpeggiator
 
-// type Preset = {
-//   osc: {
-//     type: "sawtooth" | "sine" | "pulse" | "triangle";
-//     detune: number;
-//     transpose: number;
-//     pulseWidth: number;
-//     volume: number;
-//   };
-//   osc2: {
-//     type: "sawtooth" | "sine" | "pulse" | "triangle";
-//     detune: number;
-//     transpose: number;
-//     pulseWidth: number;
-//     volume: number;
-//   };
-//   noise: {
-//     type: "white" | "pink" | "brown";
-//     volume: number;
-//   };
-//   envelope: {
-//     attack: number;
-//     decay: number;
-//     sustain: number;
-//     release: number;
-//   };
-//   filter: {
-//     type: "lowpass" | "highpass" | "bandpass" | "notch";
-//     frequency: number;
-//     rolloff: Tone.FilterRollOff;
-//     Q: number;
-//   };
-//   filterEnvelope: {
-//     attack: number;
-//     decay: number;
-//     sustain: number;
-//     release: number;
-//     baseFrequency: number;
-//     octaves: number;
-//     exponent: number;
-//   };
-//   unison: boolean;
-//   panSpread: number;
-// };
+type LFO = {
+  target: LFOTarget;
+  LFO: Tone.LFO;
+}
 
 export default class CustomPolySynth {
   private voiceCount: number = 8;
+  
+  LFO1Destinations = [];
+  LFO2Destinations: Tone.InputNode[] | undefined = [];
   voices: CustomVoice[] = [];
+  osc1Transpose: number = 0;
+  osc2Transpose: number = 0;
   private activeVoices: Map<number, CustomVoice> = new Map();
   private keyboard: AudioKeys;
   unison: boolean = false;
@@ -89,19 +36,19 @@ export default class CustomPolySynth {
   private maxPanSpreadPerVoice: number[] = [
     -0.7, 0.1, -1, 0.9, -0.7, 0.2, -0.8, 1,
   ];
-  // private LFO1: Tone.LFO = new Tone.LFO("4n", -1, 1).start();
-  // private LFO2: Tone.LFO = new Tone.LFO("4n", 400, 4000).start();
+  LFO1: LFO[] = []
+  private LFO2: Tone.LFO = new Tone.LFO({
+    frequency: 0,
+    type: "sine",
+    amplitude: 0,
+    min: 0,
+    max: 0,
+  });
 
   constructor(node: Tone.Gain, preset: Preset) {
     this.initializeVoices(node);
     this.setupKeyboard();
     this.unison = preset.unison;
-
-    // this.voices.forEach((v) => {
-    //   if (v.oscillator2.width) {
-    //     this.LFO1.connect(v.oscillator2.width);
-    //   }
-    // });
   }
 
   private initializeVoices(node: Tone.ToneAudioNode) {
@@ -113,6 +60,7 @@ export default class CustomPolySynth {
     }
   }
 
+
   private setupKeyboard() {
     this.keyboard = new AudioKeys({
       polyphony: this.voiceCount,
@@ -121,7 +69,7 @@ export default class CustomPolySynth {
     });
     this.keyboard.down((key: any) => {
       const velocity = key.velocity / 127;
-      console.log(key.frequency, Tone.now(), velocity);
+      console.log(key);
       this.triggerAttack(key.frequency, Tone.now(), velocity);
     });
 
@@ -134,7 +82,7 @@ export default class CustomPolySynth {
     if (this.unison) {
       this.voices.forEach((v) => {
         v.triggerAttack(frequency, time, velocity);
-      })
+      });
     } else {
       let voice = Array.from(this.activeVoices.values()).find(
         (v) => v.frequency.value === frequency
@@ -150,37 +98,36 @@ export default class CustomPolySynth {
   }
 
   triggerRelease(frequency: number) {
-    if(this.unison) {
+    if (this.unison) {
       this.voices.forEach((v) => {
         v.triggerRelease();
       });
     } else {
-    const voice = this.activeVoices.get(frequency);
-    if (voice) {
-      voice.triggerRelease();
-      this.activeVoices.delete(frequency);
-    }}
+      const voice = this.activeVoices.get(frequency);
+      if (voice) {
+        voice.triggerRelease();
+        this.activeVoices.delete(frequency);
+      }
+    }
   }
 
-  
+  setLFO1(target: LFOTarget) {
+    let LFO: Tone.LFO;
 
-  //   //Set Unison
-
-  //   setUnisonEngine(value: boolean) {
-  //     //stop all voices when switching unison
-  //     this.voices.forEach((v) => {
-  //       v.triggerRelease();
-  //     });
-  //     this.unison = value;
-  //   }
-
-  //   //Set Osc Waveforms
-
-  //   setOscTypeEngine(
-  //     waveform: "sawtooth" | "sine" | "pulse" | "triangle",
-  //   ) {
-  //     this.voices.forEach(v => {
-  //         v.set({ oscillator: { type: waveform } });
-  //     });
-  //   }
+    switch (target) {
+      case "osc1Frequency":
+        LFO = new Tone.LFO({
+          frequency: 2,
+          type: "sine",
+          amplitude: 0.01,
+          min: -2400,
+          max: 2400,
+        }).chain(...this.voices.map((v) => v.oscillator.detune)).start();
+        this.LFO1.push({target: target, LFO: LFO});
+        break;
+      
+      default:
+        break;
+    }
+  }
 }
