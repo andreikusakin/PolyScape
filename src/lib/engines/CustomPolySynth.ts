@@ -66,6 +66,9 @@ export default class CustomPolySynth {
       voice.oscillator2.width.value = preset.osc2.pulseWidth;
     }
     voice.oscillator2.volume.value = preset.osc2.volume;
+    // Load Noise from preset
+    voice.noise.type = preset.noise.type;
+    voice.noise.volume.value = preset.noise.volume;
   }
 
   
