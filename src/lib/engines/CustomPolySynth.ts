@@ -12,16 +12,13 @@ import { CustomVoice } from "./CustomVoice";
 type LFO = {
   target: LFOTarget;
   LFO: Tone.LFO;
-}
+};
 
 export default class CustomPolySynth {
   private voiceCount: number = 8;
-  
   LFO1Destinations = [];
   LFO2Destinations: Tone.InputNode[] | undefined = [];
   voices: CustomVoice[] = [];
-  osc1Transpose: number = 0;
-  osc2Transpose: number = 0;
   private activeVoices: Map<number, CustomVoice> = new Map();
   private keyboard: AudioKeys;
   unison: boolean = false;
@@ -36,14 +33,8 @@ export default class CustomPolySynth {
   private maxPanSpreadPerVoice: number[] = [
     -0.7, 0.1, -1, 0.9, -0.7, 0.2, -0.8, 1,
   ];
-  LFO1: LFO[] = []
-  private LFO2: Tone.LFO = new Tone.LFO({
-    frequency: 0,
-    type: "sine",
-    amplitude: 0,
-    min: 0,
-    max: 0,
-  });
+  LFO1: LFO[] = [];
+ LFO2: LFO[] = [];
 
   constructor(node: Tone.Gain, preset: Preset) {
     this.initializeVoices(node);
@@ -56,10 +47,8 @@ export default class CustomPolySynth {
       const voice = new CustomVoice();
       voice.connect(node);
       this.voices.push(voice);
-      console.log(voice);
     }
   }
-
 
   private setupKeyboard() {
     this.keyboard = new AudioKeys({
@@ -69,7 +58,6 @@ export default class CustomPolySynth {
     });
     this.keyboard.down((key: any) => {
       const velocity = key.velocity / 127;
-      console.log(key);
       this.triggerAttack(key.frequency, Tone.now(), velocity);
     });
 
@@ -111,21 +99,73 @@ export default class CustomPolySynth {
     }
   }
 
-  setLFO1(target: LFOTarget) {
+  setLFO(target: LFOTarget, lfo: 1 | 2) {
     let LFO: Tone.LFO;
+    let lfoSelected = lfo === 1 ? this.LFO1 : this.LFO2;
 
     switch (target) {
-      case "osc1Frequency":
+      case `osc${lfo}Coarse`:
         LFO = new Tone.LFO({
-          frequency: 2,
-          type: "sine",
-          amplitude: 0.01,
           min: -2400,
           max: 2400,
-        }).chain(...this.voices.map((v) => v.oscillator.detune)).start();
-        this.LFO1.push({target: target, LFO: LFO});
+        })
+          .chain(
+            ...this.voices.map((v) =>
+              lfo === 1 ? v.oscillator.detune : v.oscillator2.detune
+            )
+          )
+          .start();
+        lfoSelected.push({ target: target, LFO: LFO });
         break;
-      
+      case `osc${lfo}Fine`:
+        LFO = new Tone.LFO({
+          min: -100,
+          max: 100,
+        }).start();
+        this.voices.forEach((v) => {
+          LFO.connect(
+            lfo === 1 ? v.oscillator.detune : v.oscillator2.detune
+          );
+        });
+        lfoSelected.push({ target: target, LFO: LFO });
+        break;
+      case `osc${lfo}PW`:
+        LFO = new Tone.LFO({
+          min: -1,
+          max: 1,
+        })
+          .chain(
+            ...this.voices.map((v) =>
+              lfo === 1 ? v.oscillator.width : v.oscillator2.width
+            )
+          )
+          .start();
+        lfoSelected.push({ target: target, LFO: LFO });
+
+        break;
+      case `osc${lfo}Volume`:
+        LFO = new Tone.LFO({
+          min: -70,
+          max: 12,
+        }).start();;
+        this.voices.forEach((v) => {
+          LFO.connect(
+            lfo === 1 ? v.oscillator.volume : v.oscillator2.volume
+          )
+        });
+        lfoSelected.push({ target: target, LFO: LFO });
+        break;
+      case "filterCutoff":
+        LFO = new Tone.LFO({
+          min: 0,
+          max: 20000,
+        }).start();
+        this.voices.forEach((voice) => {
+          LFO.connect(voice.filterEnvelope.baseFrequency);
+        });
+        lfoSelected.push({ target: target, LFO: LFO });
+        break;
+
       default:
         break;
     }

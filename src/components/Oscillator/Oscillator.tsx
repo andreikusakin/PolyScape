@@ -2,8 +2,10 @@ import React from "react";
 import Knob from "../Knob/Knob";
 import styles from "./Oscillator.module.css";
 import { Sawtooth, Sine, Square, Triangle } from "../Shapes";
+import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 
 type OscillatorProps = {
+  engine?: CustomPolySynth;
   name: string;
   oscType: "sine" | "sawtooth" | "pulse" | "triangle";
   setOscillatorType: (
@@ -39,6 +41,7 @@ const OscillatorWaveform = ({
 };
 
 const Oscillator: React.FC<OscillatorProps> = ({
+  engine,
   name,
   oscType,
   setOscillatorType,
@@ -88,13 +91,14 @@ const Oscillator: React.FC<OscillatorProps> = ({
           </div>
         </div>
         <Knob
+          exponent={1}
           label={"pulse width"}
           radius={24}
           minValue={-1}
           maxValue={1}
           currentValue={pulseWidth}
           step={0.01}
-          updateValue={setPulseWidth}
+          onChange={setPulseWidth}
           lfo={false}
           lfoPercent={100}
           startingPoint={"middle"}
@@ -102,37 +106,40 @@ const Oscillator: React.FC<OscillatorProps> = ({
         />
 
         <Knob
+          exponent={1}
           label={"coarse"}
           minValue={-24}
           maxValue={24}
           currentValue={coarse}
           step={1}
-          updateValue={setCoarse}
+          onChange={setCoarse}
           radius={24}
           lfo={false}
           startingPoint={"middle"}
           interactive={true}
         />
         <Knob
-          label={"detune"}
-          minValue={0}
+          exponent={1}
+          label={"fine"}
+          minValue={-100}
           maxValue={100}
           currentValue={detune}
           step={1}
-          updateValue={setDetune}
+          onChange={setDetune}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
+          exponent={1}
           label={"volume"}
           minValue={-70}
           maxValue={12}
           unit={"db"}
           currentValue={volume}
           step={0.5}
-          updateValue={setVolume}
+          onChange={setVolume}
           radius={24}
           lfo={false}
           startingPoint={"middle"}

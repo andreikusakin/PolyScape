@@ -49,13 +49,14 @@ export default function Noise({
           </div>
         </div>
         <Knob
+ exponent={1}
           label={"volume"}
           minValue={-70}
           maxValue={12}
           unit={"db"}
           currentValue={volume}
           step={0.5}
-          updateValue={setVolume}
+          onChange={setVolume}
           radius={24}
           lfo={false}
           startingPoint={"middle"}

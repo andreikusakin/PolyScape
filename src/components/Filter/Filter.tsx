@@ -78,101 +78,117 @@ export const Filter = ({
           </ul>
           <ul className={styles.types}>
             <li
-                onClick={() => setRolloff(-12)}
-                className={rolloff === -12 ? styles.selected : ""}            
-            >12</li>
+              onClick={() => setRolloff(-12)}
+              className={rolloff === -12 ? styles.selected : ""}
+            >
+              12
+            </li>
             <li
-                onClick={() => setRolloff(-24)}
-                className={rolloff === -24 ? styles.selected : ""}
-            >24</li>
-            <li 
-                onClick={() => setRolloff(-48)}
-                className={rolloff === -48 ? styles.selected : ""}
-            >48</li>
+              onClick={() => setRolloff(-24)}
+              className={rolloff === -24 ? styles.selected : ""}
+            >
+              24
+            </li>
+            <li
+              onClick={() => setRolloff(-48)}
+              className={rolloff === -48 ? styles.selected : ""}
+            >
+              48
+            </li>
           </ul>
         </div>
 
         <Knob
+          exponent={1}
           label={"cutoff"}
           minValue={0}
           maxValue={20000}
           currentValue={frequency}
           step={1}
           unit={"hz"}
-          updateValue={setFrequency}
+          onChange={setFrequency}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
+          exponent={1}
           label={"resonance"}
           minValue={0.01}
           maxValue={15}
           currentValue={resonance}
           step={0.01}
-          updateValue={setResonance}
+          onChange={setResonance}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
+          exponent={1}
           label={"envelope"}
           label2={"amount"}
           minValue={0}
           maxValue={7}
           currentValue={envAmount}
           step={0.01}
-          updateValue={setEnvAmount}
+          onChange={setEnvAmount}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
+          exponent={1}
           label={"attack"}
+          unit={"s"}
           minValue={0.01}
-          maxValue={10}
+          maxValue={20}
           currentValue={attack}
           step={0.01}
-          updateValue={setAttack}
+          onChange={setAttack}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
+          exponent={1}
           label={"decay"}
+          unit={"s"}
           minValue={0.01}
-          maxValue={100}
+          maxValue={20}
           currentValue={decay}
           step={0.01}
-          updateValue={setDecay}
+          onChange={setDecay}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
+          exponent={1}
           label={"sustain"}
           minValue={0}
           maxValue={1}
           currentValue={sustain}
           step={0.01}
-          updateValue={setSustain}
+          onChange={setSustain}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
+          exponent={1}
           label={"release"}
+          unit={"s"}
           minValue={0.01}
-          maxValue={10}
+          maxValue={20}
           currentValue={release}
           step={0.01}
-          updateValue={setRelease}
+          onChange={setRelease}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}

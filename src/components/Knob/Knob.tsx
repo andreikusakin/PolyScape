@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import styles from "./Knob.module.css";
 import { useDrag } from "@use-gesture/react";
 import Dial from "../Dial/Dial";
@@ -10,16 +10,18 @@ type KnobProps = {
   label: string;
   label2?: string;
   unit?: string;
+  isTargeting?: boolean;
   lfo: false | 1 | 2;
-  lfoTarget?: "string";
-  lfoPercent?: number;
+  lfoTarget?: string;
+  lfoAmount?: number;
   startingPoint: "beginning" | "middle";
   interactive?: boolean;
   minValue: number;
   maxValue: number;
   currentValue: number;
   step: number;
-  updateValue?: (value: number) => void;
+  onChange?: (value: number) => void;
+  exponent: number;
 };
 
 const Knob: React.FC<KnobProps> = ({
@@ -29,31 +31,52 @@ const Knob: React.FC<KnobProps> = ({
   currentValue,
   step,
   lfo,
-  lfoPercent,
+  lfoAmount,
   lfoTarget,
   startingPoint,
   label,
   label2,
   unit,
   interactive,
-  updateValue,
+  onChange,
+  exponent,
+  isTargeting = true,
 }) => {
-  const adjustToStep = (value: number) => Math.round(value / step) * step;
+  const adjustValueToStep = (value: number, step: number) => {
+    const roundedSteps = Math.round((value - minValue) / step);
+    return roundedSteps * step + minValue;
+  };
+  const updateValue = (value: number) => {
+    // let adjustedValue;
+    // if (exponent >= 1) {
+    //   adjustedValue = value ** exponent;
+    // }
+    // else {
+    //   adjustedValue = Math.log(value);
+    // }
+
+    // return Math.min(Math.max(adjustedValue, minValue), maxValue);
+    let adjustedValue = adjustValueToStep(value, step);
+    return Math.min(Math.max(adjustedValue, minValue), maxValue);
+  };
 
   const valueToPercent = (value: number) => {
-    const adjustedValue = adjustToStep(value);
-    return ((adjustedValue - minValue) / (maxValue - minValue)) * 100;
+    return ((value - minValue) / (maxValue - minValue)) * 100;
   };
 
   const percentToValue = (percent: number) => {
-    const value = minValue + (percent / 100) * (maxValue - minValue);
-    return adjustToStep(value);
+    return (percent / 100) * (maxValue - minValue) + minValue;
   };
 
   const [percent, setPercent] = useState<number>(valueToPercent(currentValue));
   const [displayLabel, setDisplayLabel] = useState<string>(label);
   const [displayLabel2, setDisplayLabel2] = useState(label2);
   const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const newPercent = valueToPercent(currentValue);
+    setPercent(newPercent);
+  }, [currentValue]);
 
   const handleMouseDown = () => {
     setIsDragging(true);
@@ -65,28 +88,30 @@ const Knob: React.FC<KnobProps> = ({
 
   useEffect(() => {
     if (isDragging) {
-      setDisplayLabel(`${Math.round(currentValue)} ${unit ? unit : ""}`);
-      setDisplayLabel2("")
+      setDisplayLabel(`${currentValue.toFixed(2)} ${unit ? unit : ""}`);
+      setDisplayLabel2("");
     } else {
       setDisplayLabel(label);
       setDisplayLabel2(label2);
     }
-  }, [isDragging, percent, label]);
-
-  useEffect(() => {
-    setPercent(valueToPercent(currentValue));
-  }, [currentValue]);
+  }, [isDragging, currentValue, label, unit]);
 
   const bind = useDrag(
     ({ delta }) => {
-      const dragSensitivity = -0.6;
-      let newPercent = percent + delta[1] * dragSensitivity;
-      newPercent = Math.max(0, Math.min(newPercent, 100));
-      const newValue = percentToValue(newPercent);
-      const newPercentAdjusted = valueToPercent(newValue);
-      setPercent(newPercentAdjusted);
-      if (updateValue) {
-        updateValue(newValue);
+      const dragSensitivity = -0.3;
+      let percentChange = delta[1] * dragSensitivity;
+      let currentPercent = valueToPercent(currentValue);
+      let newPercent = Math.max(
+        0,
+        Math.min(100, currentPercent + percentChange)
+      );
+      let newValue = percentToValue(newPercent);
+
+      newValue = updateValue(newValue);
+
+      setPercent(valueToPercent(newValue));
+      if (onChange) {
+        onChange(newValue);
       }
     },
     {
@@ -99,18 +124,23 @@ const Knob: React.FC<KnobProps> = ({
     <div
       {...bind()}
       className={interactive ? styles.knob : styles.knobNotInteractive}
-      onDoubleClick={() => updateValue && updateValue(0)}
+      onDoubleClick={() => onChange && onChange(0)}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
     >
+      {" "}
       <Dial
         radius={radius}
         percent={percent}
         lfo={lfo}
-        lfoPercent={lfoPercent}
+        lfoAmount={lfoAmount}
         startingPoint={startingPoint}
+        isTargeting={isTargeting}
       />
-      <div className={styles.labels}><span>{displayLabel}</span><span>{displayLabel2}</span></div>
+      <div className={styles.labels}>
+        <span>{displayLabel}</span>
+        <span>{displayLabel2}</span>
+      </div>
     </div>
   );
 };

@@ -5,33 +5,28 @@ interface WaveTable {
   imag: Float32Array;
 }
 
+export interface VariableOscilatorOptions extends Tone.ToneOscillatorNodeOptions { 
+  morph: number;
+  dutyCycle: number;
+}
+
+
 export class VariableOscillator extends Tone.ToneOscillatorNode {
   private periodicWaveSize: number = this.context.sampleRate / 4;
-  // private currentCoeffs: PeriodicWave;
-  private dutyCycle: number = 0.5; 
+  dutyCycle: number = 0.5;
   private sineCoeffs = this.createSine();
   private triangleCoeffs = this.createTriangle();
   private sawtoothCoeffs = this.createSawtooth();
   private pulseCoeffs = this.createPulse(this.dutyCycle);
 
-  private morph: number;
+  morph: number = 0;
 
+  constructor(options?: Partial<VariableOscilatorOptions>)
   constructor() {
     super();
-   
     this.morph = 0;
-
-
-
     this.setWaveform(this.morph); // Set the initial waveform to sine
-    
   }
-  
-  // updateMorph(value: number) {
-    
-  //   this.morph = value; // Update the morph value
-  //   this.setWaveform(value); // Recompute and set the waveform based on the new morph value
-  // }
 
   // Creates sine coefficients for a periodic wave
   private createSine() {
@@ -93,15 +88,13 @@ export class VariableOscillator extends Tone.ToneOscillatorNode {
   setMorph(value: number) {
     this.morph = value;
     this.setWaveform(value);
-    console.log(this.morph);
   }
 
   setDutyCycle(value: number) {
-    this.dutyCycle = value; 
+    this.dutyCycle = value;
     console.log("Duty Cycle: ", this.dutyCycle);
     this.pulseCoeffs = this.createPulse(this.dutyCycle);
     this.setWaveform(this.morph);
-    console.log(this.morph);
   }
 
   setWaveform(value: number) {
@@ -118,14 +111,34 @@ export class VariableOscillator extends Tone.ToneOscillatorNode {
       );
     } else {
       // Sawtooth to Pulse(square)
-      coeffs = this.morphCoeffs(value - 2, this.sawtoothCoeffs, this.pulseCoeffs);
+      coeffs = this.morphCoeffs(
+        value - 2,
+        this.sawtoothCoeffs,
+        this.pulseCoeffs
+      );
     }
 
-    
-      const wave = this.context.createPeriodicWave(coeffs.real, coeffs.imag);
-      
-      this.setPeriodicWave(wave);
-  
-  
+    const wave = this.context.createPeriodicWave(coeffs.real, coeffs.imag);
+
+    this.setPeriodicWave(wave);
   }
+
+//   start(time?: Tone.Unit.Time) {
+//     const computedTime = this.toSeconds(time);
+//     this.log("start", computedTime);
+//     this._startGain(computedTime);
+//     this._oscillator.start(computedTime);
+//     return this;
+//   }
+
+//   stop(time?: Tone.Unit.Time) {
+//     const computedTime = this.toSeconds(time);
+//     if (this.state === 'started') {
+//         console.log('stop', computedTime);
+//         this._stopSource(computedTime);
+//     }
+
+//     return this;
+// }
+
 }

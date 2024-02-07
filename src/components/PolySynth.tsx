@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, use } from "react";
 import * as Tone from "tone/build/esm/index";
 
-import { Preset } from "@/lib/types/types";
+import { LFOTarget, Preset } from "@/lib/types/types";
 import Knob from "./Knob/Knob";
 import Oscillator from "./Oscillator/Oscillator";
 import Noise from "./Noise/Noise";
@@ -10,6 +10,7 @@ import { Filter } from "./Filter/Filter";
 import { CustomVoice } from "@/lib/engines/CustomVoice";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { Envelope } from "./Envelope/Envelope";
+import { LFO } from "./LFO/LFO";
 
 const initPreset: Preset = {
   osc1: {
@@ -24,11 +25,11 @@ const initPreset: Preset = {
     detune: 0,
     transpose: 0,
     pulseWidth: 0,
-    volume: 0,
+    volume: -70,
   },
   noise: {
     type: "white",
-    volume: 0,
+    volume: -70,
   },
   envelope: {
     attack: 0.01,
@@ -48,6 +49,16 @@ const initPreset: Preset = {
   },
   unison: false,
   panSpread: 0,
+  volume: 0,
+  LFO1: {
+    type: "sine",
+    rate: 5,
+    sync: false,
+    destinations: [
+      { target: "osc1Volume", amount: 1 },
+      { target: "osc1Fine", amount: 0.01 },
+    ],
+  },
 };
 
 const PolySynth = () => {
@@ -60,7 +71,7 @@ const PolySynth = () => {
     "sawtooth" | "sine" | "pulse" | "triangle"
   >("sine");
   const [osc1Fine, setOsc1Fine] = useState<number>(0);
-  const [osc1Transpose, setOsc1Transpose] = useState<number>(0);
+  const [osc1Coarse, setosc1Coarse] = useState<number>(0);
   const [osc1PulseWidth, setOsc1PulseWidth] = useState<number>(0);
   const [osc1Volume, setOsc1Volume] = useState<number>(0);
 
@@ -75,8 +86,10 @@ const PolySynth = () => {
 
   // Noise
 
-  const [noiseType, setNoiseType] = useState<"white" | "pink" | "brown">("white")
-  const [noiseVolume, setNoiseVolume] = useState<number>(0)
+  const [noiseType, setNoiseType] = useState<"white" | "pink" | "brown">(
+    "white"
+  );
+  const [noiseVolume, setNoiseVolume] = useState<number>(0);
 
   // envelope amplitude
   const [attack, setAttack] = useState<number>(0);
@@ -106,11 +119,33 @@ const PolySynth = () => {
   const [panSpread, setPanSpread] = useState<number>(0);
   const [unison, setUnison] = useState<boolean>(false);
 
+  //LFO1
+  const [LFO1Type, setLFO1Type] = useState<
+    "sine" | "triangle" | "sawtooth" | "square"
+  >("sine");
+  const [LFO1Rate, setLFO1Rate] = useState<
+    Tone.Unit.Frequency | Tone.FrequencyClass
+  >(1);
+  const [LFO1Sync, setLFO1Sync] = useState<boolean>(false);
+  // const [LFO1Amount, setLFO1Amount] = useState<Tone.Unit.NormalRange>(0);
+  const [LFO1Destinations, setLFO1Destinations] = useState<LFOTarget[]>([]);
+
+  //LFO2
+  const [LFO2Type, setLFO2Type] = useState<
+    "sine" | "triangle" | "sawtooth" | "square"
+  >();
+  const [LFO2Rate, setLFO2Rate] = useState<
+    Tone.Unit.Frequency | Tone.FrequencyClass
+  >(5);
+  const [LFO2Sync, setLFO2Sync] = useState<boolean>();
+  // const [LFO2Amount, setLFO2Amount] = useState<Tone.Unit.NormalRange>();
+  const [LFO2Destinations, setLFO2Destinations] = useState<LFOTarget[]>();
+
   function loadPreset(preset: Preset) {
     // OSC1
     setOsc1Type(preset.osc1.type);
     setOsc1Fine(preset.osc1.detune);
-    setOsc1Transpose(preset.osc1.transpose);
+    setosc1Coarse(preset.osc1.transpose);
     setOsc1PulseWidth(preset.osc1.pulseWidth);
     setOsc1Volume(preset.osc1.volume);
     // OSC2
@@ -120,8 +155,8 @@ const PolySynth = () => {
     setOsc2PulseWidth(preset.osc2.pulseWidth);
     setOsc2Volume(preset.osc2.volume);
     // Noise
-    setNoiseType(preset.noise.type)
-    setNoiseVolume(preset.noise.volume)
+    setNoiseType(preset.noise.type);
+    setNoiseVolume(preset.noise.volume);
     // Envelope
     setAttack(preset.envelope.attack);
     setDecay(preset.envelope.decay);
@@ -143,6 +178,12 @@ const PolySynth = () => {
     // FX
     setPanSpread(preset.panSpread);
     setUnison(preset.unison);
+    // LFO1
+    setLFO1Type(preset.LFO1?.type);
+    setLFO1Rate(preset.LFO1?.rate);
+    setLFO1Sync(preset.LFO1?.sync);
+    // setLFO1Amount(preset.LFO1?.amount);
+    setLFO1Destinations(preset.LFO1?.destinations);
   }
   useEffect(() => {
     loadPreset(preset);
@@ -156,116 +197,158 @@ const PolySynth = () => {
     }).toDestination();
 
     polySynth.current = new CustomPolySynth(gainNode, initPreset);
+
+    // polySynth.current.setLFO("osc1Coarse", 1);
+    // polySynth.current.setLFO("osc1Fine", 1);
   }, [preset]);
 
   // update oscilators and noise types
   useEffect(() => {
     if (osc1type) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({oscillator: {type: osc1type}})});
-      console.log("osc1 type changed to: ", osc1type);
+      // polySynth.current?.voices.forEach((voice) => {
+      //   voice.set({ oscillator: { type: osc1type } });
+      // });
     }
   }, [osc1type]);
 
   useEffect(() => {
     if (oscillator2Type) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({oscillator2: {type: oscillator2Type}})});
-      console.log("osc2 type changed to: ", oscillator2Type);
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ oscillator2: { type: oscillator2Type } });
+      });
     }
   }, [oscillator2Type]);
 
   useEffect(() => {
     if (noiseType) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({noise: {type: noiseType}})});
-      console.log("noise type changed to: ", noiseType);
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ noise: { type: noiseType } });
+      });
     }
   }, [noiseType]);
 
-  // // update volume 
+  // // update volume
 
   useEffect(() => {
+    if (LFO1Destinations?.includes("osc1Volume")) {
+      polySynth.current?.LFO1.find(
+        (lfo) => lfo.target === "osc1Volume"
+      )?.LFO.set({
+        min: -70 + osc1Volume,
+        max: 6 + osc1Volume,
+      });
+    }
+    if (LFO2Destinations?.includes("osc1Volume")) {
+      polySynth.current?.LFO2.find(
+        (lfo) => lfo.target === "osc1Volume"
+      )?.LFO.set({
+        min: -70 + osc1Volume,
+        max: 6 + osc1Volume,
+      });
+    }
     const volumeValue = osc1Volume ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({ oscillator: { volume: volumeValue } })});
-    console.log("osc1 volume changed to: ", volumeValue);
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ oscillator: { volume: volumeValue } });
+    });
   }, [osc1Volume]);
 
   useEffect(() => {
     const volumeValue = osc2Volume ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({ oscillator2: { volume: volumeValue } })});
-    console.log("osc2 volume changed to: ", volumeValue);
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ oscillator2: { volume: volumeValue } });
+    });
   }, [osc2Volume]);
 
   useEffect(() => {
     const volumeValue = noiseVolume ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({noise: {volume: volumeValue}})});
-    console.log("noise volume changed to: ", volumeValue);
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ noise: { volume: volumeValue } });
+    });
   }, [noiseVolume]);
 
-  // update detune
+  // update fine
   useEffect(() => {
-    const detuneValue = osc1Fine + (osc1Transpose * 100) ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({oscillator: {detune: detuneValue}})});
-    console.log("osc1 detune changed to: ", detuneValue);
+    polySynth.current?.LFO1.find((lfo) => lfo.target === "osc1Fine")?.LFO.set({
+      min: -100 + osc1Fine,
+      max: 100 + osc1Fine,
+    });
+    const fineValue = osc1Fine + osc1Coarse * 100 ?? 0;
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ oscillator: { detune: fineValue } });
+    });
   }, [osc1Fine]);
 
   useEffect(() => {
-    const detuneValue = osc2Fine + osc2Transpose ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({oscillator2: {detune: detuneValue}})});
-    console.log("osc2 detune changed to: ", detuneValue);
+    const fineValue = osc2Fine + osc2Transpose ?? 0;
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ oscillator2: { detune: fineValue } });
+    });
   }, [osc2Fine]);
 
   // // update transpose
 
   useEffect(() => {
-    const transposeValue = (osc1Transpose * 100) + osc1Fine ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({oscillator: {detune: transposeValue}})});
-    console.log("osc1Transpose state changed to: ", transposeValue);
-  }, [osc1Transpose]);
+    polySynth.current?.LFO1.find((lfo) => lfo.target === "osc1Coarse")?.LFO.set(
+      { min: -2400 + osc1Coarse * 100, max: 2400 + osc1Coarse * 100 }
+    );
+    const transposeValue = osc1Coarse * 100 + osc1Fine ?? 0;
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ oscillator: { detune: transposeValue } });
+    });
+  }, [osc1Coarse]);
 
   useEffect(() => {
     const transposeValue = osc2Transpose + osc1Fine ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({oscillator2: {detune: transposeValue}})});
-    console.log("osc2Transpose state changed to: ", transposeValue);
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ oscillator2: { detune: transposeValue } });
+    });
   }, [osc2Transpose]);
 
   // update pulse width
 
   useEffect(() => {
     const pulseWidthValue = osc1PulseWidth ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({oscillator: {width: pulseWidthValue}})});
-    console.log("osc1PulseWidth state changed to: ", pulseWidthValue);
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ oscillator: { width: pulseWidthValue } });
+    });
   }, [osc1PulseWidth]);
 
   useEffect(() => {
     const pulseWidthValue = osc2PulseWidth ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({oscillator2: {width: pulseWidthValue}})});
-    console.log("osc2PulseWidth state changed to: ", pulseWidthValue);
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ oscillator2: { width: pulseWidthValue } });
+    });
   }, [osc2PulseWidth]);
 
   // update envelopes
   useEffect(() => {
     if (attack) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({envelope: {attack: attack}})});
-      console.log("attack changed to: ", attack);
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ envelope: { attack: attack } });
+      });
     }
   }, [attack]);
 
   useEffect(() => {
     if (decay) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({envelope: {decay: decay}})});
-      console.log("decay changed to: ", decay);
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ envelope: { decay: decay } });
+      });
     }
   }, [decay]);
 
   useEffect(() => {
     const sustainValue = sustain ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({envelope: {sustain: sustainValue}})});
-    console.log("sustain changed to: ", sustain);
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ envelope: { sustain: sustainValue } });
+    });
   }, [sustain]);
 
   useEffect(() => {
     if (release) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({envelope: {release: release}})});
-      console.log("release changed to: ", release);
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ envelope: { release: release } });
+      });
     }
   }, [release]);
 
@@ -273,29 +356,33 @@ const PolySynth = () => {
 
   useEffect(() => {
     if (filterType) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({filter: {type: filterType}})});
-      console.log("filter type changed to: ", filterType);
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ filter: { type: filterType } });
+      });
     }
   }, [filterType]);
 
   useEffect(() => {
     if (filterFrequency) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({filter: {frequency: filterFrequency}})});
-      console.log("filter frequency changed to: ", filterFrequency);
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ filter: { frequency: filterFrequency } });
+      });
     }
   }, [filterFrequency]);
 
   useEffect(() => {
     if (filterRolloff) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({filter: {rolloff: filterRolloff}})});
-      console.log("filter rolloff changed to: ", filterRolloff);
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ filter: { rolloff: filterRolloff } });
+      });
     }
   }, [filterRolloff]);
 
   useEffect(() => {
     if (filterQ) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({filter: {Q: filterQ}})});
-      console.log("filter Q changed to: ", filterQ);
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ filter: { Q: filterQ } });
+      });
     }
   }, [filterQ]);
 
@@ -303,58 +390,58 @@ const PolySynth = () => {
 
   useEffect(() => {
     if (filterEnvelopeAttack) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({filterEnvelope: {attack: filterEnvelopeAttack}})});
-      console.log("filter envelope attack changed to: ", filterEnvelopeAttack);
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ filterEnvelope: { attack: filterEnvelopeAttack } });
+      });
     }
   }, [filterEnvelopeAttack]);
 
   useEffect(() => {
     if (filterEnvelopeDecay) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({filterEnvelope: {decay: filterEnvelopeDecay}})});
-      console.log("filter envelope decay changed to: ", filterEnvelopeDecay);
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ filterEnvelope: { decay: filterEnvelopeDecay } });
+      });
     }
   }, [filterEnvelopeDecay]);
 
   useEffect(() => {
     const sustain = filterEnvelopeSustain ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({filterEnvelope: {sustain: sustain}})});
-    console.log("filter envelope sustain changed to: ", filterEnvelopeSustain);
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ filterEnvelope: { sustain: sustain } });
+    });
   }, [filterEnvelopeSustain]);
 
   useEffect(() => {
     if (filterEnvelopeRelease) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({filterEnvelope: {release: filterEnvelopeRelease}})});
-      console.log(
-        "filter envelope release changed to: ",
-        filterEnvelopeRelease
-      );
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ filterEnvelope: { release: filterEnvelopeRelease } });
+      });
     }
   }, [filterEnvelopeRelease]);
 
   useEffect(() => {
     if (filterEnvelopeBaseFrequency) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({filterEnvelope: {baseFrequency: filterEnvelopeBaseFrequency}})});
-      console.log(
-        "filter envelope base frequency changed to: ",
-        filterEnvelopeBaseFrequency
-      );
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({
+          filterEnvelope: { baseFrequency: filterEnvelopeBaseFrequency },
+        });
+      });
     }
   }, [filterEnvelopeBaseFrequency]);
 
   useEffect(() => {
     if (filterEnvelopeExponent) {
-      polySynth.current?.voices.forEach((voice) => {voice.set({filterEnvelope: {exponent: filterEnvelopeExponent}})});
-      console.log(
-        "filter envelope exponent changed to: ",
-        filterEnvelopeExponent
-      );
+      polySynth.current?.voices.forEach((voice) => {
+        voice.set({ filterEnvelope: { exponent: filterEnvelopeExponent } });
+      });
     }
   }, [filterEnvelopeExponent]);
 
   useEffect(() => {
     const octaves = filterEnvelopeOctaves ?? 0;
-    polySynth.current?.voices.forEach((voice) => {voice.set({filterEnvelope: {octaves: octaves}})});
-    console.log("filter envelope octaves changed to: ", filterEnvelopeOctaves);
+    polySynth.current?.voices.forEach((voice) => {
+      voice.set({ filterEnvelope: { octaves: octaves } });
+    });
   }, [filterEnvelopeOctaves]);
 
   // // update fx
@@ -370,60 +457,82 @@ const PolySynth = () => {
     if (polySynth.current) {
       polySynth.current.unison = unisonValue;
     }
-    console.log("unison changed to: ", unisonValue);
   }, [unison]);
 
+  // LFO1
 
-  // // LFOs
+  useEffect(() => {
+    if (LFO1Destinations) {
+      LFO1Destinations.forEach((destination) => {
+        polySynth.current?.setLFO(destination, 1);
+      });
+    }
+  }, [LFO1Destinations]);
+
+  useEffect(() => {
+    if (LFO1Type) {
+      polySynth.current?.LFO1.forEach((lfo) => {
+        lfo.LFO.set({ type: LFO1Type });
+      });
+    }
+  }, [LFO1Type]);
+
+  useEffect(() => {
+    if (LFO1Rate) {
+      polySynth.current?.LFO1.forEach((lfo) => {
+        lfo.LFO.set({ frequency: LFO1Rate });
+      });
+    }
+  }, [LFO1Rate]);
 
   // useEffect(() => {
-  //   polySynth.current?.setLFO1DestinationEngine("osc1PW");
-  // }, [preset]);
-
-
-
-  
+  //   if (LFO1Amount) {
+  //     polySynth.current?.LFO1.forEach((lfo) => {
+  //       lfo.LFO.set({ amplitude: LFO1Amount });
+  //     });
+  //   }
+  // }, [LFO1Amount]);
 
   return (
     <div className="flex w-full h-full gap-10 ">
       <div>
-      <Oscillator
-        engine={polySynth.current}
-        name={"osc1"}
-        oscType={osc1type}
-        setOscillatorType={setOsc1Type}
-        coarse={osc1Transpose}
-        setCoarse={setOsc1Transpose}
-        detune={osc1Fine}
-        setDetune={setOsc1Fine}
-        pulseWidth={osc1PulseWidth}
-        setPulseWidth={setOsc1PulseWidth}
-        volume={osc1Volume}
-        setVolume={setOsc1Volume}
-      />
-      <Oscillator
-        engine={polySynth.current}
-        name={"osc2"}
-        oscType={oscillator2Type}
-        setOscillatorType={setOscillator2Type}
-        coarse={osc2Transpose}
-        setCoarse={setOsc2Transpose}
-        detune={osc2Fine}
-        setDetune={setOsc2Fine}
-        pulseWidth={osc2PulseWidth}
-        setPulseWidth={setOsc2PulseWidth}
-        volume={osc2Volume}
-        setVolume={setOsc2Volume} 
-      />
-      <Noise
-        name={"noise"}
-        type={noiseType}
-        setType={setNoiseType}
-        volume={noiseVolume}
-        setVolume={setNoiseVolume}
-      /></div>
+        <Oscillator
+          engine={polySynth.current}
+          name={"osc1"}
+          oscType={osc1type}
+          setOscillatorType={setOsc1Type}
+          coarse={osc1Coarse}
+          setCoarse={setosc1Coarse}
+          detune={osc1Fine}
+          setDetune={setOsc1Fine}
+          pulseWidth={osc1PulseWidth}
+          setPulseWidth={setOsc1PulseWidth}
+          volume={osc1Volume}
+          setVolume={setOsc1Volume}
+        />
+        <Oscillator
+          name={"osc2"}
+          oscType={oscillator2Type}
+          setOscillatorType={setOscillator2Type}
+          coarse={osc2Transpose}
+          setCoarse={setOsc2Transpose}
+          detune={osc2Fine}
+          setDetune={setOsc2Fine}
+          pulseWidth={osc2PulseWidth}
+          setPulseWidth={setOsc2PulseWidth}
+          volume={osc2Volume}
+          setVolume={setOsc2Volume}
+        />
+        <Noise
+          name={"noise"}
+          type={noiseType}
+          setType={setNoiseType}
+          volume={noiseVolume}
+          setVolume={setNoiseVolume}
+        />
+      </div>
       <div>
-        <Filter 
+        <Filter
           name={"filter"}
           filterType={filterType}
           setFilterType={setFilterType}
@@ -455,6 +564,17 @@ const PolySynth = () => {
           release={release}
           setRelease={setRelease}
         />
+        <LFO
+          name={"LFO1"}
+          type={LFO1Type}
+          setType={setLFO1Type}
+          rate={LFO1Rate}
+          setRate={setLFO1Rate}
+          sync={LFO1Sync}
+          setSync={setLFO1Sync}
+          destinations={LFO1Destinations}
+          setDestinations={setLFO1Destinations}
+        />
       </div>
       <button onClick={() => Tone.start()}>Start</button>
       <div className="flex flex-col gap-10">
@@ -466,7 +586,12 @@ const PolySynth = () => {
               <input
                 type="checkbox"
                 checked={osc1type === "sine"}
-                onChange={() => setOsc1Type("sine")}
+                onChange={() => {
+                  setOsc1Type("sine");
+                  polySynth.current?.voices.forEach((voice) => {
+                    voice.set({ oscillator: { type: "sine" } });
+                  });
+                }}
               />
             </label>
             <label>
@@ -474,7 +599,12 @@ const PolySynth = () => {
               <input
                 type="checkbox"
                 checked={osc1type === "sawtooth"}
-                onChange={() => setOsc1Type("sawtooth")}
+                onChange={() => {
+                  setOsc1Type("sawtooth");
+                  polySynth.current?.voices.forEach((voice) => {
+                    voice.set({ oscillator: { type: "sawtooth" } });
+                  });
+                }}
               />
             </label>
             <label>
@@ -527,9 +657,9 @@ const PolySynth = () => {
               min="-24"
               max="24"
               step="1"
-              value={osc1Transpose}
+              value={osc1Coarse}
               onChange={(e) => {
-                setOsc1Transpose(Number(e.target.value));
+                setosc1Coarse(Number(e.target.value));
               }}
             />
           </label>

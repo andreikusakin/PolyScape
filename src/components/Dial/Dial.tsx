@@ -1,18 +1,23 @@
+import styles from "./Dial.module.css";
+
 type DialProps = {
   radius: number;
   percent: number;
   lfo: false | 1 | 2;
-  lfoPercent?: number;
+  lfoAmount?: number;
   startingPoint: "beginning" | "middle";
+  isTargeting?: boolean;
 };
 
 const Dial: React.FC<DialProps> = ({
   radius,
   percent,
   lfo,
-  lfoPercent,
+  lfoAmount,
   startingPoint,
+  isTargeting,
 }) => {
+  
   const strokeWidth = radius * 0.1;
   const innerRadius = radius - strokeWidth / 2;
   const circumference = 2 * Math.PI * innerRadius;
@@ -25,51 +30,53 @@ const Dial: React.FC<DialProps> = ({
   const transform = `rotate(135, ${radius}, ${radius})`;
   const percentNormalized = Math.min(Math.max(percent, 0), 100);
   let lfoOffset;
-  if (lfoPercent) {
-    const lfoPercentNormalized = Math.min(Math.max(lfoPercent, 0), 100);
+  if (lfoAmount) {
+    const lfoPercentNormalized = Math.min(Math.max(lfoAmount, 0), 100);
     lfoOffset = arc - (lfoPercentNormalized / 100) * arc;
   }
   const offset = arc - (percentNormalized / 100) * arc;
-
   return (
-    <svg height={radius * 2.44} width={radius * 2.44}>
-      <circle
-        cx={radius}
-        cy={radius / 1.44}
-        fill="transparent"
-        r={innerRadius}
-        stroke="rgba(255,255,255, 0.3)"
-        strokeWidth={strokeWidth}
-        strokeDasharray={dashArray}
-        transform={transform}
-      />
-      <circle
-        cx={radius}
-        cy={radius / 1.44}
-        fill="transparent"
-        r={innerRadius}
-        stroke="rgba(255,255,255, 0.95)"
-        strokeWidth={strokeWidth}
-        strokeDasharray={dashArray}
-        strokeDashoffset={offset}
-        transform={transform}
-      />
-      {lfo ? (
+    <div className={styles.dial}>
+      {isTargeting && <div className={`${styles.targetSelecting} ${lfo === 1 ? styles.lfo1 : lfo === 2 ? styles.lfo2 : null }`}></div>}
+      <svg height={radius * 2.44} width={radius * 2.44}>
         <circle
           cx={radius}
           cy={radius / 1.44}
           fill="transparent"
-          r={outerInnerRadius}
-          stroke={
-            lfo === 1 ? "rgba(255,235,132, 0.95)" : "rgba(255,132,132, 0.95)"
-          }
+          r={innerRadius}
+          stroke="rgba(255,255,255, 0.3)"
           strokeWidth={strokeWidth}
-          strokeDasharray={outerDashArray}
-          strokeDashoffset={lfoOffset}
+          strokeDasharray={dashArray}
           transform={transform}
         />
-      ) : null}
-    </svg>
+        <circle
+          cx={radius}
+          cy={radius / 1.44}
+          fill="transparent"
+          r={innerRadius}
+          stroke="rgba(255,255,255, 0.95)"
+          strokeWidth={strokeWidth}
+          strokeDasharray={dashArray}
+          strokeDashoffset={offset}
+          transform={transform}
+        />
+        {lfo ? (
+          <circle
+            cx={radius}
+            cy={radius / 1.44}
+            fill="transparent"
+            r={outerInnerRadius}
+            stroke={
+              lfo === 1 ? "rgba(255,235,132, 0.95)" : "rgba(255,132,132, 0.95)"
+            }
+            strokeWidth={strokeWidth}
+            strokeDasharray={outerDashArray}
+            strokeDashoffset={lfoOffset}
+            transform={transform}
+          />
+        ) : null}
+      </svg>
+    </div>
   );
 };
 

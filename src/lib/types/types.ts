@@ -42,6 +42,41 @@ export type Preset = {
   };
   unison: boolean;
   panSpread: number;
+  volume: number;
+  LFO1?: {
+    type: "sine" | "triangle" | "sawtooth" | "square";
+    rate: Tone.Unit.Frequency;
+    sync: boolean;
+    destinations: {target: LFOTarget, amount: number}[];
+  }
 };
 
-export type LFOTarget = "osc1Detune" | "osc2Detune" | "filter" | "attack";
+export type LFOTarget =
+  | "osc1Coarse"
+  | "osc1Fine"
+  | "osc1PW"
+  | "osc1Volume"
+  | "osc2Coarse"
+  | "osc2Fine"
+  | "osc2PW"
+  | "osc2Volume"
+  | "noiseVolume"
+  | "filterCutoff"
+  | "filterResonance"
+  | "filterEnvAmount"
+  | "filterEnvAttack"
+  | "filterEnvDecay"
+  | "filterEnvSustain"
+  | "filterEnvRelease"
+  | "envelopeAttack"
+  | "envelopeDecay"
+  | "envelopeSustain"
+  | "envelopeRelease";
+
+export type LFODestination = {
+  target: string;
+  amount: number;
+  setAmount: (amount: number) => void;
+  minLFO: number;
+  maxLFO: number;
+};

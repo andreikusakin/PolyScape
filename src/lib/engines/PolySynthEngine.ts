@@ -3,8 +3,16 @@ import * as Tone from "tone/build/esm/index";
 import AudioKeys from "audiokeys";
 import { Preset, LFOTarget } from "../types/types";
 import NoiseEngine from "./NoiseEngine";
+import { CustomVoice } from "./CustomVoice";
 
 //TODO
+
+
+// custom monosynth with noise and 2 oscs
+
+
+
+
 
 //FIX when holding down multiple keys it stops playing if you press a new keys but not holding them, exciding 8 voices
 
@@ -19,11 +27,6 @@ import NoiseEngine from "./NoiseEngine";
 // noise
 // midi and midi mapping
 
-//combine methods for both oscs
-
-//mimick detune and panspread
-
-//mixer mimick
 
 //lfos // LFO CHAIN
 
@@ -31,8 +34,8 @@ import NoiseEngine from "./NoiseEngine";
 
 //https://github.com/Tonejs/Tone.js/wiki/Arpeggiator
 
-class PolySynthEngine {
-  private LFO1Destinations: Tone.LFO[] = [];
+export default class PolySynthEngine {
+  private LFO1Destinations: Tone.InputNode[] = [];
   private voiceCount: number = 8;
   private voices: [Tone.MonoSynth, Tone.MonoSynth, NoiseEngine][] = [];
   private panners: Tone.Panner[] = [];
@@ -51,8 +54,8 @@ class PolySynthEngine {
   private maxPanSpreadPerVoice: number[] = [
     -0.7, 0.1, -1, 0.9, -0.7, 0.2, -0.8, 1,
   ];
-  // private LFO1: Tone.LFO = new Tone.LFO("4n", 400, 4000).start();
-  // private LFO2: Tone.LFO = new Tone.LFO("4n", 400, 4000).start();
+  private LFO1: Tone.LFO = new Tone.LFO("4n", 0, 100).start();
+  private LFO2: Tone.LFO = new Tone.LFO("4n", 400, 4000).start();
 
   constructor(node: Tone.Gain<"normalRange">, preset: Preset) {
     this.initializeVoices(node, preset);
@@ -60,7 +63,7 @@ class PolySynthEngine {
     this.unison = preset.unison;
   }
 
-  private initializeVoices(node: Tone.Gain<"normalRange">, preset: Preset) {
+  private initializeVoices(node: Tone.ToneAudioNode, preset: Preset) {
     for (let i = 0; i < this.voiceCount; i++) {
       this.panners.push(new Tone.Panner().connect(node));
       
@@ -97,6 +100,7 @@ class PolySynthEngine {
       noiseEngine.connect(this.panners[i]);
 
       this.voices.push([monoSynth1, monoSynth2, noiseEngine]);
+
     }
     // this.LFO1.chain(this.voices[0][0].detune, this.voices[1][0].detune, this.voices[2][0].detune);
   }
@@ -388,9 +392,25 @@ class PolySynthEngine {
     });
   }
   //LFO1
-  setLFO1DestinationEngine(target: string) {
-    this.LFO1.connect(target as any);
+  setLFO1DestinationEngine(target: LFOTarget) {
+    let newChain: Tone.InputNode[] = this.LFO1Destinations; 
+
+  switch (target) {
+    case "osc1Coarse":
+      for (let i = 0; i < this.voiceCount; i++) {
+        newChain.push(this.voices[i][0].detune); 
+      }
+      break;
+
+    // case "osc1PW":
+    //   if(this.voices[0][0].oscillator.type !== undefined) {
+    //   for (let i = 0; i < this.voiceCount; i++) {
+    //     newChain.push(this.voices[i][0].oscillator.width); 
+    //   }}
+    //   break;
+  }
+  this.LFO1.disconnect();
+  this.LFO1Destinations.push(...newChain);
+  newChain.forEach(node => this.LFO1.connect(node));
   }
 }
-
-export default PolySynthEngine;
