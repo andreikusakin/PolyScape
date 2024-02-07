@@ -61,11 +61,9 @@ const Oscillator: React.FC<OscillatorProps> = ({
     type: "sine" | "sawtooth" | "pulse" | "triangle"
   ) => {
     setOscillatorType(type);
-    name === "osc1" ?
-      engine?.voices.forEach((v) => (v.oscillator.type = type))
-    :
-      engine?.voices.forEach((v) => (v.oscillator2.type = type))
-    
+    name === "osc1"
+      ? engine?.voices.forEach((v) => (v.oscillator.type = type))
+      : engine?.voices.forEach((v) => (v.oscillator2.type = type));
 
     if (type === "pulse") {
       name === "osc1"
@@ -78,17 +76,27 @@ const Oscillator: React.FC<OscillatorProps> = ({
 
   const updatePulseWidth = (value: number) => {
     setPulseWidth(value);
-    engine?.LFO1.find((lfo) => lfo.target === "osc1PW")?.LFO.set({
-      min: -1 + value,
-      max: 1 + value,
-    });
-    engine?.LFO2.find((lfo) => lfo.target === "osc1PW")?.LFO.set({
-      min: -1 + value,
-      max: 1 + value,
-    });
-    name === "osc1"
-      ? engine?.voices.forEach((v) => (v.oscillator.width.value = value))
-      : engine?.voices.forEach((v) => (v.oscillator2.width.value = value));
+    if (name === "osc1") {
+      engine?.LFO1.find((lfo) => lfo.target === "osc1PW")?.LFO.set({
+        min: -1 + value,
+        max: 1 + value,
+      });
+      engine?.LFO2.find((lfo) => lfo.target === "osc1PW")?.LFO.set({
+        min: -1 + value,
+        max: 1 + value,
+      });
+      engine?.voices.forEach((v) => (v.oscillator.width.value = value));
+    } else {
+      engine?.LFO1.find((lfo) => lfo.target === "osc2PW")?.LFO.set({
+        min: -1 + value,
+        max: 1 + value,
+      });
+      engine?.LFO2.find((lfo) => lfo.target === "osc2PW")?.LFO.set({
+        min: -1 + value,
+        max: 1 + value,
+      });
+      engine?.voices.forEach((v) => (v.oscillator2.width.value = value));
+    }
   };
 
   const updateCoarse = (value: number) => {
@@ -138,7 +146,7 @@ const Oscillator: React.FC<OscillatorProps> = ({
     name === "osc1"
       ? engine?.voices.forEach((v) => (v.oscillator.volume.value = value))
       : engine?.voices.forEach((v) => (v.oscillator2.volume.value = value));
-  }
+  };
   return (
     <div className={styles.oscillator}>
       <div className={styles.oscname}>{name}</div>
