@@ -202,13 +202,13 @@ const PolySynth = () => {
     // polySynth.current.setLFO("osc1Fine", 1);
   }, [preset]);
 
-  useEffect(() => {
-    if (noiseType) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ noise: { type: noiseType } });
-      });
-    }
-  }, [noiseType]);
+  // useEffect(() => {
+  //   if (noiseType) {
+  //     polySynth.current?.voices.forEach((voice) => {
+  //       voice.set({ noise: { type: noiseType } });
+  //     });
+  //   }
+  // }, [noiseType]);
 
   // // update volume
 
@@ -242,12 +242,12 @@ const PolySynth = () => {
   //   });
   // }, [osc2Volume]);
 
-  useEffect(() => {
-    const volumeValue = noiseVolume ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ noise: { volume: volumeValue } });
-    });
-  }, [noiseVolume]);
+  // useEffect(() => {
+  //   const volumeValue = noiseVolume ?? 0;
+  //   polySynth.current?.voices.forEach((voice) => {
+  //     voice.set({ noise: { volume: volumeValue } });
+  //   });
+  // }, [noiseVolume]);
 
   // update fine
   // useEffect(() => {
