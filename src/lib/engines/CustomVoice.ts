@@ -50,7 +50,6 @@ export class CustomVoice extends Monophonic<CustomVoiceOptions> {
     );
     this.noise.chain(this.panner, this.filter, this.envelope, this.output);
     this.filterEnvelope.connect(this.filter.frequency);
-    console.log(this.oscillator2.frequency.value);
   }
 
   protected _triggerEnvelopeAttack(
