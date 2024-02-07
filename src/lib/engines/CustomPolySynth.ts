@@ -34,21 +34,41 @@ export default class CustomPolySynth {
     -0.7, 0.1, -1, 0.9, -0.7, 0.2, -0.8, 1,
   ];
   LFO1: LFO[] = [];
- LFO2: LFO[] = [];
+  LFO2: LFO[] = [];
 
   constructor(node: Tone.Gain, preset: Preset) {
-    this.initializeVoices(node);
+    this.initializeVoices(node, preset);
     this.setupKeyboard();
     this.unison = preset.unison;
   }
 
-  private initializeVoices(node: Tone.ToneAudioNode) {
+  private initializeVoices(node: Tone.ToneAudioNode, preset: Preset) {
     for (let i = 0; i < this.voiceCount; i++) {
       const voice = new CustomVoice();
+      this.loadOsccillatorPreset(preset, voice);
       voice.connect(node);
       this.voices.push(voice);
     }
   }
+
+  private loadOsccillatorPreset(preset: Preset, voice: CustomVoice) {
+    // Load Oscillator 1 from preset
+    voice.oscillator.type = preset.osc1.type;
+    voice.oscillator.detune.value = preset.osc1.detune + preset.osc1.transpose * 100;
+    if (voice.oscillator.width) {
+      voice.oscillator.width.value = preset.osc1.pulseWidth;
+    }
+    voice.oscillator.volume.value = preset.osc1.volume;
+    // Load Oscillator 2 from preset
+    voice.oscillator2.type = preset.osc2.type;
+    voice.oscillator2.detune.value = preset.osc2.detune + preset.osc2.transpose * 100;
+    if (voice.oscillator2.width) {
+      voice.oscillator2.width.value = preset.osc2.pulseWidth;
+    }
+    voice.oscillator2.volume.value = preset.osc2.volume;
+  }
+
+  
 
   private setupKeyboard() {
     this.keyboard = new AudioKeys({
@@ -123,9 +143,7 @@ export default class CustomPolySynth {
           max: 100,
         }).start();
         this.voices.forEach((v) => {
-          LFO.connect(
-            lfo === 1 ? v.oscillator.detune : v.oscillator2.detune
-          );
+          LFO.connect(lfo === 1 ? v.oscillator.detune : v.oscillator2.detune);
         });
         lfoSelected.push({ target: target, LFO: LFO });
         break;
@@ -147,11 +165,9 @@ export default class CustomPolySynth {
         LFO = new Tone.LFO({
           min: -70,
           max: 12,
-        }).start();;
+        }).start();
         this.voices.forEach((v) => {
-          LFO.connect(
-            lfo === 1 ? v.oscillator.volume : v.oscillator2.volume
-          )
+          LFO.connect(lfo === 1 ? v.oscillator.volume : v.oscillator2.volume);
         });
         lfoSelected.push({ target: target, LFO: LFO });
         break;
