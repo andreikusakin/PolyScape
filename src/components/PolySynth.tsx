@@ -14,18 +14,18 @@ import { LFO } from "./LFO/LFO";
 
 const initPreset: Preset = {
   osc1: {
-    type: "pulse",
+    type: "sine",
     detune: 0,
     transpose: 0,
     pulseWidth: 0,
-    volume: 0,
+    volume: -24,
   },
   osc2: {
     type: "sine",
     detune: 0,
     transpose: 0,
     pulseWidth: 0,
-    volume: -70,
+    volume: 0,
   },
   noise: {
     type: "white",
@@ -52,11 +52,11 @@ const initPreset: Preset = {
   volume: 0,
   LFO1: {
     type: "sine",
-    rate: 5,
+    rate: 2,
     sync: false,
     destinations: [
-      { target: "osc1Volume", amount: 1 },
-      { target: "osc1Fine", amount: 0.01 },
+      // { target: "osc1Volume", amount: 1 },
+      // { target: "osc1Fine", amount: 0.01 },
     ],
   },
 };
@@ -147,6 +147,7 @@ const PolySynth = () => {
     setOsc1Fine(preset.osc1.detune);
     setosc1Coarse(preset.osc1.transpose);
     setOsc1PulseWidth(preset.osc1.pulseWidth);
+
     setOsc1Volume(preset.osc1.volume);
     // OSC2
     setOscillator2Type(preset.osc2.type);
@@ -185,9 +186,7 @@ const PolySynth = () => {
     // setLFO1Amount(preset.LFO1?.amount);
     setLFO1Destinations(preset.LFO1?.destinations);
   }
-  useEffect(() => {
-    loadPreset(preset);
-  }, []);
+  useEffect(() => {}, []);
 
   // initialize synth
   useEffect(() => {
@@ -197,27 +196,11 @@ const PolySynth = () => {
     }).toDestination();
 
     polySynth.current = new CustomPolySynth(gainNode, initPreset);
+    loadPreset(preset);
 
     // polySynth.current.setLFO("osc1Coarse", 1);
     // polySynth.current.setLFO("osc1Fine", 1);
   }, [preset]);
-
-  // update oscilators and noise types
-  useEffect(() => {
-    if (osc1type) {
-      // polySynth.current?.voices.forEach((voice) => {
-      //   voice.set({ oscillator: { type: osc1type } });
-      // });
-    }
-  }, [osc1type]);
-
-  useEffect(() => {
-    if (oscillator2Type) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ oscillator2: { type: oscillator2Type } });
-      });
-    }
-  }, [oscillator2Type]);
 
   useEffect(() => {
     if (noiseType) {
@@ -229,35 +212,35 @@ const PolySynth = () => {
 
   // // update volume
 
-  useEffect(() => {
-    if (LFO1Destinations?.includes("osc1Volume")) {
-      polySynth.current?.LFO1.find(
-        (lfo) => lfo.target === "osc1Volume"
-      )?.LFO.set({
-        min: -70 + osc1Volume,
-        max: 6 + osc1Volume,
-      });
-    }
-    if (LFO2Destinations?.includes("osc1Volume")) {
-      polySynth.current?.LFO2.find(
-        (lfo) => lfo.target === "osc1Volume"
-      )?.LFO.set({
-        min: -70 + osc1Volume,
-        max: 6 + osc1Volume,
-      });
-    }
-    const volumeValue = osc1Volume ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ oscillator: { volume: volumeValue } });
-    });
-  }, [osc1Volume]);
+  // useEffect(() => {
+  //   if (LFO1Destinations?.includes("osc1Volume")) {
+  //     polySynth.current?.LFO1.find(
+  //       (lfo) => lfo.target === "osc1Volume"
+  //     )?.LFO.set({
+  //       min: -70 + osc1Volume,
+  //       max: 6 + osc1Volume,
+  //     });
+  //   }
+  //   if (LFO2Destinations?.includes("osc1Volume")) {
+  //     polySynth.current?.LFO2.find(
+  //       (lfo) => lfo.target === "osc1Volume"
+  //     )?.LFO.set({
+  //       min: -70 + osc1Volume,
+  //       max: 6 + osc1Volume,
+  //     });
+  //   }
+  //   const volumeValue = osc1Volume ?? 0;
+  //   polySynth.current?.voices.forEach((voice) => {
+  //     voice.set({ oscillator: { volume: volumeValue } });
+  //   });
+  // }, [osc1Volume]);
 
-  useEffect(() => {
-    const volumeValue = osc2Volume ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ oscillator2: { volume: volumeValue } });
-    });
-  }, [osc2Volume]);
+  // useEffect(() => {
+  //   const volumeValue = osc2Volume ?? 0;
+  //   polySynth.current?.voices.forEach((voice) => {
+  //     voice.set({ oscillator2: { volume: volumeValue } });
+  //   });
+  // }, [osc2Volume]);
 
   useEffect(() => {
     const volumeValue = noiseVolume ?? 0;
@@ -267,58 +250,42 @@ const PolySynth = () => {
   }, [noiseVolume]);
 
   // update fine
-  useEffect(() => {
-    polySynth.current?.LFO1.find((lfo) => lfo.target === "osc1Fine")?.LFO.set({
-      min: -100 + osc1Fine,
-      max: 100 + osc1Fine,
-    });
-    const fineValue = osc1Fine + osc1Coarse * 100 ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ oscillator: { detune: fineValue } });
-    });
-  }, [osc1Fine]);
+  // useEffect(() => {
+  //   polySynth.current?.LFO1.find((lfo) => lfo.target === "osc1Fine")?.LFO.set({
+  //     min: -100 + osc1Fine,
+  //     max: 100 + osc1Fine,
+  //   });
+  //   const fineValue = osc1Fine + osc1Coarse * 100 ?? 0;
+  //   polySynth.current?.voices.forEach((voice) => {
+  //     voice.set({ oscillator: { detune: fineValue } });
+  //   });
+  // }, [osc1Fine]);
 
-  useEffect(() => {
-    const fineValue = osc2Fine + osc2Transpose ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ oscillator2: { detune: fineValue } });
-    });
-  }, [osc2Fine]);
+  // useEffect(() => {
+  //   const fineValue = osc2Fine + osc2Transpose ?? 0;
+  //   polySynth.current?.voices.forEach((voice) => {
+  //     voice.set({ oscillator2: { detune: fineValue } });
+  //   });
+  // }, [osc2Fine]);
 
   // // update transpose
 
-  useEffect(() => {
-    polySynth.current?.LFO1.find((lfo) => lfo.target === "osc1Coarse")?.LFO.set(
-      { min: -2400 + osc1Coarse * 100, max: 2400 + osc1Coarse * 100 }
-    );
-    const transposeValue = osc1Coarse * 100 + osc1Fine ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ oscillator: { detune: transposeValue } });
-    });
-  }, [osc1Coarse]);
+  // useEffect(() => {
+  //   polySynth.current?.LFO1.find((lfo) => lfo.target === "osc1Coarse")?.LFO.set(
+  //     { min: -2400 + osc1Coarse * 100, max: 2400 + osc1Coarse * 100 }
+  //   );
+  //   const transposeValue = osc1Coarse * 100 + osc1Fine ?? 0;
+  //   polySynth.current?.voices.forEach((voice) => {
+  //     voice.set({ oscillator: { detune: transposeValue } });
+  //   });
+  // }, [osc1Coarse]);
 
-  useEffect(() => {
-    const transposeValue = osc2Transpose + osc1Fine ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ oscillator2: { detune: transposeValue } });
-    });
-  }, [osc2Transpose]);
-
-  // update pulse width
-
-  useEffect(() => {
-    const pulseWidthValue = osc1PulseWidth ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ oscillator: { width: pulseWidthValue } });
-    });
-  }, [osc1PulseWidth]);
-
-  useEffect(() => {
-    const pulseWidthValue = osc2PulseWidth ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ oscillator2: { width: pulseWidthValue } });
-    });
-  }, [osc2PulseWidth]);
+  // useEffect(() => {
+  //   const transposeValue = osc2Transpose + osc1Fine ?? 0;
+  //   polySynth.current?.voices.forEach((voice) => {
+  //     voice.set({ oscillator2: { detune: transposeValue } });
+  //   });
+  // }, [osc2Transpose]);
 
   // update envelopes
   useEffect(() => {
@@ -464,7 +431,7 @@ const PolySynth = () => {
   useEffect(() => {
     if (LFO1Destinations) {
       LFO1Destinations.forEach((destination) => {
-        polySynth.current?.setLFO(destination, 1);
+        polySynth.current?.setLFO(destination.target, 1);
       });
     }
   }, [LFO1Destinations]);
@@ -511,6 +478,7 @@ const PolySynth = () => {
           setVolume={setOsc1Volume}
         />
         <Oscillator
+          engine={polySynth.current}
           name={"osc2"}
           oscType={oscillator2Type}
           setOscillatorType={setOscillator2Type}
@@ -564,7 +532,7 @@ const PolySynth = () => {
           release={release}
           setRelease={setRelease}
         />
-        <LFO
+        {/* <LFO
           name={"LFO1"}
           type={LFO1Type}
           setType={setLFO1Type}
@@ -574,7 +542,7 @@ const PolySynth = () => {
           setSync={setLFO1Sync}
           destinations={LFO1Destinations}
           setDestinations={setLFO1Destinations}
-        />
+        /> */}
       </div>
       <button onClick={() => Tone.start()}>Start</button>
       <div className="flex flex-col gap-10">
