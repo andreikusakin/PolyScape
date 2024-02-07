@@ -3,9 +3,10 @@ import Knob from "../Knob/Knob";
 import styles from "./Oscillator.module.css";
 import { Sawtooth, Sine, Square, Triangle } from "../Shapes";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
+import { LFOTarget } from "@/lib/types/types";
 
 type OscillatorProps = {
-  engine?: CustomPolySynth;
+  engine: CustomPolySynth | undefined;
   name: string;
   oscType: "sine" | "sawtooth" | "pulse" | "triangle";
   setOscillatorType: (
@@ -53,32 +54,116 @@ const Oscillator: React.FC<OscillatorProps> = ({
   setPulseWidth,
   volume,
   setVolume,
+  LFO1Destinations,
+  LFO2Destinations,
 }) => {
+  const updateWaveformType = (
+    type: "sine" | "sawtooth" | "pulse" | "triangle"
+  ) => {
+    setOscillatorType(type);
+    name === "osc1" ?
+      engine?.voices.forEach((v) => (v.oscillator.type = type))
+    :
+      engine?.voices.forEach((v) => (v.oscillator2.type = type))
+    
+
+    if (type === "pulse") {
+      name === "osc1"
+        ? engine?.voices.forEach((v) => (v.oscillator.width.value = pulseWidth))
+        : engine?.voices.forEach(
+            (v) => (v.oscillator2.width.value = pulseWidth)
+          );
+    }
+  };
+
+  const updatePulseWidth = (value: number) => {
+    setPulseWidth(value);
+    engine?.LFO1.find((lfo) => lfo.target === "osc1PW")?.LFO.set({
+      min: -1 + value,
+      max: 1 + value,
+    });
+    engine?.LFO2.find((lfo) => lfo.target === "osc1PW")?.LFO.set({
+      min: -1 + value,
+      max: 1 + value,
+    });
+    name === "osc1"
+      ? engine?.voices.forEach((v) => (v.oscillator.width.value = value))
+      : engine?.voices.forEach((v) => (v.oscillator2.width.value = value));
+  };
+
+  const updateCoarse = (value: number) => {
+    setCoarse(value);
+    engine?.LFO1.find((lfo) => lfo.target === "osc1Coarse")?.LFO.set({
+      min: -2400 + value * 100,
+      max: 2400 + value * 100,
+    });
+    engine?.LFO2.find((lfo) => lfo.target === "osc1Coarse")?.LFO.set({
+      min: -2400 + value * 100,
+      max: 2400 + value * 100,
+    });
+    const coarseValue = value * 100 + detune;
+    name === "osc1"
+      ? engine?.voices.forEach((v) => (v.oscillator.detune.value = coarseValue))
+      : engine?.voices.forEach(
+          (v) => (v.oscillator2.detune.value = coarseValue)
+        );
+  };
+
+  const updateFine = (value: number) => {
+    setDetune(value);
+    engine?.LFO1.find((lfo) => lfo.target === "osc1Fine")?.LFO.set({
+      min: -100 + value,
+      max: 100 + value,
+    });
+    engine?.LFO2.find((lfo) => lfo.target === "osc1Fine")?.LFO.set({
+      min: -100 + value,
+      max: 100 + value,
+    });
+    const fineValue = value + coarse * 100;
+    name === "osc1"
+      ? engine?.voices.forEach((v) => (v.oscillator.detune.value = fineValue))
+      : engine?.voices.forEach((v) => (v.oscillator2.detune.value = fineValue));
+  };
+
+  const updateVolume = (value: number) => {
+    setVolume(value);
+    engine?.LFO1.find((lfo) => lfo.target === "osc1Volume")?.LFO.set({
+      min: -70 + value,
+      max: 12 + value,
+    });
+    engine?.LFO2.find((lfo) => lfo.target === "osc1Volume")?.LFO.set({
+      min: -70 + value,
+      max: 12 + value,
+    });
+    name === "osc1"
+      ? engine?.voices.forEach((v) => (v.oscillator.volume.value = value))
+      : engine?.voices.forEach((v) => (v.oscillator2.volume.value = value));
+  }
   return (
     <div className={styles.oscillator}>
       <div className={styles.oscname}>{name}</div>
       <div className={styles.container}>
         <ul className={styles.shapes}>
           <li
-            onClick={() => setOscillatorType("sine")}
+            onClick={() => updateWaveformType("sine")}
             className={oscType === "sine" ? styles.selected : ""}
           >
             sine
           </li>
           <li
-            onClick={() => setOscillatorType("sawtooth")}
+            onClick={() => updateWaveformType("sawtooth")}
             className={oscType === "sawtooth" ? styles.selected : ""}
           >
             sawtooth
           </li>
           <li
-            onClick={() => setOscillatorType("pulse")}
+            onClick={() => updateWaveformType("pulse")}
             className={oscType === "pulse" ? styles.selected : ""}
           >
             square
           </li>
           <li
-            onClick={() => setOscillatorType("triangle")}
+            onClick={() => updateWaveformType("triangle")}
             className={oscType === "triangle" ? styles.selected : ""}
           >
             triangle
@@ -98,7 +183,7 @@ const Oscillator: React.FC<OscillatorProps> = ({
           maxValue={1}
           currentValue={pulseWidth}
           step={0.01}
-          onChange={setPulseWidth}
+          onChange={updatePulseWidth}
           lfo={false}
           lfoPercent={100}
           startingPoint={"middle"}
@@ -112,7 +197,7 @@ const Oscillator: React.FC<OscillatorProps> = ({
           maxValue={24}
           currentValue={coarse}
           step={1}
-          onChange={setCoarse}
+          onChange={updateCoarse}
           radius={24}
           lfo={false}
           startingPoint={"middle"}
@@ -125,7 +210,7 @@ const Oscillator: React.FC<OscillatorProps> = ({
           maxValue={100}
           currentValue={detune}
           step={1}
-          onChange={setDetune}
+          onChange={updateFine}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
@@ -139,7 +224,7 @@ const Oscillator: React.FC<OscillatorProps> = ({
           unit={"db"}
           currentValue={volume}
           step={0.5}
-          onChange={setVolume}
+          onChange={updateVolume}
           radius={24}
           lfo={false}
           startingPoint={"middle"}
