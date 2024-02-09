@@ -55,8 +55,10 @@ const initPreset: Preset = {
     rate: 2,
     sync: false,
     destinations: [
-      // { target: "osc1Volume", amount: 1 },
-      // { target: "osc1Fine", amount: 0.01 },
+      { target: "osc1Volume", amount: 1 },
+      { target: "osc1Fine", amount: 0.01 },
+      { target: "osc1Volume", amount: 1 },
+      // { target: "osc1 pulse width", amount: 0.01 },
     ],
   },
 };
@@ -492,6 +494,7 @@ const PolySynth = () => {
           setVolume={setOsc2Volume}
         />
         <Noise
+          engine={polySynth.current}
           name={"noise"}
           type={noiseType}
           setType={setNoiseType}
@@ -532,7 +535,7 @@ const PolySynth = () => {
           release={release}
           setRelease={setRelease}
         />
-        {/* <LFO
+        <LFO
           name={"LFO1"}
           type={LFO1Type}
           setType={setLFO1Type}
@@ -542,7 +545,7 @@ const PolySynth = () => {
           setSync={setLFO1Sync}
           destinations={LFO1Destinations}
           setDestinations={setLFO1Destinations}
-        /> */}
+        />
       </div>
       <button onClick={() => Tone.start()}>Start</button>
       <div className="flex flex-col gap-10">
