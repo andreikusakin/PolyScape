@@ -2,6 +2,7 @@ import { LFODestination, LFOTarget } from "@/lib/types/types";
 import * as Tone from "tone/build/esm/index";
 import styles from "./LFO.module.css";
 import Knob from "../Knob/Knob";
+import { OscillatorWaveform } from "../OscillatorWaveform";
 
 type LFOProps = {
   name: string;
@@ -26,56 +27,58 @@ export const LFO = ({
     <div className={styles.wrapper}>
       <div className={styles.name}>{name}</div>
       <div className={styles.container}>
-        <ul className={styles.shapes}>
-          <li
-            onClick={() => setType("sine")}
-            className={type === "sine" ? styles.selected : ""}
-          >
-            sine
-          </li>
-          <li
-            onClick={() => setType("sawtooth")}
-            className={type === "sawtooth" ? styles.selected : ""}
-          >
-            sawtooth
-          </li>
-          <li
-            onClick={() => setType("square")}
-            className={type === "square" ? styles.selected : ""}
-          >
-            square
-          </li>
-          <li
-            onClick={() => setType("triangle")}
-            className={type === "triangle" ? styles.selected : ""}
-          >
-            triangle
-          </li>
-        </ul>
-        <div className={styles.rate}>
-          <Knob />
+        <div>
+          <ul className={styles.shapes}>
+            <li
+              onClick={() => setType("sine")}
+              className={type === "sine" ? styles.selected : ""}
+            >
+              sine
+            </li>
+            <li
+              onClick={() => setType("sawtooth")}
+              className={type === "sawtooth" ? styles.selected : ""}
+            >
+              sawtooth
+            </li>
+            <li
+              onClick={() => setType("square")}
+              className={type === "square" ? styles.selected : ""}
+            >
+              square
+            </li>
+            <li
+              onClick={() => setType("triangle")}
+              className={type === "triangle" ? styles.selected : ""}
+            >
+              triangle
+            </li>
+          </ul>
+          <div className={styles.rate}>
+            <Knob radius={24} label={"rate"} interactive={true} />
+          </div>
+        </div>
+        <div className={styles.waveform}>
+          <div className={styles.waveformAnimation}>
+            <OscillatorWaveform oscType={type} />
+          </div>
         </div>
         <div className={styles.destinations}>
-          <div className={styles.underlay}>
+          {/* <div className={styles.underlay}>
             <span></span>
             <span></span>
             <span></span>
             <span></span>
+          </div> */}
+          <div className={styles.targets}>
+            {destinations.map((d, i) => (
+              <div className={styles.slider} key={i}>
+                <label className={styles.label}>{d.target}</label>
+                <span className={styles.track}></span>
+              </div>
+            ))}
           </div>
-          {destinations.map((d, i) => (
-            <div className={styles.destination} key={i}>
-              <label className={styles.label}>{d.target}</label>
-              <input
-                className={styles.slider}
-                type="range"
-                min={0}
-                max={1}
-                step={0.001}
-                value={0}
-                onChange={(e) => setAmount(Number(e.target.value))}
-              />
-            </div>
-          ))}
+          <p>destinations</p>
         </div>
       </div>
     </div>
