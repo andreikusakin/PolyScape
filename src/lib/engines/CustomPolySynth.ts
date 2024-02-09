@@ -48,6 +48,7 @@ export default class CustomPolySynth {
       this.loadOsccillatorPreset(preset, voice);
       voice.connect(node);
       this.voices.push(voice);
+      console.log(voice.envelope.sustain)
     }
   }
 
@@ -69,6 +70,11 @@ export default class CustomPolySynth {
     // Load Noise from preset
     voice.noise.type = preset.noise.type;
     voice.noise.volume.value = preset.noise.volume;
+    // Load Envelope from preset
+    voice.envelope.attack = preset.envelope.attack;
+    voice.envelope.decay = preset.envelope.decay;
+    voice.envelope.sustain = preset.envelope.sustain;
+    voice.envelope.release = preset.envelope.release;
   }
 
   
