@@ -52,7 +52,7 @@ export type Preset = {
 };
 
 export type LFOTarget =
-  | "osc1Coarse"
+  | "osc1 coarse"
   | "osc1Fine"
   | "osc1PW"
   | "osc1Volume"
