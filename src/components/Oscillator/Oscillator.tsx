@@ -1,9 +1,10 @@
 import React from "react";
 import Knob from "../Knob/Knob";
 import styles from "./Oscillator.module.css";
-import { Sawtooth, Sine, Square, Triangle } from "../Shapes";
+
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { LFOTarget } from "@/lib/types/types";
+import { OscillatorWaveform } from "../OscillatorWaveform";
 
 type OscillatorProps = {
   engine: CustomPolySynth | undefined;
@@ -22,24 +23,7 @@ type OscillatorProps = {
   setVolume: (volume: number) => void;
 };
 
-const OscillatorWaveform = ({
-  oscType,
-}: {
-  oscType: "sine" | "sawtooth" | "pulse" | "triangle";
-}) => {
-  switch (oscType) {
-    case "sine":
-      return <Sine />;
-    case "sawtooth":
-      return <Sawtooth />;
-    case "pulse":
-      return <Square />;
-    case "triangle":
-      return <Triangle />;
-    default:
-      return null;
-  }
-};
+
 
 const Oscillator: React.FC<OscillatorProps> = ({
   engine,
@@ -101,11 +85,11 @@ const Oscillator: React.FC<OscillatorProps> = ({
 
   const updateCoarse = (value: number) => {
     setCoarse(value);
-    engine?.LFO1.find((lfo) => lfo.target === "osc1Coarse")?.LFO.set({
+    engine?.LFO1.find((lfo) => lfo.target === "osc1 coarse")?.LFO.set({
       min: -2400 + value * 100,
       max: 2400 + value * 100,
     });
-    engine?.LFO2.find((lfo) => lfo.target === "osc1Coarse")?.LFO.set({
+    engine?.LFO2.find((lfo) => lfo.target === "osc1 coarse")?.LFO.set({
       min: -2400 + value * 100,
       max: 2400 + value * 100,
     });
