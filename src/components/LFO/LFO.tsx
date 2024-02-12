@@ -64,12 +64,12 @@ export const LFO = ({
           </div>
         </div>
         <div className={styles.destinations}>
-          {/* <div className={styles.underlay}>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div> */}
+          <div className={styles.underlay}>
+            <div className={styles.selector}><label>assign</label></div>
+            <div className={styles.selector}><label>assign</label></div>
+            <div className={styles.selector}><label>assign</label></div>
+            <div className={styles.selector}><label>assign</label></div>
+          </div>
           <div className={styles.targets}>
             {destinations.map((d, i) => (
               <div className={styles.slider} key={i}>
