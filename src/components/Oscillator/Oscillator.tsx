@@ -61,21 +61,21 @@ const Oscillator: React.FC<OscillatorProps> = ({
   const updatePulseWidth = (value: number) => {
     setPulseWidth(value);
     if (name === "osc1") {
-      engine?.LFO1.find((lfo) => lfo.target === "osc1PW")?.LFO.set({
+      engine?.LFO1.find((lfo) => lfo.target === "osc1 pulse width")?.LFO.set({
         min: -1 + value,
         max: 1 + value,
       });
-      engine?.LFO2.find((lfo) => lfo.target === "osc1PW")?.LFO.set({
+      engine?.LFO2.find((lfo) => lfo.target === "osc1 pulse width")?.LFO.set({
         min: -1 + value,
         max: 1 + value,
       });
       engine?.voices.forEach((v) => (v.oscillator.width.value = value));
     } else {
-      engine?.LFO1.find((lfo) => lfo.target === "osc2PW")?.LFO.set({
+      engine?.LFO1.find((lfo) => lfo.target === "osc2 pulse width")?.LFO.set({
         min: -1 + value,
         max: 1 + value,
       });
-      engine?.LFO2.find((lfo) => lfo.target === "osc2PW")?.LFO.set({
+      engine?.LFO2.find((lfo) => lfo.target === "osc2 pulse width")?.LFO.set({
         min: -1 + value,
         max: 1 + value,
       });
@@ -103,11 +103,19 @@ const Oscillator: React.FC<OscillatorProps> = ({
 
   const updateFine = (value: number) => {
     setDetune(value);
-    engine?.LFO1.find((lfo) => lfo.target === "osc1Fine")?.LFO.set({
+    engine?.LFO1.find((lfo) => lfo.target === "osc1 fine")?.LFO.set({
       min: -100 + value,
       max: 100 + value,
     });
-    engine?.LFO2.find((lfo) => lfo.target === "osc1Fine")?.LFO.set({
+    engine?.LFO2.find((lfo) => lfo.target === "osc1 fine")?.LFO.set({
+      min: -100 + value,
+      max: 100 + value,
+    });
+    engine?.LFO1.find((lfo) => lfo.target === "osc2 fine")?.LFO.set({
+      min: -100 + value,
+      max: 100 + value,
+    });
+    engine?.LFO2.find((lfo) => lfo.target === "osc2 fine")?.LFO.set({
       min: -100 + value,
       max: 100 + value,
     });
@@ -119,11 +127,11 @@ const Oscillator: React.FC<OscillatorProps> = ({
 
   const updateVolume = (value: number) => {
     setVolume(value);
-    engine?.LFO1.find((lfo) => lfo.target === "osc1Volume")?.LFO.set({
+    engine?.LFO1.find((lfo) => lfo.target === "osc1 volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
-    engine?.LFO2.find((lfo) => lfo.target === "osc1Volume")?.LFO.set({
+    engine?.LFO2.find((lfo) => lfo.target === "osc1 volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });

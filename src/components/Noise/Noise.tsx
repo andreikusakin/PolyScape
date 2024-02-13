@@ -32,11 +32,11 @@ export default function Noise({
 
   const updateVolume = (value: number) => {
     setVolume(value);
-    engine?.LFO1.find((lfo) => lfo.target === "noiseVolume")?.LFO.set({
+    engine?.LFO1.find((lfo) => lfo.target === "noise volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     })
-    engine?.LFO2.find((lfo) => lfo.target === "noiseVolume")?.LFO.set({
+    engine?.LFO2.find((lfo) => lfo.target === "noise volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     })
