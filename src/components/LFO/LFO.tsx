@@ -55,12 +55,23 @@ export const LFO = ({
     if (engine)
     engine.LFO1 = filteredLFOs ?? [];
     }
+    else {
+      setDestinations([...destinations.filter((d: LFODestination) => d.target !== target)]);
+      engine?.LFO2.forEach(lfo => {
+        if (lfo.target === target) {
+          lfo.LFO.stop();
+          lfo.LFO.disconnect();
+        }});
+    const filteredLFOs = engine?.LFO2.filter(lfo => lfo.target !== target);
+    if (engine)
+    engine.LFO2 = filteredLFOs ?? [];
+    }
   };
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.name}>{name}</div>
-      <div className={styles.container}>
+      <div className={[styles.container, name === "lfo1" ? styles.borderLFO1 : styles.borderLFO2].join(' ')}>
         <div>
           <ul className={styles.shapes}>
             <li
