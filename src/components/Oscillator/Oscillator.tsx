@@ -21,9 +21,9 @@ type OscillatorProps = {
   setPulseWidth: (pulseWidth: number) => void;
   volume: number;
   setVolume: (volume: number) => void;
+  isSelectingLFO: false | 1 | 2;
+  assignLFO: (target: LFOTarget, lfo: 1 | 2) => void;
 };
-
-
 
 const Oscillator: React.FC<OscillatorProps> = ({
   engine,
@@ -38,8 +38,8 @@ const Oscillator: React.FC<OscillatorProps> = ({
   setPulseWidth,
   volume,
   setVolume,
-  LFO1Destinations,
-  LFO2Destinations,
+  isSelectingLFO,
+  assignLFO,
 }) => {
   const updateWaveformType = (
     type: "sine" | "sawtooth" | "pulse" | "triangle"
@@ -93,6 +93,15 @@ const Oscillator: React.FC<OscillatorProps> = ({
       min: -2400 + value * 100,
       max: 2400 + value * 100,
     });
+    engine?.LFO1.find((lfo) => lfo.target === "osc2 coarse")?.LFO.set({
+      min: -2400 + value * 100,
+      max: 2400 + value * 100,
+    });
+    engine?.LFO2.find((lfo) => lfo.target === "osc2 coarse")?.LFO.set({
+      min: -2400 + value * 100,
+      max: 2400 + value * 100,
+    });
+
     const coarseValue = value * 100 + detune;
     name === "osc1"
       ? engine?.voices.forEach((v) => (v.oscillator.detune.value = coarseValue))
@@ -132,6 +141,14 @@ const Oscillator: React.FC<OscillatorProps> = ({
       max: 12 + value,
     });
     engine?.LFO2.find((lfo) => lfo.target === "osc1 volume")?.LFO.set({
+      min: -70 + value,
+      max: 12 + value,
+    });
+    engine?.LFO1.find((lfo) => lfo.target === "osc2 volume")?.LFO.set({
+      min: -70 + value,
+      max: 12 + value,
+    });
+    engine?.LFO2.find((lfo) => lfo.target === "osc2 volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
@@ -178,47 +195,57 @@ const Oscillator: React.FC<OscillatorProps> = ({
         <Knob
           exponent={1}
           label={"pulse width"}
+          lfoParameter={
+            name === "osc1" ? "osc1 pulse width" : "osc2 pulse width"
+          }
           radius={24}
           minValue={-1}
           maxValue={1}
           currentValue={pulseWidth}
           step={0.01}
           onChange={updatePulseWidth}
-          lfo={false}
-          lfoPercent={100}
+          isSelectingLFO={isSelectingLFO}
+          // lfoPercent={100}
           startingPoint={"middle"}
           interactive={oscType === "pulse" ? true : false}
+          assignLFO={assignLFO}
         />
 
         <Knob
           exponent={1}
           label={"coarse"}
+          lfoParameter={name === "osc1" ? "osc1 coarse" : "osc2 coarse"}
           minValue={-24}
           maxValue={24}
           currentValue={coarse}
           step={1}
           onChange={updateCoarse}
           radius={24}
-          lfo={false}
+          isSelectingLFO={isSelectingLFO}
           startingPoint={"middle"}
           interactive={true}
+          assignLFO={assignLFO}
         />
         <Knob
           exponent={1}
           label={"fine"}
+          lfoParameter={name === "osc1" ? "osc1 fine" : "osc2 fine"}
           minValue={-100}
           maxValue={100}
           currentValue={detune}
           step={1}
           onChange={updateFine}
           radius={24}
-          lfo={false}
+          isSelectingLFO={isSelectingLFO}
           startingPoint={"beginning"}
           interactive={true}
+          
+          assignLFO={assignLFO}
         />
         <Knob
           exponent={1}
           label={"volume"}
+          lfoParameter={name === "osc1" ? "osc1 volume" : "osc2 volume"}
           minValue={-70}
           maxValue={12}
           unit={"db"}
@@ -226,9 +253,10 @@ const Oscillator: React.FC<OscillatorProps> = ({
           step={0.5}
           onChange={updateVolume}
           radius={24}
-          lfo={false}
+          isSelectingLFO={isSelectingLFO}
           startingPoint={"middle"}
           interactive={true}
+          assignLFO={assignLFO}
         />
       </div>
     </div>
