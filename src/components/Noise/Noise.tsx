@@ -2,6 +2,7 @@ import Knob from "../Knob/Knob";
 import styles from "./Noise.module.css";
 import { NoiseShape } from "../Shapes";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
+import { LFOTarget } from "@/lib/types/types";
 
 type NoiseProps = {
   engine: CustomPolySynth | undefined;
@@ -10,6 +11,8 @@ type NoiseProps = {
   setType: (type: "white" | "pink" | "brown") => void;
   volume: number;
   setVolume: (volume: number) => void;
+  isSelectingLFO: false | 1 | 2;
+  assignLFO: (target: LFOTarget, lfo: 1 | 2) => void;
 };
 
 export default function Noise({
@@ -19,6 +22,8 @@ export default function Noise({
   setType,
   volume,
   setVolume,
+  isSelectingLFO,
+  assignLFO,
 }: NoiseProps) {
   const colorValue =
     type === "white" ? "#FFFFFF" : type === "pink" ? "#E859FF" : "#FF543D";
@@ -74,6 +79,7 @@ export default function Noise({
         <Knob
           exponent={1}
           label={"volume"}
+          lfoParameter={"noise volume"}
           minValue={-70}
           maxValue={12}
           unit={"db"}
@@ -81,9 +87,10 @@ export default function Noise({
           step={0.5}
           onChange={updateVolume}
           radius={24}
-          lfo={false}
           startingPoint={"middle"}
           interactive={true}
+          assignLFO={assignLFO}
+          isSelectingLFO={isSelectingLFO}
         />
       </div>
     </div>
