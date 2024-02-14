@@ -14,18 +14,18 @@ import { LFO } from "./LFO/LFO";
 
 const initPreset: Preset = {
   osc1: {
-    type: "sine",
-    detune: 0,
-    transpose: 0,
-    pulseWidth: 0,
-    volume: -24,
-  },
-  osc2: {
-    type: "sine",
+    type: "sawtooth",
     detune: 0,
     transpose: 0,
     pulseWidth: 0,
     volume: 0,
+  },
+  osc2: {
+    type: "triangle",
+    detune: 0,
+    transpose: 0,
+    pulseWidth: 0,
+    volume: -40,
   },
   noise: {
     type: "white",
@@ -43,7 +43,7 @@ const initPreset: Preset = {
     decay: 0.01,
     sustain: 0,
     release: 0,
-    baseFrequency: 18000,
+    baseFrequency: 15000,
     octaves: 0,
     exponent: 5,
   },
@@ -52,12 +52,12 @@ const initPreset: Preset = {
   volume: 0,
   LFO1: {
     type: "sine",
-    rate: 2,
+    rate: "4n",
     sync: false,
     destinations: [
-      { target: "osc1Volume", amount: 1 },
-      { target: "osc1Fine", amount: 0.01 },
-      { target: "osc1Volume", amount: 1 },
+      // { target: "osc1 fine", amount: 0.1 },
+      // { target: "osc1 volume", amount: 1 },
+      // { target: "filter cutoff", amount: 0.1 },
       // { target: "osc1 pulse width", amount: 0.01 },
     ],
   },
@@ -65,8 +65,11 @@ const initPreset: Preset = {
 
 const PolySynth = () => {
   const [preset, setPreset] = useState<Preset>(initPreset);
-
+  const [currestSettings, setCurrentSettings] = useState<Preset>(initPreset);
   const polySynth = useRef<CustomPolySynth>();
+  const [isSelectingLFOTarget, setIsSelectingLFOTarget] = useState<
+    false | 1 | 2
+  >(false);
 
   // OSC1
   const [osc1type, setOsc1Type] = useState<
@@ -130,7 +133,7 @@ const PolySynth = () => {
   >(1);
   const [LFO1Sync, setLFO1Sync] = useState<boolean>(false);
   // const [LFO1Amount, setLFO1Amount] = useState<Tone.Unit.NormalRange>(0);
-  const [LFO1Destinations, setLFO1Destinations] = useState<LFOTarget[]>([]);
+  const [LFO1Destinations, setLFO1Destinations] = useState<[]>([]);
 
   //LFO2
   const [LFO2Type, setLFO2Type] = useState<
@@ -182,13 +185,23 @@ const PolySynth = () => {
     setPanSpread(preset.panSpread);
     setUnison(preset.unison);
     // LFO1
-    setLFO1Type(preset.LFO1?.type);
-    setLFO1Rate(preset.LFO1?.rate);
-    setLFO1Sync(preset.LFO1?.sync);
-    // setLFO1Amount(preset.LFO1?.amount);
+    setLFO1Type(preset.LFO1?.type || "sine");
+    setLFO1Rate(preset.LFO1?.rate || 1);
+    setLFO1Sync(preset.LFO1?.sync || false);
     setLFO1Destinations(preset.LFO1?.destinations);
   }
-  useEffect(() => {}, []);
+
+  const assignLFO = (target: LFOTarget, lfo: 1 | 2, currentValue?: number) => {
+    setIsSelectingLFOTarget(false);
+    polySynth.current?.setLFO(target, lfo, currentValue);
+    if (lfo === 1) {
+      setLFO1Destinations([...LFO1Destinations, {target: target, amount: 0.5}]);
+    } else {
+      setLFO2Destinations([...LFO2Destinations, {target: target, amount: 0.5}]);
+    }
+  };
+
+  console.log("LFO1Destinations: ", LFO1Destinations);
 
   // initialize synth
   useEffect(() => {
@@ -201,217 +214,8 @@ const PolySynth = () => {
     loadPreset(preset);
 
     // polySynth.current.setLFO("osc1Coarse", 1);
-    // polySynth.current.setLFO("osc1Fine", 1);
+    // polySynth.current.setLFO("osc1 fine", 1);
   }, [preset]);
-
-  // useEffect(() => {
-  //   if (noiseType) {
-  //     polySynth.current?.voices.forEach((voice) => {
-  //       voice.set({ noise: { type: noiseType } });
-  //     });
-  //   }
-  // }, [noiseType]);
-
-  // // update volume
-
-  // useEffect(() => {
-  //   if (LFO1Destinations?.includes("osc1Volume")) {
-  //     polySynth.current?.LFO1.find(
-  //       (lfo) => lfo.target === "osc1Volume"
-  //     )?.LFO.set({
-  //       min: -70 + osc1Volume,
-  //       max: 6 + osc1Volume,
-  //     });
-  //   }
-  //   if (LFO2Destinations?.includes("osc1Volume")) {
-  //     polySynth.current?.LFO2.find(
-  //       (lfo) => lfo.target === "osc1Volume"
-  //     )?.LFO.set({
-  //       min: -70 + osc1Volume,
-  //       max: 6 + osc1Volume,
-  //     });
-  //   }
-  //   const volumeValue = osc1Volume ?? 0;
-  //   polySynth.current?.voices.forEach((voice) => {
-  //     voice.set({ oscillator: { volume: volumeValue } });
-  //   });
-  // }, [osc1Volume]);
-
-  // useEffect(() => {
-  //   const volumeValue = osc2Volume ?? 0;
-  //   polySynth.current?.voices.forEach((voice) => {
-  //     voice.set({ oscillator2: { volume: volumeValue } });
-  //   });
-  // }, [osc2Volume]);
-
-  // useEffect(() => {
-  //   const volumeValue = noiseVolume ?? 0;
-  //   polySynth.current?.voices.forEach((voice) => {
-  //     voice.set({ noise: { volume: volumeValue } });
-  //   });
-  // }, [noiseVolume]);
-
-  // update fine
-  // useEffect(() => {
-  //   polySynth.current?.LFO1.find((lfo) => lfo.target === "osc1Fine")?.LFO.set({
-  //     min: -100 + osc1Fine,
-  //     max: 100 + osc1Fine,
-  //   });
-  //   const fineValue = osc1Fine + osc1Coarse * 100 ?? 0;
-  //   polySynth.current?.voices.forEach((voice) => {
-  //     voice.set({ oscillator: { detune: fineValue } });
-  //   });
-  // }, [osc1Fine]);
-
-  // useEffect(() => {
-  //   const fineValue = osc2Fine + osc2Transpose ?? 0;
-  //   polySynth.current?.voices.forEach((voice) => {
-  //     voice.set({ oscillator2: { detune: fineValue } });
-  //   });
-  // }, [osc2Fine]);
-
-  // // update transpose
-
-  // useEffect(() => {
-  //   polySynth.current?.LFO1.find((lfo) => lfo.target === "osc1Coarse")?.LFO.set(
-  //     { min: -2400 + osc1Coarse * 100, max: 2400 + osc1Coarse * 100 }
-  //   );
-  //   const transposeValue = osc1Coarse * 100 + osc1Fine ?? 0;
-  //   polySynth.current?.voices.forEach((voice) => {
-  //     voice.set({ oscillator: { detune: transposeValue } });
-  //   });
-  // }, [osc1Coarse]);
-
-  // useEffect(() => {
-  //   const transposeValue = osc2Transpose + osc1Fine ?? 0;
-  //   polySynth.current?.voices.forEach((voice) => {
-  //     voice.set({ oscillator2: { detune: transposeValue } });
-  //   });
-  // }, [osc2Transpose]);
-
-  // update envelopes
-  useEffect(() => {
-    if (attack) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ envelope: { attack: attack } });
-      });
-    }
-  }, [attack]);
-
-  useEffect(() => {
-    if (decay) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ envelope: { decay: decay } });
-      });
-    }
-  }, [decay]);
-
-  useEffect(() => {
-    const sustainValue = sustain ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ envelope: { sustain: sustainValue } });
-    });
-  }, [sustain]);
-
-  useEffect(() => {
-    if (release) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ envelope: { release: release } });
-      });
-    }
-  }, [release]);
-
-  // update filter
-
-  useEffect(() => {
-    if (filterType) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ filter: { type: filterType } });
-      });
-    }
-  }, [filterType]);
-
-  useEffect(() => {
-    if (filterFrequency) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ filter: { frequency: filterFrequency } });
-      });
-    }
-  }, [filterFrequency]);
-
-  useEffect(() => {
-    if (filterRolloff) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ filter: { rolloff: filterRolloff } });
-      });
-    }
-  }, [filterRolloff]);
-
-  useEffect(() => {
-    if (filterQ) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ filter: { Q: filterQ } });
-      });
-    }
-  }, [filterQ]);
-
-  // update filter envelope
-
-  useEffect(() => {
-    if (filterEnvelopeAttack) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ filterEnvelope: { attack: filterEnvelopeAttack } });
-      });
-    }
-  }, [filterEnvelopeAttack]);
-
-  useEffect(() => {
-    if (filterEnvelopeDecay) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ filterEnvelope: { decay: filterEnvelopeDecay } });
-      });
-    }
-  }, [filterEnvelopeDecay]);
-
-  useEffect(() => {
-    const sustain = filterEnvelopeSustain ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ filterEnvelope: { sustain: sustain } });
-    });
-  }, [filterEnvelopeSustain]);
-
-  useEffect(() => {
-    if (filterEnvelopeRelease) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ filterEnvelope: { release: filterEnvelopeRelease } });
-      });
-    }
-  }, [filterEnvelopeRelease]);
-
-  useEffect(() => {
-    if (filterEnvelopeBaseFrequency) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({
-          filterEnvelope: { baseFrequency: filterEnvelopeBaseFrequency },
-        });
-      });
-    }
-  }, [filterEnvelopeBaseFrequency]);
-
-  useEffect(() => {
-    if (filterEnvelopeExponent) {
-      polySynth.current?.voices.forEach((voice) => {
-        voice.set({ filterEnvelope: { exponent: filterEnvelopeExponent } });
-      });
-    }
-  }, [filterEnvelopeExponent]);
-
-  useEffect(() => {
-    const octaves = filterEnvelopeOctaves ?? 0;
-    polySynth.current?.voices.forEach((voice) => {
-      voice.set({ filterEnvelope: { octaves: octaves } });
-    });
-  }, [filterEnvelopeOctaves]);
 
   // // update fx
 
@@ -430,37 +234,29 @@ const PolySynth = () => {
 
   // LFO1
 
-  useEffect(() => {
-    if (LFO1Destinations) {
-      LFO1Destinations.forEach((destination) => {
-        polySynth.current?.setLFO(destination.target, 1);
-      });
-    }
-  }, [LFO1Destinations]);
-
-  useEffect(() => {
-    if (LFO1Type) {
-      polySynth.current?.LFO1.forEach((lfo) => {
-        lfo.LFO.set({ type: LFO1Type });
-      });
-    }
-  }, [LFO1Type]);
-
-  useEffect(() => {
-    if (LFO1Rate) {
-      polySynth.current?.LFO1.forEach((lfo) => {
-        lfo.LFO.set({ frequency: LFO1Rate });
-      });
-    }
-  }, [LFO1Rate]);
-
   // useEffect(() => {
-  //   if (LFO1Amount) {
-  //     polySynth.current?.LFO1.forEach((lfo) => {
-  //       lfo.LFO.set({ amplitude: LFO1Amount });
+  //   if (LFO1Destinations) {
+  //     LFO1Destinations.forEach((destination) => {
+  //       polySynth.current?.setLFO(destination.target, 1);
   //     });
   //   }
-  // }, [LFO1Amount]);
+  // }, [LFO1Destinations]);
+
+  // useEffect(() => {
+  //   if (LFO1Type) {
+  //     polySynth.current?.LFO1.forEach((lfo) => {
+  //       lfo.LFO.set({ type: LFO1Type });
+  //     });
+  //   }
+  // }, [LFO1Type]);
+
+  // useEffect(() => {
+  //   if (LFO1Rate) {
+  //     polySynth.current?.LFO1.forEach((lfo) => {
+  //       lfo.LFO.set({ frequency: LFO1Rate });
+  //     });
+  //   }
+  // }, [LFO1Rate]);
 
   return (
     <div className="flex w-full h-full gap-10 ">
@@ -478,6 +274,8 @@ const PolySynth = () => {
           setPulseWidth={setOsc1PulseWidth}
           volume={osc1Volume}
           setVolume={setOsc1Volume}
+          isSelectingLFO={isSelectingLFOTarget}
+          assignLFO={assignLFO}
         />
         <Oscillator
           engine={polySynth.current}
@@ -492,6 +290,8 @@ const PolySynth = () => {
           setPulseWidth={setOsc2PulseWidth}
           volume={osc2Volume}
           setVolume={setOsc2Volume}
+          isSelectingLFO={isSelectingLFOTarget}
+          assignLFO={assignLFO}
         />
         <Noise
           engine={polySynth.current}
@@ -500,10 +300,13 @@ const PolySynth = () => {
           setType={setNoiseType}
           volume={noiseVolume}
           setVolume={setNoiseVolume}
+          isSelectingLFO={isSelectingLFOTarget}
+          assignLFO={assignLFO}
         />
       </div>
       <div>
         <Filter
+          engine={polySynth.current}
           name={"filter"}
           filterType={filterType}
           setFilterType={setFilterType}
@@ -525,6 +328,7 @@ const PolySynth = () => {
           setRelease={setFilterEnvelopeRelease}
         />
         <Envelope
+          engine={polySynth.current}
           name={"amplitude"}
           attack={attack}
           setAttack={setAttack}
@@ -536,7 +340,8 @@ const PolySynth = () => {
           setRelease={setRelease}
         />
         <LFO
-          name={"LFO1"}
+          engine={polySynth.current}
+          name={"lfo1"}
           type={LFO1Type}
           setType={setLFO1Type}
           rate={LFO1Rate}
@@ -545,441 +350,11 @@ const PolySynth = () => {
           setSync={setLFO1Sync}
           destinations={LFO1Destinations}
           setDestinations={setLFO1Destinations}
+          isSelecting={isSelectingLFOTarget}
+          setIsSelecting={setIsSelectingLFOTarget}
         />
       </div>
       <button onClick={() => Tone.start()}>Start</button>
-      <div className="flex flex-col gap-10">
-        <div className="flex gap-5 flex-col">
-          OSC1
-          <div className="flex gap-5">
-            <label>
-              Sine
-              <input
-                type="checkbox"
-                checked={osc1type === "sine"}
-                onChange={() => {
-                  setOsc1Type("sine");
-                  polySynth.current?.voices.forEach((voice) => {
-                    voice.set({ oscillator: { type: "sine" } });
-                  });
-                }}
-              />
-            </label>
-            <label>
-              Sawtooth
-              <input
-                type="checkbox"
-                checked={osc1type === "sawtooth"}
-                onChange={() => {
-                  setOsc1Type("sawtooth");
-                  polySynth.current?.voices.forEach((voice) => {
-                    voice.set({ oscillator: { type: "sawtooth" } });
-                  });
-                }}
-              />
-            </label>
-            <label>
-              Square
-              <input
-                type="checkbox"
-                checked={osc1type === "pulse"}
-                onChange={() => setOsc1Type("pulse")}
-              />
-            </label>
-            <label>
-              Triangle
-              <input
-                type="checkbox"
-                checked={osc1type === "triangle"}
-                onChange={() => setOsc1Type("triangle")}
-              />
-            </label>
-          </div>
-          <label>
-            Volume
-            <input
-              type="range"
-              min="-96"
-              max="6"
-              step="1"
-              value={osc1Volume}
-              onChange={(e) => {
-                setOsc1Volume(Number(e.target.value));
-              }}
-            />
-          </label>
-          <label>
-            Detune
-            <input
-              type="range"
-              min="0"
-              max="100"
-              step="1"
-              value={osc1Fine}
-              onChange={(e) => {
-                setOsc1Fine(Number(e.target.value));
-              }}
-            />
-          </label>
-          <label>
-            Transpose
-            <input
-              type="range"
-              min="-24"
-              max="24"
-              step="1"
-              value={osc1Coarse}
-              onChange={(e) => {
-                setosc1Coarse(Number(e.target.value));
-              }}
-            />
-          </label>
-          <label>
-            Pulse Width
-            <input
-              type="range"
-              min="-1"
-              max="1"
-              step="0.01"
-              value={osc1PulseWidth}
-              onChange={(e) => {
-                setOsc1PulseWidth(Number(e.target.value));
-              }}
-            />
-          </label>
-        </div>
-        <div className="flex gap-5 flex-col">
-          OSC2
-          <div className="flex gap-5">
-            <label>
-              Sine
-              <input
-                type="checkbox"
-                checked={oscillator2Type === "sine"}
-                onChange={() => setOscillator2Type("sine")}
-              />
-            </label>
-            <label>
-              Sawtooth
-              <input
-                type="checkbox"
-                checked={oscillator2Type === "sawtooth"}
-                onChange={() => setOscillator2Type("sawtooth")}
-              />
-            </label>
-            <label>
-              Square
-              <input
-                type="checkbox"
-                checked={oscillator2Type === "pulse"}
-                onChange={() => setOscillator2Type("pulse")}
-              />
-            </label>
-            <label>
-              Triangle
-              <input
-                type="checkbox"
-                checked={oscillator2Type === "triangle"}
-                onChange={() => setOscillator2Type("triangle")}
-              />
-            </label>
-          </div>
-          <label>
-            Volume
-            <input
-              type="range"
-              min="-96"
-              max="6"
-              step="1"
-              value={osc2Volume}
-              onChange={(e) => {
-                setOsc2Volume(Number(e.target.value));
-              }}
-            />
-          </label>
-          <label>
-            Detune
-            <input
-              type="range"
-              min="0"
-              max="100"
-              step="1"
-              value={osc2Fine}
-              onChange={(e) => {
-                setOsc2Fine(Number(e.target.value));
-              }}
-            />
-          </label>
-          <label>
-            Transpose
-            <input
-              type="range"
-              min="-24"
-              max="24"
-              step="1"
-              value={osc2Transpose}
-              onChange={(e) => {
-                setOsc2Transpose(Number(e.target.value));
-              }}
-            />
-          </label>
-          <label>
-            Pulse Width
-            <input
-              type="range"
-              min="-1"
-              max="1"
-              step="0.01"
-              value={osc2PulseWidth}
-              onChange={(e) => {
-                setOsc2PulseWidth(Number(e.target.value));
-              }}
-            />
-          </label>
-        </div>
-      </div>
-      <div className="flex gap-5 flex-col">
-        FILTER
-        <div className="flex gap-5">
-          <label>
-            Lowpass
-            <input
-              type="checkbox"
-              checked={filterType === "lowpass"}
-              onChange={() => setFilterType("lowpass")}
-            />
-          </label>
-          <label>
-            Highpass
-            <input
-              type="checkbox"
-              checked={filterType === "highpass"}
-              onChange={() => setFilterType("highpass")}
-            />
-          </label>
-          <label>
-            Bandpass
-            <input
-              type="checkbox"
-              checked={filterType === "bandpass"}
-              onChange={() => setFilterType("bandpass")}
-            />
-          </label>
-          <label>
-            Notch
-            <input
-              type="checkbox"
-              checked={filterType === "notch"}
-              onChange={() => setFilterType("notch")}
-            />
-          </label>
-        </div>
-        <label>
-          Frequency
-          <input
-            type="range"
-            min="0"
-            max="15000"
-            step="1"
-            value={filterFrequency}
-            onChange={(e) => setFilterFrequency(Number(e.target.value))}
-          />
-        </label>
-        <div className="flex gap-5">
-          Rolloff
-          <label>
-            12
-            <input
-              type="checkbox"
-              checked={filterRolloff === -12}
-              onChange={() => setFilterRolloff(-12)}
-            />
-          </label>
-          <label>
-            24
-            <input
-              type="checkbox"
-              checked={filterRolloff === -24}
-              onChange={() => setFilterRolloff(-24)}
-            />
-          </label>
-          <label>
-            48
-            <input
-              type="checkbox"
-              checked={filterRolloff === -48}
-              onChange={() => setFilterRolloff(-48)}
-            />
-          </label>
-        </div>
-        <label>
-          Q
-          <input
-            type="range"
-            min="0"
-            max="15"
-            step="0.1"
-            value={filterQ}
-            onChange={(e) => setFilterQ(Number(e.target.value))}
-          />
-        </label>
-      </div>
-      <div className="flex gap-5 flex-col">
-        <div className="flex gap-5 flex-col">
-          AMPLITUDE ENVELOPE
-          <label>
-            Attack
-            <input
-              type="range"
-              min="0.01"
-              max="10"
-              step="0.01"
-              value={attack}
-              onChange={(e) => setAttack(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            Decay
-            <input
-              type="range"
-              min="0.01"
-              max="10"
-              step="0.01"
-              value={decay}
-              onChange={(e) => setDecay(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            Sustain
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={sustain}
-              onChange={(e) => setSustain(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            Release
-            <input
-              type="range"
-              min="0.01"
-              max="10"
-              step="0.01"
-              value={release}
-              onChange={(e) => setRelease(Number(e.target.value))}
-            />
-          </label>
-        </div>
-        <div className="flex gap-5 flex-col">
-          FILTER ENVELOPE
-          <label>
-            Attack
-            <input
-              type="range"
-              min="0.01"
-              max="10"
-              step="0.01"
-              value={filterEnvelopeAttack}
-              onChange={(e) => setFilterEnvelopeAttack(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            Decay
-            <input
-              type="range"
-              min="0.01"
-              max="100"
-              step="0.01"
-              value={filterEnvelopeDecay}
-              onChange={(e) => setFilterEnvelopeDecay(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            Sustain
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={filterEnvelopeSustain}
-              onChange={(e) => setFilterEnvelopeSustain(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            Release
-            <input
-              type="range"
-              min="0.01"
-              max="10"
-              step="0.01"
-              value={filterEnvelopeRelease}
-              onChange={(e) => setFilterEnvelopeRelease(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            Base Frequency
-            <input
-              type="range"
-              min="0"
-              max="15000"
-              step="1"
-              value={filterEnvelopeBaseFrequency}
-              onChange={(e) =>
-                setFilterEnvelopeBaseFrequency(Number(e.target.value))
-              }
-            />
-          </label>
-          <label>
-            Exponent
-            <input
-              type="range"
-              min="0"
-              max="10"
-              step="1"
-              value={filterEnvelopeExponent}
-              onChange={(e) =>
-                setFilterEnvelopeExponent(Number(e.target.value))
-              }
-            />
-          </label>
-          <label>
-            Octaves
-            <input
-              type="range"
-              min="0"
-              max="7"
-              step="0.01"
-              value={filterEnvelopeOctaves}
-              onChange={(e) => setFilterEnvelopeOctaves(Number(e.target.value))}
-            />
-          </label>
-        </div>
-      </div>
-
-      <div className="flex gap-5 flex-col">
-        FX
-        <label>
-          Pan Spread
-          <input
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            value={panSpread}
-            onChange={(e) => setPanSpread(Number(e.target.value))}
-          />
-        </label>
-        <label>
-          Unison
-          <input
-            type="checkbox"
-            checked={unison}
-            onChange={() => setUnison(!unison)}
-          />
-        </label>
-      </div>
     </div>
   );
 };
