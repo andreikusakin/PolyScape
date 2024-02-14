@@ -4,15 +4,15 @@ import React, { use, useEffect, useState } from "react";
 import styles from "./Knob.module.css";
 import { useDrag } from "@use-gesture/react";
 import Dial from "../Dial/Dial";
+import { LFOTarget } from "@/lib/types/types";
 
 type KnobProps = {
   radius: number;
   label: string;
   label2?: string;
   unit?: string;
-  isTargeting?: boolean;
-  lfo: false | 1 | 2;
-  lfoTarget?: string;
+  isSelectingLFO?: false | 1 | 2;
+  lfoParameter?: LFOTarget;
   lfoAmount?: number;
   startingPoint: "beginning" | "middle";
   interactive?: boolean;
@@ -22,6 +22,7 @@ type KnobProps = {
   step: number;
   onChange?: (value: number) => void;
   exponent: number;
+  assignLFO?: (target: LFOTarget, lfo: 1 | 2) => void;
 };
 
 const Knob: React.FC<KnobProps> = ({
@@ -30,9 +31,8 @@ const Knob: React.FC<KnobProps> = ({
   maxValue,
   currentValue,
   step,
-  lfo,
   lfoAmount,
-  lfoTarget,
+  lfoParameter,
   startingPoint,
   label,
   label2,
@@ -40,7 +40,8 @@ const Knob: React.FC<KnobProps> = ({
   interactive,
   onChange,
   exponent,
-  isTargeting = true,
+  isSelectingLFO,
+  assignLFO
 }) => {
   const adjustValueToStep = (value: number, step: number) => {
     const roundedSteps = Math.round((value - minValue) / step);
@@ -120,8 +121,10 @@ const Knob: React.FC<KnobProps> = ({
       },
     }
   );
+ 
   return (
     <div
+      onClick={lfoParameter && isSelectingLFO ? () => assignLFO && assignLFO(lfoParameter, isSelectingLFO, currentValue) : undefined}
       {...bind()}
       className={interactive ? styles.knob : styles.knobNotInteractive}
       onDoubleClick={() => onChange && onChange(0)}
@@ -132,10 +135,10 @@ const Knob: React.FC<KnobProps> = ({
       <Dial
         radius={radius}
         percent={percent}
-        lfo={lfo}
+        // lfo={lfo}
         lfoAmount={lfoAmount}
         startingPoint={startingPoint}
-        isTargeting={isTargeting}
+        isSelectingLFO={isSelectingLFO}
       />
       <div className={styles.labels}>
         <span>{displayLabel}</span>
