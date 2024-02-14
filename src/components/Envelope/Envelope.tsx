@@ -1,8 +1,10 @@
 import styles from "./Envelope.module.css";
 import Knob from "../Knob/Knob";
 import * as Tone from "tone/build/esm/index";
+import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 
 type EnvelopeProps = {
+  engine: CustomPolySynth | undefined;
   name: string;
   attack: number;
   setAttack: (attack: number) => void;
@@ -15,6 +17,7 @@ type EnvelopeProps = {
 };
 
 export const Envelope = ({
+  engine,
   name,
   attack,
   setAttack,
