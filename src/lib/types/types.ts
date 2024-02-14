@@ -48,30 +48,36 @@ export type Preset = {
     rate: Tone.Unit.Frequency;
     sync: boolean;
     destinations: {target: LFOTarget, amount: number}[];
+  };
+  LFO2?: {
+    type: "sine" | "triangle" | "sawtooth" | "square";
+    rate: Tone.Unit.Frequency;
+    sync: boolean;
+    destinations: {target: LFOTarget, amount: number}[];
   }
 };
 
 export type LFOTarget =
   | "osc1 coarse"
-  | "osc1Fine"
-  | "osc1PW"
-  | "osc1Volume"
-  | "osc2Coarse"
-  | "osc2Fine"
-  | "osc2PW"
-  | "osc2Volume"
-  | "noiseVolume"
-  | "filterCutoff"
-  | "filterResonance"
-  | "filterEnvAmount"
-  | "filterEnvAttack"
-  | "filterEnvDecay"
-  | "filterEnvSustain"
-  | "filterEnvRelease"
-  | "envelopeAttack"
-  | "envelopeDecay"
-  | "envelopeSustain"
-  | "envelopeRelease";
+  | "osc1 fine"
+  | "osc1 pulse width"
+  | "osc1 volume"
+  | "osc2 coarse"
+  | "osc2 fine"
+  | "osc2 pulse width"
+  | "osc2 volume"
+  | "noise volume"
+  | "filter cutoff"
+  | "filter resonance"
+  | "envelope amount"
+  | "filter attack"
+  | "filter decay"
+  | "filter sustain"
+  | "filter release"
+  | "envelope attack"
+  | "envelope decay"
+  | "envelope sustain"
+  | "envelope release";
 
 export type LFODestination = {
   target: string;
