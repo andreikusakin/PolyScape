@@ -1,8 +1,10 @@
 import styles from "./Filter.module.css";
 import Knob from "../Knob/Knob";
 import * as Tone from "tone/build/esm/index";
+import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 
 type FilterProps = {
+  engine: CustomPolySynth | undefined;
   name: string;
   filterType: "lowpass" | "highpass" | "bandpass" | "notch";
   setFilterType: (type: "lowpass" | "highpass" | "bandpass" | "notch") => void;
@@ -25,6 +27,7 @@ type FilterProps = {
 };
 
 export const Filter = ({
+  engine,
   name,
   filterType,
   setFilterType,
@@ -45,6 +48,69 @@ export const Filter = ({
   release,
   setRelease,
 }: FilterProps) => {
+  const updateType = (type: "lowpass" | "highpass" | "bandpass" | "notch") => {
+    setFilterType(type);
+    engine?.voices.forEach((voice) => {
+      voice.filter.type = type;
+    });
+  };
+
+  const updateRolloff = (rolloff: Tone.FilterRollOff) => {
+    setRolloff(rolloff);
+    engine?.voices.forEach((voice) => {
+      voice.filter.rolloff = rolloff;
+    });
+  };
+
+  const updateCutoff = (cutoff: number) => {
+    setFrequency(cutoff);
+    engine?.voices.forEach((voice) => {
+      voice.filterEnvelope.baseFrequency = cutoff;
+    });
+  };
+
+  const updateResonance = (resonance: number) => {
+    setResonance(resonance);
+    engine?.voices.forEach((voice) => {
+      voice.filter.Q.value = resonance;
+    });
+  };
+
+  const updateEnvelopeAmount = (amount: number) => {
+    setEnvAmount(amount);
+    engine?.voices.forEach((voice) => {
+      voice.filterEnvelope.octaves = amount;
+    });
+  };
+
+  const updateAttack = (attack: number) => {
+    setAttack(attack);
+    engine?.voices.forEach((voice) => {
+      voice.filterEnvelope.attack = attack;
+    });
+  }
+
+  const updateDecay = (decay: number) => {
+    setDecay(decay);
+    engine?.voices.forEach((voice) => {
+      voice.filterEnvelope.decay = decay;
+    });
+  }
+
+  const updateSustain = (sustain: number) => {
+    setSustain(sustain);
+    engine?.voices.forEach((voice) => {
+      voice.filterEnvelope.sustain = sustain;
+    });
+  }
+
+  const updateRelease = (release: number) => {
+    setRelease(release);
+    engine?.voices.forEach((voice) => {
+      voice.filterEnvelope.release = release;
+    });
+  }
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.name}>{name}</div>
@@ -52,25 +118,25 @@ export const Filter = ({
         <div className={styles.typescontainer}>
           <ul className={styles.types}>
             <li
-              onClick={() => setFilterType("lowpass")}
+              onClick={() => updateType("lowpass")}
               className={filterType === "lowpass" ? styles.selected : ""}
             >
               lp
             </li>
             <li
-              onClick={() => setFilterType("highpass")}
+              onClick={() => updateType("highpass")}
               className={filterType === "highpass" ? styles.selected : ""}
             >
               hp
             </li>
             <li
-              onClick={() => setFilterType("bandpass")}
+              onClick={() => updateType("bandpass")}
               className={filterType === "bandpass" ? styles.selected : ""}
             >
               bp
             </li>
             <li
-              onClick={() => setFilterType("notch")}
+              onClick={() => updateType("notch")}
               className={filterType === "notch" ? styles.selected : ""}
             >
               notch
@@ -78,19 +144,19 @@ export const Filter = ({
           </ul>
           <ul className={styles.types}>
             <li
-              onClick={() => setRolloff(-12)}
+              onClick={() => updateRolloff(-12)}
               className={rolloff === -12 ? styles.selected : ""}
             >
               12
             </li>
             <li
-              onClick={() => setRolloff(-24)}
+              onClick={() => updateRolloff(-24)}
               className={rolloff === -24 ? styles.selected : ""}
             >
               24
             </li>
             <li
-              onClick={() => setRolloff(-48)}
+              onClick={() => updateRolloff(-48)}
               className={rolloff === -48 ? styles.selected : ""}
             >
               48
@@ -106,7 +172,7 @@ export const Filter = ({
           currentValue={frequency}
           step={1}
           unit={"hz"}
-          onChange={setFrequency}
+          onChange={updateCutoff}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
@@ -119,7 +185,7 @@ export const Filter = ({
           maxValue={15}
           currentValue={resonance}
           step={0.01}
-          onChange={setResonance}
+          onChange={updateResonance}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
@@ -133,7 +199,7 @@ export const Filter = ({
           maxValue={7}
           currentValue={envAmount}
           step={0.01}
-          onChange={setEnvAmount}
+          onChange={updateEnvelopeAmount}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
@@ -143,11 +209,11 @@ export const Filter = ({
           exponent={1}
           label={"attack"}
           unit={"s"}
-          minValue={0.01}
+          minValue={0.001}
           maxValue={20}
           currentValue={attack}
-          step={0.01}
-          onChange={setAttack}
+          step={0.001}
+          onChange={updateAttack}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
@@ -157,11 +223,11 @@ export const Filter = ({
           exponent={1}
           label={"decay"}
           unit={"s"}
-          minValue={0.01}
+          minValue={0.001}
           maxValue={20}
           currentValue={decay}
-          step={0.01}
-          onChange={setDecay}
+          step={0.001}
+          onChange={updateDecay}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
@@ -174,7 +240,7 @@ export const Filter = ({
           maxValue={1}
           currentValue={sustain}
           step={0.01}
-          onChange={setSustain}
+          onChange={updateSustain}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
@@ -188,7 +254,7 @@ export const Filter = ({
           maxValue={20}
           currentValue={release}
           step={0.01}
-          onChange={setRelease}
+          onChange={updateRelease}
           radius={24}
           lfo={false}
           startingPoint={"beginning"}
