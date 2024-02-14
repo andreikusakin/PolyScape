@@ -35,9 +35,13 @@ export default class CustomPolySynth {
   ];
   LFO1: LFO[] = [];
   LFO2: LFO[] = [];
+  private preset: Preset;
 
   constructor(node: Tone.Gain, preset: Preset) {
+    this.preset = preset;
     this.initializeVoices(node, preset);
+    this.loadFilterPreset(preset);
+    this.loadLFOs(preset);
     this.setupKeyboard();
     this.unison = preset.unison;
   }
@@ -48,21 +52,22 @@ export default class CustomPolySynth {
       this.loadOsccillatorPreset(preset, voice);
       voice.connect(node);
       this.voices.push(voice);
-      console.log(voice.envelope.sustain)
     }
   }
 
   private loadOsccillatorPreset(preset: Preset, voice: CustomVoice) {
     // Load Oscillator 1 from preset
     voice.oscillator.type = preset.osc1.type;
-    voice.oscillator.detune.value = preset.osc1.detune + preset.osc1.transpose * 100;
+    voice.oscillator.detune.value =
+      preset.osc1.detune + preset.osc1.transpose * 100;
     if (voice.oscillator.width) {
       voice.oscillator.width.value = preset.osc1.pulseWidth;
     }
     voice.oscillator.volume.value = preset.osc1.volume;
     // Load Oscillator 2 from preset
     voice.oscillator2.type = preset.osc2.type;
-    voice.oscillator2.detune.value = preset.osc2.detune + preset.osc2.transpose * 100;
+    voice.oscillator2.detune.value =
+      preset.osc2.detune + preset.osc2.transpose * 100;
     if (voice.oscillator2.width) {
       voice.oscillator2.width.value = preset.osc2.pulseWidth;
     }
@@ -77,7 +82,36 @@ export default class CustomPolySynth {
     voice.envelope.release = preset.envelope.release;
   }
 
-  
+  private loadFilterPreset(preset: Preset) {
+    this.voices.forEach((v) => {
+      v.filter.type = preset.filter.type;
+      v.filter.frequency.value = preset.filter.frequency;
+      v.filter.Q.value = preset.filter.Q;
+      v.filter.rolloff = preset.filter.rolloff;
+      v.filterEnvelope.attack = preset.filterEnvelope.attack;
+      v.filterEnvelope.decay = preset.filterEnvelope.decay;
+      v.filterEnvelope.sustain = preset.filterEnvelope.sustain;
+      v.filterEnvelope.release = preset.filterEnvelope.release;
+      v.filterEnvelope.baseFrequency = preset.filterEnvelope.baseFrequency;
+    });
+  }
+
+  private loadLFOs(preset: Preset) {
+    if (preset.LFO1) {
+      preset.LFO1.destinations.forEach((p) => {
+        this.setLFO(p.target, 1);
+        this.LFO1.forEach((lfo) => {
+          lfo.LFO.set({
+            type: preset.LFO1?.type,
+            frequency: preset.LFO1?.rate,
+          });
+        });
+        this.LFO1.find((lfo) => lfo.target === p.target)?.LFO.set({
+          amplitude: p.amount,
+        });
+      });
+    }
+  }
 
   private setupKeyboard() {
     this.keyboard = new AudioKeys({
@@ -128,68 +162,122 @@ export default class CustomPolySynth {
     }
   }
 
-  setLFO(target: LFOTarget, lfo: 1 | 2) {
+ 
+
+  setLFO(target: LFOTarget, lfo: 1 | 2, currentValue?: number) {
     let LFO: Tone.LFO;
     let lfoSelected = lfo === 1 ? this.LFO1 : this.LFO2;
 
     switch (target) {
-      case `osc${lfo}Coarse`:
+      case `osc1 coarse`:
         LFO = new Tone.LFO({
-          min: -2400,
-          max: 2400,
+          min: -2400 + ((currentValue ? currentValue : this.preset.osc1.transpose) * 100),
+          max: 2400 + ((currentValue ? currentValue : this.preset.osc1.transpose) * 100),
+          amplitude: 0.5,
         })
-          .chain(
-            ...this.voices.map((v) =>
-              lfo === 1 ? v.oscillator.detune : v.oscillator2.detune
-            )
-          )
+          .chain(...this.voices.map((v) => v.oscillator.detune))
           .start();
         lfoSelected.push({ target: target, LFO: LFO });
         break;
-      case `osc${lfo}Fine`:
-        LFO = new Tone.LFO({
-          min: -100,
-          max: 100,
-        }).start();
-        this.voices.forEach((v) => {
-          LFO.connect(lfo === 1 ? v.oscillator.detune : v.oscillator2.detune);
-        });
-        lfoSelected.push({ target: target, LFO: LFO });
-        break;
-      case `osc${lfo}PW`:
-        LFO = new Tone.LFO({
-          min: -1,
-          max: 1,
-        })
-          .chain(
-            ...this.voices.map((v) =>
-              lfo === 1 ? v.oscillator.width : v.oscillator2.width
-            )
-          )
-          .start();
-        lfoSelected.push({ target: target, LFO: LFO });
 
-        break;
-      case `osc${lfo}Volume`:
+      case `osc2 coarse`:
         LFO = new Tone.LFO({
-          min: -70,
-          max: 12,
+          min: -2400 + ((currentValue ? currentValue : this.preset.osc2.transpose) * 100),
+          max: 2400 + ((currentValue ? currentValue : this.preset.osc2.transpose) * 100),
+          amplitude: 0.5,
+        })
+          .chain(...this.voices.map((v) => v.oscillator2.detune))
+          .start();
+        lfoSelected.push({ target: target, LFO: LFO });
+        break;
+
+      case `osc1 fine`:
+        LFO = new Tone.LFO({
+          min: -100 + (currentValue ? currentValue : this.preset.osc1.detune),
+          max: 100 + (currentValue ? currentValue : this.preset.osc1.detune),
+          amplitude: 0.5,
         }).start();
         this.voices.forEach((v) => {
-          LFO.connect(lfo === 1 ? v.oscillator.volume : v.oscillator2.volume);
+          LFO.connect(v.detune);
         });
         lfoSelected.push({ target: target, LFO: LFO });
         break;
-      case "filterCutoff":
+      case `osc2 fine`:
         LFO = new Tone.LFO({
-          min: 0,
-          max: 20000,
+          min: -100 + (currentValue ? currentValue : this.preset.osc2.detune),
+          max: 100 + (currentValue ? currentValue : this.preset.osc2.detune),
+          amplitude: 0.5,
         }).start();
-        this.voices.forEach((voice) => {
-          LFO.connect(voice.filterEnvelope.baseFrequency);
+        this.voices.forEach((v) => {
+          LFO.connect(v.detune2);
         });
         lfoSelected.push({ target: target, LFO: LFO });
         break;
+      case `osc1 pulse width`:
+        LFO = new Tone.LFO({
+          min: -1 + (currentValue ? currentValue : this.preset.osc1.pulseWidth),
+          max: 1 + (currentValue ? currentValue : this.preset.osc1.pulseWidth),
+          amplitude: 0.5,
+        })
+          .start();
+        this.voices.forEach((v) => {LFO.connect(v.oscillator.width)});
+        lfoSelected.push({ target: target, LFO: LFO });
+        break;
+      case `osc2 pulse width`:
+        LFO = new Tone.LFO({
+          min: -1 + (currentValue ? currentValue : this.preset.osc2.pulseWidth),
+          max: 1 + (currentValue ? currentValue : this.preset.osc2.pulseWidth),
+          amplitude: 0.5,
+        })
+          .start();
+        this.voices.forEach((v) => {LFO.connect(v.oscillator2.width)});
+        lfoSelected.push({ target: target, LFO: LFO });
+        break;
+      case `osc1 volume`:
+        LFO = new Tone.LFO({
+          min: -70 + (currentValue ? currentValue : this.preset.osc1.volume),
+          max: 12 + (currentValue ? currentValue : this.preset.osc1.volume),
+          amplitude: 0.5,
+        }).start();
+        this.voices.forEach((v) => {
+          LFO.connect(v.oscillator.volume);
+        });
+        lfoSelected.push({ target: target, LFO: LFO });
+        break;
+      case `osc2 volume`:
+        LFO = new Tone.LFO({
+          min: -70 + (currentValue ? currentValue : this.preset.osc2.volume),
+          max: 12 + (currentValue ? currentValue : this.preset.osc2.volume),
+          amplitude: 0.5,
+        }).start();
+        this.voices.forEach((v) => {
+          LFO.connect(v.oscillator2.volume);
+        });
+        lfoSelected.push({ target: target, LFO: LFO });
+        break;
+      case "filter cutoff":
+        LFO = new Tone.LFO({
+          min: this.preset.filter.frequency - 10000,
+          max: this.preset.filter.frequency + 10000,
+          amplitude: 0.5,
+        }).start();
+        this.voices.forEach((v) => {
+          LFO.connect(v.filter.frequency);
+        });
+        lfoSelected.push({ target: target, LFO: LFO });
+        break;
+
+        case "noise volume":
+          LFO = new Tone.LFO({
+            min: -70 + (currentValue ? currentValue : this.preset.noise.volume),
+            max: 12 + (currentValue ? currentValue : this.preset.noise.volume),
+            amplitude: 0.5,
+          }).start();
+          this.voices.forEach((v) => {
+            LFO.connect(v.noise.volume);
+          });
+          lfoSelected.push({ target: target, LFO: LFO });
+          break;
 
       default:
         break;
