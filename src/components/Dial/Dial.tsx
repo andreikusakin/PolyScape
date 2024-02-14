@@ -3,10 +3,10 @@ import styles from "./Dial.module.css";
 type DialProps = {
   radius: number;
   percent: number;
-  lfo: false | 1 | 2;
+  lfo?: 1 | 2;
   lfoAmount?: number;
   startingPoint: "beginning" | "middle";
-  isTargeting?: boolean;
+  isSelectingLFO?: false | 1 | 2;
 };
 
 const Dial: React.FC<DialProps> = ({
@@ -15,7 +15,7 @@ const Dial: React.FC<DialProps> = ({
   lfo,
   lfoAmount,
   startingPoint,
-  isTargeting,
+  isSelectingLFO,
 }) => {
   
   const strokeWidth = radius * 0.1;
@@ -37,7 +37,7 @@ const Dial: React.FC<DialProps> = ({
   const offset = arc - (percentNormalized / 100) * arc;
   return (
     <div className={styles.dial}>
-      {isTargeting && <div className={`${styles.targetSelecting} ${lfo === 1 ? styles.lfo1 : lfo === 2 ? styles.lfo2 : null }`}></div>}
+      {isSelectingLFO && <div className={`${styles.targetSelecting} ${isSelectingLFO === 1 ? styles.lfo1 : isSelectingLFO === 2 ? styles.lfo2 : null }`}></div>}
       <svg height={radius * 2.44} width={radius * 2.44}>
         <circle
           cx={radius}
@@ -60,7 +60,7 @@ const Dial: React.FC<DialProps> = ({
           strokeDashoffset={offset}
           transform={transform}
         />
-        {lfo ? (
+        {/* {lfo ? (
           <circle
             cx={radius}
             cy={radius / 1.44}
@@ -74,7 +74,7 @@ const Dial: React.FC<DialProps> = ({
             strokeDashoffset={lfoOffset}
             transform={transform}
           />
-        ) : null}
+        ) : null} */}
       </svg>
     </div>
   );

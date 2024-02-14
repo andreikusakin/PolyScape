@@ -10,13 +10,13 @@
 }
 
 .lfo1 {
-  border: 2px solid rgba(240, 208, 82, 1);
-  box-shadow: 0 0 0 2px rgba(240, 208, 82, 0.4);
-  background: rgba(240, 208, 82, 0.3);
-}
-
-.lfo2 {
   border: 2px solid rgba(227, 81, 96, 1);
   box-shadow: 0 0 0 2px rgba(227, 81, 96, 0.4);
   background: rgba(227, 81, 96, 0.3);
+}
+
+.lfo2 {
+  border: 2px solid rgba(240, 208, 82, 1);
+  box-shadow: 0 0 0 2px rgba(240, 208, 82, 0.4);
+  background: rgba(240, 208, 82, 0.3);
 }
