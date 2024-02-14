@@ -4,6 +4,7 @@ import styles from "./LFO.module.css";
 import Knob from "../Knob/Knob";
 import { OscillatorWaveform } from "../OscillatorWaveform";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
+import { Slider } from "../Slider/Slider";
 
 type LFOProps = {
   engine?: CustomPolySynth;
@@ -125,10 +126,18 @@ export const LFO = ({
           </div>
           <div className={styles.targets}>
             {destinations.map((d, i) => (
-              <div className={styles.slider} key={i} onDoubleClick={() => handleDoubleClick(d.target)}>
-                <label className={styles.label}>{d.target}</label>
-                <span className={styles.track}></span>
-              </div>
+              // <div className={styles.slider} key={i} onDoubleClick={() => handleDoubleClick(d.target)}>
+              //   <label className={styles.label}>{d.target}</label>
+              //   <span className={styles.track}></span>
+              // </div>
+              <Slider
+                key={i}
+                lfoName={name}
+                target={d.target}
+                value={d.amount}
+                min={0}
+                max={1}
+                handleDoubleClick={handleDoubleClick} />
             ))}
           </div>
           <p>destinations</p>
