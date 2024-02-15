@@ -21,6 +21,8 @@ type OscillatorProps = {
   setPulseWidth: (pulseWidth: number) => void;
   volume: number;
   setVolume: (volume: number) => void;
+  lfo1: [];
+  lfo2: [];
   isSelectingLFO: false | 1 | 2;
   assignLFO: (target: LFOTarget, lfo: 1 | 2) => void;
 };
@@ -40,6 +42,8 @@ const Oscillator: React.FC<OscillatorProps> = ({
   setVolume,
   isSelectingLFO,
   assignLFO,
+  lfo1,
+  lfo2,
 }) => {
   const updateWaveformType = (
     type: "sine" | "sawtooth" | "pulse" | "triangle"
@@ -225,6 +229,7 @@ const Oscillator: React.FC<OscillatorProps> = ({
           startingPoint={"middle"}
           interactive={true}
           assignLFO={assignLFO}
+          lfoAmount={lfo1?.find((lfo) => lfo.target === "osc1 coarse")?.amount}
         />
         <Knob
           exponent={1}
