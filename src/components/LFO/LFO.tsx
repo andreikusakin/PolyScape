@@ -11,8 +11,10 @@ type LFOProps = {
   name: string;
   type: "sine" | "triangle" | "sawtooth" | "square";
   setType: (type: "sine" | "triangle" | "sawtooth" | "square") => void;
-  rate: Tone.Unit.Frequency;
+  rate: Tone.Unit.Frequency | Tone.FrequencyClass | number | string;
   setRate: (rate: Tone.Unit.Frequency) => void;
+  sync: boolean;
+  setSync: (sync: boolean) => void;
   destinations: [];
   setDestinations: ([]) => void;
   isSelecting: false | 1 | 2;
@@ -26,6 +28,8 @@ export const LFO = ({
   setType,
   rate,
   setRate,
+  sync,
+  setSync,
   destinations,
   setDestinations,
   isSelecting,
@@ -43,6 +47,13 @@ export const LFO = ({
       ? engine?.LFO1.forEach((lfo) => (lfo.LFO.type = type))
       : engine?.LFO2.forEach((lfo) => (lfo.LFO.type = type));
   };
+
+  const updateRate = (value: Tone.Unit.Frequency) => { 
+    setRate(value);
+    name === "lfo1"
+      ? engine?.LFO1.forEach((lfo) => (lfo.LFO.frequency.value = value))
+      : engine?.LFO2.forEach((lfo) => (lfo.LFO.frequency.value = value));
+  }
 
   const handleDoubleClick = (target: LFOTarget) => {
     if (name === "lfo1") {
@@ -124,7 +135,19 @@ export const LFO = ({
             </li>
           </ul>
           <div className={styles.rate}>
-            <Knob radius={24} label={"rate"} interactive={true} />
+            <Knob
+             radius={24} 
+             label={"rate"} 
+             interactive={true}
+             minValue={0}
+              maxValue={200}
+              step={0.01}
+              currentValue={rate}
+              onChange={updateRate}
+              exponent={1}
+              startingPoint={"beginning"}
+              sync={sync}
+             />
           </div>
         </div>
         <div className={styles.waveform}>
