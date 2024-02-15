@@ -130,7 +130,7 @@ const PolySynth = () => {
   >("sine");
   const [LFO1Rate, setLFO1Rate] = useState<
     Tone.Unit.Frequency | Tone.FrequencyClass
-  >(1);
+  >(0);
   const [LFO1Sync, setLFO1Sync] = useState<boolean>(false);
   // const [LFO1Amount, setLFO1Amount] = useState<Tone.Unit.NormalRange>(0);
   const [LFO1Destinations, setLFO1Destinations] = useState<[]>([]);
@@ -138,13 +138,13 @@ const PolySynth = () => {
   //LFO2
   const [LFO2Type, setLFO2Type] = useState<
     "sine" | "triangle" | "sawtooth" | "square"
-  >();
+  >("sine");
   const [LFO2Rate, setLFO2Rate] = useState<
     Tone.Unit.Frequency | Tone.FrequencyClass
-  >(5);
-  const [LFO2Sync, setLFO2Sync] = useState<boolean>();
+  >(0);
+  const [LFO2Sync, setLFO2Sync] = useState<boolean>(false);
   // const [LFO2Amount, setLFO2Amount] = useState<Tone.Unit.NormalRange>();
-  const [LFO2Destinations, setLFO2Destinations] = useState<LFOTarget[]>();
+  const [LFO2Destinations, setLFO2Destinations] = useState<[]>([]);
 
   function loadPreset(preset: Preset) {
     // OSC1
@@ -193,15 +193,32 @@ const PolySynth = () => {
 
   const assignLFO = (target: LFOTarget, lfo: 1 | 2, currentValue?: number) => {
     setIsSelectingLFOTarget(false);
+    const targetExistsInLFO1 = polySynth.current?.LFO1.some(
+      (lfo) => lfo.target === target
+    );
+    const targetExistsInLFO2 = polySynth.current?.LFO2.some(
+      (lfo) => lfo.target === target
+    );
+    if (targetExistsInLFO1 && lfo === 1) {
+      return;
+    }
+    if (targetExistsInLFO2 && lfo === 2) {
+      return;
+    }
+
     polySynth.current?.setLFO(target, lfo, currentValue);
     if (lfo === 1) {
-      setLFO1Destinations([...LFO1Destinations, {target: target, amount: 0.5}]);
+      setLFO1Destinations([
+        ...LFO1Destinations,
+        { target: target, amount: 0.5 },
+      ]);
     } else {
-      setLFO2Destinations([...LFO2Destinations, {target: target, amount: 0.5}]);
+      setLFO2Destinations([
+        ...LFO2Destinations,
+        { target: target, amount: 0.5 },
+      ]);
     }
   };
-
-  console.log("LFO1Destinations: ", LFO1Destinations);
 
   // initialize synth
   useEffect(() => {
@@ -274,6 +291,8 @@ const PolySynth = () => {
           setPulseWidth={setOsc1PulseWidth}
           volume={osc1Volume}
           setVolume={setOsc1Volume}
+          lfo1={LFO1Destinations}
+          lfo2={LFO2Destinations}
           isSelectingLFO={isSelectingLFOTarget}
           assignLFO={assignLFO}
         />
@@ -350,6 +369,20 @@ const PolySynth = () => {
           setSync={setLFO1Sync}
           destinations={LFO1Destinations}
           setDestinations={setLFO1Destinations}
+          isSelecting={isSelectingLFOTarget}
+          setIsSelecting={setIsSelectingLFOTarget}
+        />
+        <LFO
+          engine={polySynth.current}
+          name={"lfo2"}
+          type={LFO2Type}
+          setType={setLFO2Type}
+          rate={LFO2Rate}
+          setRate={setLFO2Rate}
+          sync={LFO2Sync}
+          setSync={setLFO2Sync}
+          destinations={LFO2Destinations}
+          setDestinations={setLFO2Destinations}
           isSelecting={isSelectingLFOTarget}
           setIsSelecting={setIsSelectingLFOTarget}
         />
