@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Knob.module.css";
 import { useDrag } from "@use-gesture/react";
 import Dial from "../Dial/Dial";
@@ -48,15 +48,6 @@ const Knob: React.FC<KnobProps> = ({
     return roundedSteps * step + minValue;
   };
   const updateValue = (value: number) => {
-    // let adjustedValue;
-    // if (exponent >= 1) {
-    //   adjustedValue = value ** exponent;
-    // }
-    // else {
-    //   adjustedValue = Math.log(value);
-    // }
-
-    // return Math.min(Math.max(adjustedValue, minValue), maxValue);
     let adjustedValue = adjustValueToStep(value, step);
     return Math.min(Math.max(adjustedValue, minValue), maxValue);
   };

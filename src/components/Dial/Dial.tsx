@@ -60,7 +60,7 @@ const Dial: React.FC<DialProps> = ({
           strokeDashoffset={offset}
           transform={transform}
         />
-        {/* {lfo ? (
+        {lfoAmount ? (
           <circle
             cx={radius}
             cy={radius / 1.44}
@@ -74,7 +74,7 @@ const Dial: React.FC<DialProps> = ({
             strokeDashoffset={lfoOffset}
             transform={transform}
           />
-        ) : null} */}
+        ) : null}
       </svg>
     </div>
   );

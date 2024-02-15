@@ -46,33 +46,56 @@ export const LFO = ({
 
   const handleDoubleClick = (target: LFOTarget) => {
     if (name === "lfo1") {
-      setDestinations([...destinations.filter((d: LFODestination) => d.target !== target)]);
-      engine?.LFO1.forEach(lfo => {
+      setDestinations([
+        ...destinations.filter((d: LFODestination) => d.target !== target),
+      ]);
+      engine?.LFO1.forEach((lfo) => {
         if (lfo.target === target) {
           lfo.LFO.stop();
           lfo.LFO.disconnect();
-        }});
-    const filteredLFOs = engine?.LFO1.filter(lfo => lfo.target !== target);
-    if (engine)
-    engine.LFO1 = filteredLFOs ?? [];
-    }
-    else {
-      setDestinations([...destinations.filter((d: LFODestination) => d.target !== target)]);
-      engine?.LFO2.forEach(lfo => {
+        }
+      });
+      const filteredLFOs = engine?.LFO1.filter((lfo) => lfo.target !== target);
+      if (engine) engine.LFO1 = filteredLFOs ?? [];
+    } else {
+      setDestinations([
+        ...destinations.filter((d: LFODestination) => d.target !== target),
+      ]);
+      engine?.LFO2.forEach((lfo) => {
         if (lfo.target === target) {
           lfo.LFO.stop();
           lfo.LFO.disconnect();
-        }});
-    const filteredLFOs = engine?.LFO2.filter(lfo => lfo.target !== target);
-    if (engine)
-    engine.LFO2 = filteredLFOs ?? [];
+        }
+      });
+      const filteredLFOs = engine?.LFO2.filter((lfo) => lfo.target !== target);
+      if (engine) engine.LFO2 = filteredLFOs ?? [];
     }
+  };
+
+  const updateLFOAmount = (target: LFOTarget, amount: number) => {
+    setDestinations([...destinations.map((d: LFODestination) => (d.target === target ? { ...d, amount: amount } : d))]);
+    name === "lfo1"
+      ? engine?.LFO1.forEach((lfo) => {
+          if (lfo.target === target) {
+            lfo.LFO.amplitude.value = amount;
+          }
+        })
+      : engine?.LFO2.forEach((lfo) => {
+          if (lfo.target === target) {
+            lfo.LFO.amplitude.value = amount;
+          }
+        });
   };
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.name}>{name}</div>
-      <div className={[styles.container, name === "lfo1" ? styles.borderLFO1 : styles.borderLFO2].join(' ')}>
+      <div
+        className={[
+          styles.container,
+          name === "lfo1" ? styles.borderLFO1 : styles.borderLFO2,
+        ].join(" ")}
+      >
         <div>
           <ul className={styles.shapes}>
             <li
@@ -126,10 +149,6 @@ export const LFO = ({
           </div>
           <div className={styles.targets}>
             {destinations.map((d, i) => (
-              // <div className={styles.slider} key={i} onDoubleClick={() => handleDoubleClick(d.target)}>
-              //   <label className={styles.label}>{d.target}</label>
-              //   <span className={styles.track}></span>
-              // </div>
               <Slider
                 key={i}
                 lfoName={name}
@@ -137,7 +156,10 @@ export const LFO = ({
                 value={d.amount}
                 min={0}
                 max={1}
-                handleDoubleClick={handleDoubleClick} />
+                step={0.01}
+                handleDoubleClick={handleDoubleClick}
+                onChange={updateLFOAmount}
+              />
             ))}
           </div>
           <p>destinations</p>
