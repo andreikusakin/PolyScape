@@ -147,6 +147,7 @@ export const LFO = ({
               exponent={1}
               startingPoint={"beginning"}
               sync={sync}
+              unit={sync ? "" : "Hz"}
              />
           </div>
         </div>
