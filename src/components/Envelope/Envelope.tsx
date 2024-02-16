@@ -29,6 +29,35 @@ export const Envelope = ({
   release,
   setRelease,
 }: EnvelopeProps) => {
+
+  const updateAttack = (attack: number) => {
+    setAttack(attack);
+    engine?.voices.forEach((voice) => {
+      voice.envelope.attack = attack;
+    });
+  };
+
+  const updateDecay = (decay: number) => {
+    setDecay(decay);
+    engine?.voices.forEach((voice) => {
+      voice.envelope.decay = decay;
+    });
+  };
+
+  const updateSustain = (sustain: number) => {
+    setSustain(sustain);
+    engine?.voices.forEach((voice) => {
+      voice.envelope.sustain = sustain;
+    });
+  };
+
+  const updateRelease = (release: number) => {
+    setRelease(release);
+    engine?.voices.forEach((voice) => {
+      voice.envelope.release = release;
+    });
+  };
+
   return (
     <SectionWrapper name={name} wide={true}>
       <Knob
@@ -39,7 +68,7 @@ export const Envelope = ({
         maxValue={20}
         currentValue={attack}
         step={0.01}
-        onChange={setAttack}
+        onChange={updateAttack}
         radius={24}
         lfo={false}
         startingPoint="beginning"
@@ -53,7 +82,7 @@ export const Envelope = ({
         maxValue={20}
         currentValue={decay}
         step={0.01}
-        onChange={setDecay}
+        onChange={updateDecay}
         radius={24}
         lfo={false}
         startingPoint="beginning"
@@ -66,7 +95,7 @@ export const Envelope = ({
         maxValue={1}
         currentValue={sustain}
         step={0.01}
-        onChange={setSustain}
+        onChange={updateSustain}
         radius={24}
         lfo={false}
         startingPoint="beginning"
@@ -80,7 +109,7 @@ export const Envelope = ({
         maxValue={20}
         currentValue={release}
         step={0.01}
-        onChange={setRelease}
+        onChange={updateRelease}
         radius={24}
         lfo={false}
         startingPoint="beginning"
