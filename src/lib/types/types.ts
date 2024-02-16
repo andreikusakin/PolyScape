@@ -54,7 +54,21 @@ export type Preset = {
     rate: Tone.Unit.Frequency;
     sync: boolean;
     destinations: {target: LFOTarget, amount: number}[];
+  };
+  effects?:{
+    reverb?: {
+      decay: number;
+      wet: number;
+      preDelay: number;
+    };
+    feedbackDelay?: {
+      delayTime: Tone.Unit.Time;
+      feedback: number;
+      wet: number;
+    };
+    
   }
+  
 };
 
 export type LFOTarget =
