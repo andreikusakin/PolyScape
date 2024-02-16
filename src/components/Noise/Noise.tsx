@@ -3,6 +3,7 @@ import styles from "./Noise.module.css";
 import { NoiseShape } from "../Shapes";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { LFOTarget } from "@/lib/types/types";
+import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 
 type NoiseProps = {
   engine: CustomPolySynth | undefined;
@@ -48,9 +49,7 @@ export default function Noise({
     engine?.voices.forEach((v) => (v.noise.volume.value = value))
   }
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.name}>{name}</div>
-      <div className={styles.container}>
+    <SectionWrapper name={name}>
         <ul className={styles.types}>
           <li
             onClick={() => updateType("white")}
@@ -92,7 +91,6 @@ export default function Noise({
           assignLFO={assignLFO}
           isSelectingLFO={isSelectingLFO}
         />
-      </div>
-    </div>
+    </SectionWrapper>
   );
 }

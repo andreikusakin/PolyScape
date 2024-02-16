@@ -1,7 +1,7 @@
 import React from "react";
 import Knob from "../Knob/Knob";
 import styles from "./Oscillator.module.css";
-
+import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { LFOTarget } from "@/lib/types/types";
 import { OscillatorWaveform } from "../OscillatorWaveform";
@@ -161,110 +161,104 @@ const Oscillator: React.FC<OscillatorProps> = ({
       : engine?.voices.forEach((v) => (v.oscillator2.volume.value = value));
   };
   return (
-    <div className={styles.oscillator}>
-      <div className={styles.oscname}>{name}</div>
-      <div className={styles.container}>
-        <ul className={styles.shapes}>
-          <li
-            onClick={() => updateWaveformType("sine")}
-            className={oscType === "sine" ? styles.selected : ""}
-          >
-            sine
-          </li>
-          <li
-            onClick={() => updateWaveformType("sawtooth")}
-            className={oscType === "sawtooth" ? styles.selected : ""}
-          >
-            sawtooth
-          </li>
-          <li
-            onClick={() => updateWaveformType("pulse")}
-            className={oscType === "pulse" ? styles.selected : ""}
-          >
-            square
-          </li>
-          <li
-            onClick={() => updateWaveformType("triangle")}
-            className={oscType === "triangle" ? styles.selected : ""}
-          >
-            triangle
-          </li>
-        </ul>
+    <SectionWrapper name={name}>
+      <ul className={styles.shapes}>
+        <li
+          onClick={() => updateWaveformType("sine")}
+          className={oscType === "sine" ? styles.selected : ""}
+        >
+          sine
+        </li>
+        <li
+          onClick={() => updateWaveformType("sawtooth")}
+          className={oscType === "sawtooth" ? styles.selected : ""}
+        >
+          sawtooth
+        </li>
+        <li
+          onClick={() => updateWaveformType("pulse")}
+          className={oscType === "pulse" ? styles.selected : ""}
+        >
+          square
+        </li>
+        <li
+          onClick={() => updateWaveformType("triangle")}
+          className={oscType === "triangle" ? styles.selected : ""}
+        >
+          triangle
+        </li>
+      </ul>
 
-        <div className={styles.waveform}>
-          <div className={styles.waveformAnimation}>
-            <OscillatorWaveform oscType={oscType} />
-          </div>
+      <div className={styles.waveform}>
+        <div className={styles.waveformAnimation}>
+          <OscillatorWaveform oscType={oscType} />
         </div>
-        <Knob
-          exponent={1}
-          label={"pulse width"}
-          lfoParameter={
-            name === "osc1" ? "osc1 pulse width" : "osc2 pulse width"
-          }
-          radius={24}
-          minValue={-1}
-          maxValue={1}
-          currentValue={pulseWidth}
-          step={0.01}
-          onChange={updatePulseWidth}
-          isSelectingLFO={isSelectingLFO}
-          // lfoPercent={100}
-          startingPoint={"middle"}
-          interactive={oscType === "pulse" ? true : false}
-          assignLFO={assignLFO}
-        />
-
-        <Knob
-          exponent={1}
-          label={"coarse"}
-          lfoParameter={name === "osc1" ? "osc1 coarse" : "osc2 coarse"}
-          minValue={-24}
-          maxValue={24}
-          currentValue={coarse}
-          step={1}
-          onChange={updateCoarse}
-          radius={24}
-          isSelectingLFO={isSelectingLFO}
-          startingPoint={"middle"}
-          interactive={true}
-          assignLFO={assignLFO}
-          lfoAmount={lfo1?.find((lfo) => lfo.target === "osc1 coarse")?.amount}
-        />
-        <Knob
-          exponent={1}
-          label={"fine"}
-          lfoParameter={name === "osc1" ? "osc1 fine" : "osc2 fine"}
-          minValue={-100}
-          maxValue={100}
-          currentValue={detune}
-          step={1}
-          onChange={updateFine}
-          radius={24}
-          isSelectingLFO={isSelectingLFO}
-          startingPoint={"beginning"}
-          interactive={true}
-          
-          assignLFO={assignLFO}
-        />
-        <Knob
-          exponent={1}
-          label={"volume"}
-          lfoParameter={name === "osc1" ? "osc1 volume" : "osc2 volume"}
-          minValue={-70}
-          maxValue={12}
-          unit={"db"}
-          currentValue={volume}
-          step={0.5}
-          onChange={updateVolume}
-          radius={24}
-          isSelectingLFO={isSelectingLFO}
-          startingPoint={"middle"}
-          interactive={true}
-          assignLFO={assignLFO}
-        />
       </div>
-    </div>
+      <Knob
+        exponent={1}
+        label={"pulse width"}
+        lfoParameter={name === "osc1" ? "osc1 pulse width" : "osc2 pulse width"}
+        radius={24}
+        minValue={-1}
+        maxValue={1}
+        currentValue={pulseWidth}
+        step={0.01}
+        onChange={updatePulseWidth}
+        isSelectingLFO={isSelectingLFO}
+        // lfoPercent={100}
+        startingPoint={"middle"}
+        interactive={oscType === "pulse" ? true : false}
+        assignLFO={assignLFO}
+      />
+
+      <Knob
+        exponent={1}
+        label={"coarse"}
+        lfoParameter={name === "osc1" ? "osc1 coarse" : "osc2 coarse"}
+        minValue={-24}
+        maxValue={24}
+        currentValue={coarse}
+        step={1}
+        onChange={updateCoarse}
+        radius={24}
+        isSelectingLFO={isSelectingLFO}
+        startingPoint={"middle"}
+        interactive={true}
+        assignLFO={assignLFO}
+        lfoAmount={lfo1?.find((lfo) => lfo.target === "osc1 coarse")?.amount}
+      />
+      <Knob
+        exponent={1}
+        label={"fine"}
+        lfoParameter={name === "osc1" ? "osc1 fine" : "osc2 fine"}
+        minValue={-100}
+        maxValue={100}
+        currentValue={detune}
+        step={1}
+        onChange={updateFine}
+        radius={24}
+        isSelectingLFO={isSelectingLFO}
+        startingPoint={"beginning"}
+        interactive={true}
+        assignLFO={assignLFO}
+      />
+      <Knob
+        exponent={1}
+        label={"volume"}
+        lfoParameter={name === "osc1" ? "osc1 volume" : "osc2 volume"}
+        minValue={-70}
+        maxValue={12}
+        unit={"db"}
+        currentValue={volume}
+        step={0.5}
+        onChange={updateVolume}
+        radius={24}
+        isSelectingLFO={isSelectingLFO}
+        startingPoint={"middle"}
+        interactive={true}
+        assignLFO={assignLFO}
+      />
+    </SectionWrapper>
   );
 };
 
