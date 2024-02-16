@@ -11,6 +11,7 @@ import { CustomVoice } from "@/lib/engines/CustomVoice";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { Envelope } from "../Envelope/Envelope";
 import { LFO } from "../LFO/LFO";
+import Effects from "@/lib/engines/Effects";
 
 const initPreset: Preset = {
   osc1: {
@@ -62,12 +63,18 @@ const initPreset: Preset = {
     sync: true,
     destinations: [{ target: "osc2 fine", amount: 0.1 }],
   },
+  effects: {
+    reverb: { decay: 5, wet: 0.2, preDelay: 0 },
+    feedbackDelay: { delayTime: "8n", feedback: 0.5, wet: 0.5 },
+  
+  }
 };
 
 const PolySynth = () => {
   const [preset, setPreset] = useState<Preset>(initPreset);
   const [currestSettings, setCurrentSettings] = useState<Preset>(initPreset);
   const polySynth = useRef<CustomPolySynth>();
+  const effects = useRef<Effects>();
   const [isSelectingLFOTarget, setIsSelectingLFOTarget] = useState<
     false | 1 | 2
   >(false);
@@ -229,16 +236,15 @@ const PolySynth = () => {
 
   // initialize synth
   useEffect(() => {
-    const gainNode = new Tone.Gain({
-      gain: 0.06,
-      units: "gain",
-    }).toDestination();
-
-    polySynth.current = new CustomPolySynth(gainNode, initPreset);
+    
+    
+    polySynth.current = new CustomPolySynth(initPreset);
+    effects.current = new Effects(polySynth.current.outputNode, initPreset.effects);
     loadPreset(preset);
-
-    // polySynth.current.setLFO("osc1Coarse", 1);
-    // polySynth.current.setLFO("osc1 fine", 1);
+    const masterNode = new Tone.Gain().chain(effects.current.outputNode, Tone.Destination)
+    // effects.current.addEffect("feedbackDelay");
+    effects.current.addEffect("reverb");
+    
   }, [preset]);
 
   // // update fx
