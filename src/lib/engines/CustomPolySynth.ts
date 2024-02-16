@@ -38,10 +38,12 @@ export default class CustomPolySynth {
   LFO1: LFO[] = [];
   LFO2: LFO[] = [];
   private preset: Preset;
+  readonly outputNode: Tone.Gain;
 
-  constructor(node: Tone.Gain, preset: Preset) {
+  constructor(preset: Preset) {
     this.preset = preset;
-    this.initializeVoices(node, preset);
+    this.outputNode = new Tone.Gain({ gain: 0.2 });
+    this.initializeVoices(this.outputNode, preset);
     this.loadFilterPreset(preset);
     this.loadLFOs(preset);
     this.setupKeyboard();
