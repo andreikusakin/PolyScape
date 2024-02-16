@@ -5,7 +5,7 @@ import styles from "./Slider.module.css";
 import { useDrag } from "@use-gesture/react";
 
 type SliderProps = {
-  key: number;
+
   lfoName: string;
   target: LFOTarget;
   value: number;
@@ -17,7 +17,7 @@ type SliderProps = {
 };
 
 export const Slider = ({
-  key,
+
   lfoName,
   target,
   value,
@@ -47,7 +47,7 @@ export const Slider = ({
 
   const bind = useDrag(
     ({ delta }) => {
-      const dragSensitivity = -0.3;
+      const dragSensitivity = -2;
       let percentChange = delta[1] * dragSensitivity;
       let currentPercent = valueToPercent(value);
       let newPercent = Math.max(
@@ -72,7 +72,7 @@ export const Slider = ({
         styles.container,
         lfoName === "lfo1" ? styles.containerLFO1 : styles.containerLFO2,
       ].join(" ")}
-      key={key}
+    
       onDoubleClick={() => handleDoubleClick(target)}
     >
       <label
