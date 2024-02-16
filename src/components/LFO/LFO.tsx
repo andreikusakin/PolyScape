@@ -48,12 +48,12 @@ export const LFO = ({
       : engine?.LFO2.forEach((lfo) => (lfo.LFO.type = type));
   };
 
-  const updateRate = (value: Tone.Unit.Frequency) => { 
+  const updateRate = (value: Tone.Unit.Frequency) => {
     setRate(value);
     name === "lfo1"
       ? engine?.LFO1.forEach((lfo) => (lfo.LFO.frequency.value = value))
       : engine?.LFO2.forEach((lfo) => (lfo.LFO.frequency.value = value));
-  }
+  };
 
   const handleDoubleClick = (target: LFOTarget) => {
     if (name === "lfo1") {
@@ -84,7 +84,11 @@ export const LFO = ({
   };
 
   const updateLFOAmount = (target: LFOTarget, amount: number) => {
-    setDestinations([...destinations.map((d: LFODestination) => (d.target === target ? { ...d, amount: amount } : d))]);
+    setDestinations([
+      ...destinations.map((d: LFODestination) =>
+        d.target === target ? { ...d, amount: amount } : d
+      ),
+    ]);
     name === "lfo1"
       ? engine?.LFO1.forEach((lfo) => {
           if (lfo.target === target) {
@@ -136,10 +140,10 @@ export const LFO = ({
           </ul>
           <div className={styles.rate}>
             <Knob
-             radius={24} 
-             label={"rate"} 
-             interactive={true}
-             minValue={0}
+              radius={24}
+              label={"rate"}
+              interactive={true}
+              minValue={0}
               maxValue={200}
               step={0.01}
               currentValue={rate}
@@ -148,12 +152,30 @@ export const LFO = ({
               startingPoint={"beginning"}
               sync={sync}
               unit={sync ? "" : "Hz"}
-             />
+            />
           </div>
         </div>
-        <div className={styles.waveform}>
-          <div className={styles.waveformAnimation}>
-            <OscillatorWaveform oscType={type} />
+        <div>
+          <div className={styles.waveform}>
+            <div className={styles.waveformAnimation}>
+              <OscillatorWaveform oscType={type} />
+            </div>
+          </div>
+          <div
+            onClick={() => {
+              setSync(!sync);
+              setRate(sync ? "4n" : 1);
+            }}
+            className={[
+              styles.sync,
+              sync
+                ? name === "lfo1"
+                  ? styles.sync_activeLFO1
+                  : styles.sync_activeLFO2
+                : "",
+            ].join(" ")}
+          >
+            <label>sync</label>
           </div>
         </div>
         <div className={styles.destinations}>
