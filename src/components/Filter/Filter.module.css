@@ -1,3 +1,14 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 80px);
+  justify-items: center;
+  align-items: center;
+  row-gap: 20px;
+  column-gap: 10px;
+  color: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+}
+
 .typescontainer {
   display: flex;
   justify-content: space-between;

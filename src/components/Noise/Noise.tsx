@@ -41,15 +41,16 @@ export default function Noise({
     engine?.LFO1.find((lfo) => lfo.target === "noise volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
-    })
+    });
     engine?.LFO2.find((lfo) => lfo.target === "noise volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
-    })
-    engine?.voices.forEach((v) => (v.noise.volume.value = value))
-  }
+    });
+    engine?.voices.forEach((v) => (v.noise.volume.value = value));
+  };
   return (
     <SectionWrapper name={name}>
+      <div className={styles.grid}>
         <ul className={styles.types}>
           <li
             onClick={() => updateType("white")}
@@ -91,6 +92,7 @@ export default function Noise({
           assignLFO={assignLFO}
           isSelectingLFO={isSelectingLFO}
         />
+      </div>
     </SectionWrapper>
   );
 }

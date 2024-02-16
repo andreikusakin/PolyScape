@@ -29,7 +29,6 @@ export const Envelope = ({
   release,
   setRelease,
 }: EnvelopeProps) => {
-
   const updateAttack = (attack: number) => {
     setAttack(attack);
     engine?.voices.forEach((voice) => {
@@ -59,62 +58,64 @@ export const Envelope = ({
   };
 
   return (
-    <SectionWrapper name={name} wide={true}>
-      <Knob
-        exponent={1}
-        label="attack"
-        unit={"s"}
-        minValue={0}
-        maxValue={20}
-        currentValue={attack}
-        step={0.01}
-        onChange={updateAttack}
-        radius={24}
-        lfo={false}
-        startingPoint="beginning"
-        interactive={true}
-      />
-      <Knob
-        exponent={1}
-        label="decay"
-        unit={"s"}
-        minValue={0}
-        maxValue={20}
-        currentValue={decay}
-        step={0.01}
-        onChange={updateDecay}
-        radius={24}
-        lfo={false}
-        startingPoint="beginning"
-        interactive={true}
-      />
-      <Knob
-        exponent={1}
-        label="sustain"
-        minValue={0}
-        maxValue={1}
-        currentValue={sustain}
-        step={0.01}
-        onChange={updateSustain}
-        radius={24}
-        lfo={false}
-        startingPoint="beginning"
-        interactive={true}
-      />
-      <Knob
-        exponent={1}
-        label="release"
-        unit={"s"}
-        minValue={0}
-        maxValue={20}
-        currentValue={release}
-        step={0.01}
-        onChange={updateRelease}
-        radius={24}
-        lfo={false}
-        startingPoint="beginning"
-        interactive={true}
-      />
+    <SectionWrapper name={name}>
+      <div className={styles.grid}>
+        <Knob
+          exponent={1}
+          label="attack"
+          unit={"s"}
+          minValue={0}
+          maxValue={20}
+          currentValue={attack}
+          step={0.01}
+          onChange={updateAttack}
+          radius={24}
+          lfo={false}
+          startingPoint="beginning"
+          interactive={true}
+        />
+        <Knob
+          exponent={1}
+          label="decay"
+          unit={"s"}
+          minValue={0}
+          maxValue={20}
+          currentValue={decay}
+          step={0.01}
+          onChange={updateDecay}
+          radius={24}
+          lfo={false}
+          startingPoint="beginning"
+          interactive={true}
+        />
+        <Knob
+          exponent={1}
+          label="sustain"
+          minValue={0}
+          maxValue={1}
+          currentValue={sustain}
+          step={0.01}
+          onChange={updateSustain}
+          radius={24}
+          lfo={false}
+          startingPoint="beginning"
+          interactive={true}
+        />
+        <Knob
+          exponent={1}
+          label="release"
+          unit={"s"}
+          minValue={0}
+          maxValue={20}
+          currentValue={release}
+          step={0.01}
+          onChange={updateRelease}
+          radius={24}
+          lfo={false}
+          startingPoint="beginning"
+          interactive={true}
+        />
+      </div>
     </SectionWrapper>
   );
 };
