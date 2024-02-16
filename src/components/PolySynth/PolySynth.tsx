@@ -1,16 +1,16 @@
 "use-client";
 import { useState, useEffect, useRef, use } from "react";
 import * as Tone from "tone/build/esm/index";
-
+import styles from "./PolySynth.module.css";
 import { LFOTarget, Preset } from "@/lib/types/types";
-import Knob from "./Knob/Knob";
-import Oscillator from "./Oscillator/Oscillator";
-import Noise from "./Noise/Noise";
-import { Filter } from "./Filter/Filter";
+import Knob from "../Knob/Knob";
+import Oscillator from "../Oscillator/Oscillator";
+import Noise from "../Noise/Noise";
+import { Filter } from "../Filter/Filter";
 import { CustomVoice } from "@/lib/engines/CustomVoice";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
-import { Envelope } from "./Envelope/Envelope";
-import { LFO } from "./LFO/LFO";
+import { Envelope } from "../Envelope/Envelope";
+import { LFO } from "../LFO/LFO";
 
 const initPreset: Preset = {
   osc1: {
@@ -52,14 +52,15 @@ const initPreset: Preset = {
   volume: 0,
   LFO1: {
     type: "sine",
-    rate: "4n",
-    sync: false,
-    destinations: [
-      // { target: "osc1 fine", amount: 0.1 },
-      // { target: "osc1 volume", amount: 1 },
-      // { target: "filter cutoff", amount: 0.1 },
-      // { target: "osc1 pulse width", amount: 0.01 },
-    ],
+    rate: "8n",
+    sync: true,
+    destinations: [{ target: "osc1 fine", amount: 0.1 }],
+  },
+  LFO2: {
+    type: "square",
+    rate: "8n",
+    sync: true,
+    destinations: [{ target: "osc2 fine", amount: 0.1 }],
   },
 };
 
@@ -186,12 +187,18 @@ const PolySynth = () => {
     setUnison(preset.unison);
     // LFO1
     setLFO1Type(preset.LFO1?.type || "sine");
-    setLFO1Rate(preset.LFO1?.rate || 1);
+    setLFO1Rate(preset.LFO1?.rate || 0);
     setLFO1Sync(preset.LFO1?.sync || false);
-    setLFO1Destinations(preset.LFO1?.destinations);
+    setLFO1Destinations(preset.LFO1?.destinations || []);
+    // LFO2
+    setLFO2Type(preset.LFO2?.type || "sine");
+    setLFO2Rate(preset.LFO2?.rate || 0);
+    setLFO2Sync(preset.LFO2?.sync || false);
+    setLFO2Destinations(preset.LFO2?.destinations || []);
   }
 
   const assignLFO = (target: LFOTarget, lfo: 1 | 2, currentValue?: number) => {
+    const currentRate = lfo === 1 ? LFO1Rate : LFO2Rate;
     setIsSelectingLFOTarget(false);
     const targetExistsInLFO1 = polySynth.current?.LFO1.some(
       (lfo) => lfo.target === target
@@ -206,7 +213,7 @@ const PolySynth = () => {
       return;
     }
 
-    polySynth.current?.setLFO(target, lfo, currentValue);
+    polySynth.current?.setLFO(target, lfo, currentValue, currentRate);
     if (lfo === 1) {
       setLFO1Destinations([
         ...LFO1Destinations,
@@ -249,35 +256,9 @@ const PolySynth = () => {
     }
   }, [unison]);
 
-  // LFO1
-
-  // useEffect(() => {
-  //   if (LFO1Destinations) {
-  //     LFO1Destinations.forEach((destination) => {
-  //       polySynth.current?.setLFO(destination.target, 1);
-  //     });
-  //   }
-  // }, [LFO1Destinations]);
-
-  // useEffect(() => {
-  //   if (LFO1Type) {
-  //     polySynth.current?.LFO1.forEach((lfo) => {
-  //       lfo.LFO.set({ type: LFO1Type });
-  //     });
-  //   }
-  // }, [LFO1Type]);
-
-  // useEffect(() => {
-  //   if (LFO1Rate) {
-  //     polySynth.current?.LFO1.forEach((lfo) => {
-  //       lfo.LFO.set({ frequency: LFO1Rate });
-  //     });
-  //   }
-  // }, [LFO1Rate]);
-
   return (
-    <div className="flex w-full h-full gap-10 ">
-      <div>
+    <div className={styles.wrapper}>
+      <div className={styles.left}>
         <Oscillator
           engine={polySynth.current}
           name={"osc1"}
@@ -309,6 +290,8 @@ const PolySynth = () => {
           setPulseWidth={setOsc2PulseWidth}
           volume={osc2Volume}
           setVolume={setOsc2Volume}
+          lfo1={LFO1Destinations}
+          lfo2={LFO2Destinations}
           isSelectingLFO={isSelectingLFOTarget}
           assignLFO={assignLFO}
         />
@@ -323,7 +306,7 @@ const PolySynth = () => {
           assignLFO={assignLFO}
         />
       </div>
-      <div>
+      <div className={styles.right}>
         <Filter
           engine={polySynth.current}
           name={"filter"}
@@ -358,36 +341,40 @@ const PolySynth = () => {
           release={release}
           setRelease={setRelease}
         />
-        <LFO
-          engine={polySynth.current}
-          name={"lfo1"}
-          type={LFO1Type}
-          setType={setLFO1Type}
-          rate={LFO1Rate}
-          setRate={setLFO1Rate}
-          sync={LFO1Sync}
-          setSync={setLFO1Sync}
-          destinations={LFO1Destinations}
-          setDestinations={setLFO1Destinations}
-          isSelecting={isSelectingLFOTarget}
-          setIsSelecting={setIsSelectingLFOTarget}
-        />
-        <LFO
-          engine={polySynth.current}
-          name={"lfo2"}
-          type={LFO2Type}
-          setType={setLFO2Type}
-          rate={LFO2Rate}
-          setRate={setLFO2Rate}
-          sync={LFO2Sync}
-          setSync={setLFO2Sync}
-          destinations={LFO2Destinations}
-          setDestinations={setLFO2Destinations}
-          isSelecting={isSelectingLFOTarget}
-          setIsSelecting={setIsSelectingLFOTarget}
-        />
       </div>
-      <button onClick={() => Tone.start()}>Start</button>
+      <div className={styles.bottom}>
+        <div className={styles.LFOs}>
+          <LFO
+            engine={polySynth.current}
+            name={"lfo1"}
+            type={LFO1Type}
+            setType={setLFO1Type}
+            rate={LFO1Rate}
+            setRate={setLFO1Rate}
+            sync={LFO1Sync}
+            setSync={setLFO1Sync}
+            destinations={LFO1Destinations}
+            setDestinations={setLFO1Destinations}
+            isSelecting={isSelectingLFOTarget}
+            setIsSelecting={setIsSelectingLFOTarget}
+          />
+          <LFO
+            engine={polySynth.current}
+            name={"lfo2"}
+            type={LFO2Type}
+            setType={setLFO2Type}
+            rate={LFO2Rate}
+            setRate={setLFO2Rate}
+            sync={LFO2Sync}
+            setSync={setLFO2Sync}
+            destinations={LFO2Destinations}
+            setDestinations={setLFO2Destinations}
+            isSelecting={isSelectingLFOTarget}
+            setIsSelecting={setIsSelectingLFOTarget}
+          />
+        </div>
+      </div>
+      {/* <button onClick={() => Tone.start()}>Start</button> */}
     </div>
   );
 };

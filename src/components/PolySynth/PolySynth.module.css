@@ -1,0 +1,57 @@
+.wrapper {
+  padding: 30px;
+}
+
+.left {
+  position: fixed;
+  top: 30px;
+  left: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.bottom {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  
+  gap: 30px;
+  position: fixed;
+  top: 30px;
+  right: 30px;
+}
+
+.LFOs {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+@media screen and (max-width: 768px) {
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+  .left {
+    position: unset;
+  }
+  .right {
+    position: unset;
+  }
+  .bottom {
+    position: unset;
+  }
+  
+  .LFOs {
+    flex-direction: column;
+  }
+}
