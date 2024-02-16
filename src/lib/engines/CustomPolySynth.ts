@@ -7,6 +7,8 @@ import { CustomVoice } from "./CustomVoice";
 
 //TODO
 
+//pan spread, midi keyboard, unison
+
 //https://github.com/Tonejs/Tone.js/wiki/Arpeggiator
 
 type LFO = {
@@ -99,7 +101,7 @@ export default class CustomPolySynth {
   private loadLFOs(preset: Preset) {
     if (preset.LFO1) {
       preset.LFO1.destinations.forEach((p) => {
-        this.setLFO(p.target, 1);
+        this.setLFO(p.target, 1, p.amount);
         this.LFO1.forEach((lfo) => {
           lfo.LFO.set({
             type: preset.LFO1?.type,
@@ -107,6 +109,20 @@ export default class CustomPolySynth {
           });
         });
         this.LFO1.find((lfo) => lfo.target === p.target)?.LFO.set({
+          amplitude: p.amount,
+        });
+      });
+    }
+    if (preset.LFO2) {
+      preset.LFO2.destinations.forEach((p) => {
+        this.setLFO(p.target, 2, p.amount);
+        this.LFO2.forEach((lfo) => {
+          lfo.LFO.set({
+            type: preset.LFO2?.type,
+            frequency: preset.LFO2?.rate,
+          });
+        });
+        this.LFO2.find((lfo) => lfo.target === p.target)?.LFO.set({
           amplitude: p.amount,
         });
       });
@@ -164,7 +180,7 @@ export default class CustomPolySynth {
 
  
 
-  setLFO(target: LFOTarget, lfo: 1 | 2, currentValue?: number) {
+  setLFO(target: LFOTarget, lfo: 1 | 2, currentValue?: number, rate?: number | string) {
     let LFO: Tone.LFO;
     let lfoSelected = lfo === 1 ? this.LFO1 : this.LFO2;
 
@@ -174,6 +190,7 @@ export default class CustomPolySynth {
           min: -2400 + ((currentValue ? currentValue : this.preset.osc1.transpose) * 100),
           max: 2400 + ((currentValue ? currentValue : this.preset.osc1.transpose) * 100),
           amplitude: 0.5,
+          frequency: rate
         })
           .chain(...this.voices.map((v) => v.oscillator.detune))
           .start();
@@ -185,6 +202,7 @@ export default class CustomPolySynth {
           min: -2400 + ((currentValue ? currentValue : this.preset.osc2.transpose) * 100),
           max: 2400 + ((currentValue ? currentValue : this.preset.osc2.transpose) * 100),
           amplitude: 0.5,
+          frequency: rate 
         })
           .chain(...this.voices.map((v) => v.oscillator2.detune))
           .start();
@@ -196,6 +214,7 @@ export default class CustomPolySynth {
           min: -100 + (currentValue ? currentValue : this.preset.osc1.detune),
           max: 100 + (currentValue ? currentValue : this.preset.osc1.detune),
           amplitude: 0.5,
+          frequency: rate
         }).start();
         this.voices.forEach((v) => {
           LFO.connect(v.detune);
@@ -207,6 +226,7 @@ export default class CustomPolySynth {
           min: -100 + (currentValue ? currentValue : this.preset.osc2.detune),
           max: 100 + (currentValue ? currentValue : this.preset.osc2.detune),
           amplitude: 0.5,
+          frequency: rate
         }).start();
         this.voices.forEach((v) => {
           LFO.connect(v.detune2);
@@ -218,6 +238,7 @@ export default class CustomPolySynth {
           min: -1 + (currentValue ? currentValue : this.preset.osc1.pulseWidth),
           max: 1 + (currentValue ? currentValue : this.preset.osc1.pulseWidth),
           amplitude: 0.5,
+          frequency: rate
         })
           .start();
         this.voices.forEach((v) => {LFO.connect(v.oscillator.width)});
@@ -228,6 +249,7 @@ export default class CustomPolySynth {
           min: -1 + (currentValue ? currentValue : this.preset.osc2.pulseWidth),
           max: 1 + (currentValue ? currentValue : this.preset.osc2.pulseWidth),
           amplitude: 0.5,
+          frequency: rate
         })
           .start();
         this.voices.forEach((v) => {LFO.connect(v.oscillator2.width)});
@@ -238,6 +260,7 @@ export default class CustomPolySynth {
           min: -70 + (currentValue ? currentValue : this.preset.osc1.volume),
           max: 12 + (currentValue ? currentValue : this.preset.osc1.volume),
           amplitude: 0.5,
+          frequency: rate
         }).start();
         this.voices.forEach((v) => {
           LFO.connect(v.oscillator.volume);
@@ -249,6 +272,7 @@ export default class CustomPolySynth {
           min: -70 + (currentValue ? currentValue : this.preset.osc2.volume),
           max: 12 + (currentValue ? currentValue : this.preset.osc2.volume),
           amplitude: 0.5,
+          frequency: rate
         }).start();
         this.voices.forEach((v) => {
           LFO.connect(v.oscillator2.volume);
@@ -260,6 +284,7 @@ export default class CustomPolySynth {
           min: this.preset.filter.frequency - 10000,
           max: this.preset.filter.frequency + 10000,
           amplitude: 0.5,
+          frequency: rate
         }).start();
         this.voices.forEach((v) => {
           LFO.connect(v.filter.frequency);
@@ -272,6 +297,7 @@ export default class CustomPolySynth {
             min: -70 + (currentValue ? currentValue : this.preset.noise.volume),
             max: 12 + (currentValue ? currentValue : this.preset.noise.volume),
             amplitude: 0.5,
+            frequency: rate
           }).start();
           this.voices.forEach((v) => {
             LFO.connect(v.noise.volume);
