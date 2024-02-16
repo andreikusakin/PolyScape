@@ -6,7 +6,6 @@
   letter-spacing: calc(var(--main-synth-ui-font-size) * 0.2);
   height: fit-content;
   text-transform: uppercase;
-  margin: 30px;
   width: fit-content;
 }
 
