@@ -1,4 +1,5 @@
 import * as Tone from "tone/build/esm/index";
+import { WebMidi } from "webmidi";
 // @ts-ignore
 import AudioKeys from "audiokeys";
 import { Preset, LFOTarget, LFODestination } from "../types/types";
@@ -11,13 +12,16 @@ import { CustomVoice } from "./CustomVoice";
 
 //https://github.com/Tonejs/Tone.js/wiki/Arpeggiator
 
+//fix voice allocation
+
 type LFO = {
   target: LFOTarget;
   LFO: Tone.LFO;
+  gain?: Tone.Gain;
 };
 
 export default class CustomPolySynth {
-  private voiceCount: number = 8;
+  private voiceCount: number = 16;
   LFO1Destinations = [];
   LFO2Destinations: Tone.InputNode[] | undefined = [];
   voices: CustomVoice[] = [];
@@ -47,6 +51,7 @@ export default class CustomPolySynth {
     this.loadFilterPreset(preset);
     this.loadLFOs(preset);
     this.setupKeyboard();
+    this.setupMidi();
     this.unison = preset.unison;
   }
 
@@ -147,6 +152,29 @@ export default class CustomPolySynth {
     });
   }
 
+  private setupMidi() {
+    WebMidi.enable((err) => {
+      if (err) {
+        console.log("WebMidi could not be enabled.", err);
+      } else {
+        console.log(WebMidi.inputs);
+        if (WebMidi.inputs.length < 1) {
+          console.log("No MIDI devices detected");
+          return;
+        }
+        const input = WebMidi.inputs[1];
+        input.addListener("noteon", "all", (e) => {
+          const frequency = Tone.Frequency(e.note.number, "midi").toFrequency();
+          this.triggerAttack(frequency, Tone.now(), e.velocity);
+        });
+        input.addListener("noteoff", "all", (e) => {
+          const frequency = Tone.Frequency(e.note.number, "midi").toFrequency();
+          this.triggerRelease(frequency);
+        });
+      }
+    });
+  }
+
   triggerAttack(frequency: number, time: Tone.Unit.Time, velocity: number) {
     if (this.unison) {
       this.voices.forEach((v) => {
@@ -180,31 +208,46 @@ export default class CustomPolySynth {
     }
   }
 
- 
-
-  setLFO(target: LFOTarget, lfo: 1 | 2, currentValue?: number, rate?: number | string) {
+  setLFO(
+    target: LFOTarget,
+    lfo: 1 | 2,
+    currentValue?: number,
+    rate?: number | string
+  ) {
     let LFO: Tone.LFO;
+    let gain: Tone.Gain;
     let lfoSelected = lfo === 1 ? this.LFO1 : this.LFO2;
 
     switch (target) {
       case `osc1 coarse`:
+        gain = new Tone.Gain();
         LFO = new Tone.LFO({
-          min: -2400 + ((currentValue ? currentValue : this.preset.osc1.transpose) * 100),
-          max: 2400 + ((currentValue ? currentValue : this.preset.osc1.transpose) * 100),
+          min:
+            -2400 +
+            (currentValue ? currentValue : this.preset.osc1.transpose) * 100,
+          max:
+            2400 +
+            (currentValue ? currentValue : this.preset.osc1.transpose) * 100,
           amplitude: 0.5,
-          frequency: rate
-        })
-          .chain(...this.voices.map((v) => v.oscillator.detune))
-          .start();
-        lfoSelected.push({ target: target, LFO: LFO });
+          frequency: rate,
+        }).start();
+        Tone.connect(LFO, gain);
+        this.voices.forEach((v) => {
+          gain.connect(v.oscillator.detune);
+        });
+        lfoSelected.push({ target: target, LFO: LFO, gain: gain });
         break;
 
       case `osc2 coarse`:
         LFO = new Tone.LFO({
-          min: -2400 + ((currentValue ? currentValue : this.preset.osc2.transpose) * 100),
-          max: 2400 + ((currentValue ? currentValue : this.preset.osc2.transpose) * 100),
+          min:
+            -2400 +
+            (currentValue ? currentValue : this.preset.osc2.transpose) * 100,
+          max:
+            2400 +
+            (currentValue ? currentValue : this.preset.osc2.transpose) * 100,
           amplitude: 0.5,
-          frequency: rate 
+          frequency: rate,
         })
           .chain(...this.voices.map((v) => v.oscillator2.detune))
           .start();
@@ -212,57 +255,70 @@ export default class CustomPolySynth {
         break;
 
       case `osc1 fine`:
+        gain = new Tone.Gain();
         LFO = new Tone.LFO({
           min: -100 + (currentValue ? currentValue : this.preset.osc1.detune),
           max: 100 + (currentValue ? currentValue : this.preset.osc1.detune),
           amplitude: 0.5,
-          frequency: rate
+          frequency: rate,
         }).start();
+        Tone.connect(LFO, gain);
         this.voices.forEach((v) => {
-          LFO.connect(v.detune);
+          gain.connect(v.oscillator.detune);
         });
-        lfoSelected.push({ target: target, LFO: LFO });
+        lfoSelected.push({ target: target, LFO: LFO, gain: gain });
         break;
       case `osc2 fine`:
+        gain = new Tone.Gain();
         LFO = new Tone.LFO({
           min: -100 + (currentValue ? currentValue : this.preset.osc2.detune),
           max: 100 + (currentValue ? currentValue : this.preset.osc2.detune),
           amplitude: 0.5,
-          frequency: rate
+          frequency: rate,
         }).start();
+        Tone.connect(LFO, gain);
         this.voices.forEach((v) => {
-          LFO.connect(v.detune2);
+          gain.connect(v.detune2);
         });
-        lfoSelected.push({ target: target, LFO: LFO });
+        lfoSelected.push({ target: target, LFO: LFO, gain: gain });
         break;
       case `osc1 pulse width`:
+        gain = new Tone.Gain();
         LFO = new Tone.LFO({
           min: -1 + (currentValue ? currentValue : this.preset.osc1.pulseWidth),
           max: 1 + (currentValue ? currentValue : this.preset.osc1.pulseWidth),
           amplitude: 0.5,
-          frequency: rate
-        })
-          .start();
-        this.voices.forEach((v) => {LFO.connect(v.oscillator.width)});
-        lfoSelected.push({ target: target, LFO: LFO });
+          frequency: rate,
+        }).start();
+        Tone.connect(LFO, gain);
+        this.voices.forEach((v) => {
+          if (v.oscillator.type === "pulse" && v.oscillator.width)
+            gain.connect(v.oscillator.width);
+        });
+        lfoSelected.push({ target: target, LFO: LFO, gain: gain });
         break;
       case `osc2 pulse width`:
+        gain = new Tone.Gain();
         LFO = new Tone.LFO({
           min: -1 + (currentValue ? currentValue : this.preset.osc2.pulseWidth),
           max: 1 + (currentValue ? currentValue : this.preset.osc2.pulseWidth),
           amplitude: 0.5,
-          frequency: rate
-        })
-          .start();
-        this.voices.forEach((v) => {LFO.connect(v.oscillator2.width)});
-        lfoSelected.push({ target: target, LFO: LFO });
+          frequency: rate,
+        }).start();
+        Tone.connect(LFO, gain);
+        this.voices.forEach((v) => {
+          if (v.oscillator2.type === "pulse" && v.oscillator2.width)
+            gain.connect(v.oscillator2.width);
+        });
+        lfoSelected.push({ target: target, LFO: LFO, gain: gain });
         break;
       case `osc1 volume`:
+        
         LFO = new Tone.LFO({
           min: -70 + (currentValue ? currentValue : this.preset.osc1.volume),
           max: 12 + (currentValue ? currentValue : this.preset.osc1.volume),
           amplitude: 0.5,
-          frequency: rate
+          frequency: rate,
         }).start();
         this.voices.forEach((v) => {
           LFO.connect(v.oscillator.volume);
@@ -274,7 +330,7 @@ export default class CustomPolySynth {
           min: -70 + (currentValue ? currentValue : this.preset.osc2.volume),
           max: 12 + (currentValue ? currentValue : this.preset.osc2.volume),
           amplitude: 0.5,
-          frequency: rate
+          frequency: rate,
         }).start();
         this.voices.forEach((v) => {
           LFO.connect(v.oscillator2.volume);
@@ -286,7 +342,7 @@ export default class CustomPolySynth {
           min: this.preset.filter.frequency - 10000,
           max: this.preset.filter.frequency + 10000,
           amplitude: 0.5,
-          frequency: rate
+          frequency: rate,
         }).start();
         this.voices.forEach((v) => {
           LFO.connect(v.filter.frequency);
@@ -294,21 +350,38 @@ export default class CustomPolySynth {
         lfoSelected.push({ target: target, LFO: LFO });
         break;
 
-        case "noise volume":
-          LFO = new Tone.LFO({
-            min: -70 + (currentValue ? currentValue : this.preset.noise.volume),
-            max: 12 + (currentValue ? currentValue : this.preset.noise.volume),
-            amplitude: 0.5,
-            frequency: rate
-          }).start();
-          this.voices.forEach((v) => {
-            LFO.connect(v.noise.volume);
-          });
-          lfoSelected.push({ target: target, LFO: LFO });
-          break;
+      case "noise volume":
+        LFO = new Tone.LFO({
+          min: -70 + (currentValue ? currentValue : this.preset.noise.volume),
+          max: 12 + (currentValue ? currentValue : this.preset.noise.volume),
+          amplitude: 0.5,
+          frequency: rate,
+        }).start();
+        this.voices.forEach((v) => {
+          LFO.connect(v.noise.volume);
+        });
+        lfoSelected.push({ target: target, LFO: LFO });
+        break;
 
       default:
         break;
     }
+  }
+
+  disconnectLFO(target: LFOTarget, lfo: 1 | 2) {
+    let lfoSelected = lfo === 1 ? this.LFO1 : this.LFO2;
+    lfoSelected.forEach((lfo) => {
+      if (lfo.target === target) {
+        lfo.LFO.stop();
+        lfo.LFO.dispose();
+        lfo.gain?.dispose();
+        // this.voices.forEach((v) => {
+
+        //   v.oscillator2.stop();
+        // });
+      }
+    });
+    const filteredLFOs = lfoSelected.filter((lfo) => lfo.target !== target);
+    lfo === 1 ? (this.LFO1 = filteredLFOs) : (this.LFO2 = filteredLFOs);
   }
 }
