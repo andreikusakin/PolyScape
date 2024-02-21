@@ -12,6 +12,8 @@ import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { Envelope } from "../Envelope/Envelope";
 import { LFO } from "../LFO/LFO";
 import Effects from "@/lib/engines/Effects";
+import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
+import { Header } from "../Header/Header";
 
 const initPreset: Preset = {
   osc1: {
@@ -55,19 +57,22 @@ const initPreset: Preset = {
     type: "sine",
     rate: "8n",
     sync: true,
-    destinations: [{ target: "osc1 fine", amount: 0.1 }],
+    destinations: [
+      // { target: "osc1 fine", amount: 0.1 }
+    ],
   },
   LFO2: {
     type: "square",
     rate: "8n",
     sync: true,
-    destinations: [{ target: "osc2 fine", amount: 0.1 }],
+    destinations: [
+      // { target: "osc2 fine", amount: 0.1 }
+    ],
   },
   effects: {
     reverb: { decay: 5, wet: 0.2, preDelay: 0 },
     feedbackDelay: { delayTime: "8n", feedback: 0.5, wet: 0.5 },
-  
-  }
+  },
 };
 
 const PolySynth = () => {
@@ -154,6 +159,8 @@ const PolySynth = () => {
   // const [LFO2Amount, setLFO2Amount] = useState<Tone.Unit.NormalRange>();
   const [LFO2Destinations, setLFO2Destinations] = useState<[]>([]);
 
+  console.log(LFO1Sync, LFO1Rate)
+
   function loadPreset(preset: Preset) {
     // OSC1
     setOsc1Type(preset.osc1.type);
@@ -236,15 +243,18 @@ const PolySynth = () => {
 
   // initialize synth
   useEffect(() => {
-    
-    
     polySynth.current = new CustomPolySynth(initPreset);
-    effects.current = new Effects(polySynth.current.outputNode, initPreset.effects);
+    effects.current = new Effects(
+      polySynth.current.outputNode,
+      initPreset.effects
+    );
     loadPreset(preset);
-    const masterNode = new Tone.Gain().chain(effects.current.outputNode, Tone.Destination)
+    const masterNode = new Tone.Gain().chain(
+      effects.current.outputNode,
+      Tone.Destination
+    );
     // effects.current.addEffect("feedbackDelay");
     effects.current.addEffect("reverb");
-    
   }, [preset]);
 
   // // update fx
@@ -264,95 +274,99 @@ const PolySynth = () => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.left}>
-        <Oscillator
-          engine={polySynth.current}
-          name={"osc1"}
-          oscType={osc1type}
-          setOscillatorType={setOsc1Type}
-          coarse={osc1Coarse}
-          setCoarse={setosc1Coarse}
-          detune={osc1Fine}
-          setDetune={setOsc1Fine}
-          pulseWidth={osc1PulseWidth}
-          setPulseWidth={setOsc1PulseWidth}
-          volume={osc1Volume}
-          setVolume={setOsc1Volume}
-          lfo1={LFO1Destinations}
-          lfo2={LFO2Destinations}
-          isSelectingLFO={isSelectingLFOTarget}
-          assignLFO={assignLFO}
-        />
-        <Oscillator
-          engine={polySynth.current}
-          name={"osc2"}
-          oscType={oscillator2Type}
-          setOscillatorType={setOscillator2Type}
-          coarse={osc2Transpose}
-          setCoarse={setOsc2Transpose}
-          detune={osc2Fine}
-          setDetune={setOsc2Fine}
-          pulseWidth={osc2PulseWidth}
-          setPulseWidth={setOsc2PulseWidth}
-          volume={osc2Volume}
-          setVolume={setOsc2Volume}
-          lfo1={LFO1Destinations}
-          lfo2={LFO2Destinations}
-          isSelectingLFO={isSelectingLFOTarget}
-          assignLFO={assignLFO}
-        />
-        <Noise
-          engine={polySynth.current}
-          name={"noise"}
-          type={noiseType}
-          setType={setNoiseType}
-          volume={noiseVolume}
-          setVolume={setNoiseVolume}
-          isSelectingLFO={isSelectingLFOTarget}
-          assignLFO={assignLFO}
-        />
-      </div>
-      <div className={styles.right}>
-        <Filter
-          engine={polySynth.current}
-          name={"filter"}
-          filterType={filterType}
-          setFilterType={setFilterType}
-          frequency={filterEnvelopeBaseFrequency}
-          setFrequency={setFilterEnvelopeBaseFrequency}
-          rolloff={filterRolloff}
-          setRolloff={setFilterRolloff}
-          resonance={filterQ}
-          setResonance={setFilterQ}
-          envAmount={filterEnvelopeOctaves}
-          setEnvAmount={setFilterEnvelopeOctaves}
-          attack={filterEnvelopeAttack}
-          setAttack={setFilterEnvelopeAttack}
-          decay={filterEnvelopeDecay}
-          setDecay={setFilterEnvelopeDecay}
-          sustain={filterEnvelopeSustain}
-          setSustain={setFilterEnvelopeSustain}
-          release={filterEnvelopeRelease}
-          setRelease={setFilterEnvelopeRelease}
-        />
-        <Envelope
-          engine={polySynth.current}
-          name={"amplitude"}
-          attack={attack}
-          setAttack={setAttack}
-          decay={decay}
-          setDecay={setDecay}
-          sustain={sustain}
-          setSustain={setSustain}
-          release={release}
-          setRelease={setRelease}
-        />
+      <Header />
+      <div className={styles.left_right}>
+        <div className={styles.left}>
+          <Oscillator
+            engine={polySynth.current}
+            name={"osc1"}
+            oscType={osc1type}
+            setOscillatorType={setOsc1Type}
+            coarse={osc1Coarse}
+            setCoarse={setosc1Coarse}
+            detune={osc1Fine}
+            setDetune={setOsc1Fine}
+            pulseWidth={osc1PulseWidth}
+            setPulseWidth={setOsc1PulseWidth}
+            volume={osc1Volume}
+            setVolume={setOsc1Volume}
+            lfo1={LFO1Destinations}
+            lfo2={LFO2Destinations}
+            isSelectingLFO={isSelectingLFOTarget}
+            assignLFO={assignLFO}
+          />
+          <input type="range" min="-1200" max="1200" step="1" onChange={(e) => polySynth.current?.voices.forEach((v) => v.oscillator.set({ detune:  Number(e.target.value)}))}/>
+          <Oscillator
+            engine={polySynth.current}
+            name={"osc2"}
+            oscType={oscillator2Type}
+            setOscillatorType={setOscillator2Type}
+            coarse={osc2Transpose}
+            setCoarse={setOsc2Transpose}
+            detune={osc2Fine}
+            setDetune={setOsc2Fine}
+            pulseWidth={osc2PulseWidth}
+            setPulseWidth={setOsc2PulseWidth}
+            volume={osc2Volume}
+            setVolume={setOsc2Volume}
+            lfo1={LFO1Destinations}
+            lfo2={LFO2Destinations}
+            isSelectingLFO={isSelectingLFOTarget}
+            assignLFO={assignLFO}
+          />
+          <Noise
+            engine={polySynth.current}
+            name={"noise"}
+            type={noiseType}
+            setType={setNoiseType}
+            volume={noiseVolume}
+            setVolume={setNoiseVolume}
+            isSelectingLFO={isSelectingLFOTarget}
+            assignLFO={assignLFO}
+          />
+        </div>
+        <div className={styles.right}>
+          <Filter
+            engine={polySynth.current}
+            name={"filter"}
+            filterType={filterType}
+            setFilterType={setFilterType}
+            frequency={filterEnvelopeBaseFrequency}
+            setFrequency={setFilterEnvelopeBaseFrequency}
+            rolloff={filterRolloff}
+            setRolloff={setFilterRolloff}
+            resonance={filterQ}
+            setResonance={setFilterQ}
+            envAmount={filterEnvelopeOctaves}
+            setEnvAmount={setFilterEnvelopeOctaves}
+            attack={filterEnvelopeAttack}
+            setAttack={setFilterEnvelopeAttack}
+            decay={filterEnvelopeDecay}
+            setDecay={setFilterEnvelopeDecay}
+            sustain={filterEnvelopeSustain}
+            setSustain={setFilterEnvelopeSustain}
+            release={filterEnvelopeRelease}
+            setRelease={setFilterEnvelopeRelease}
+          />
+          <Envelope
+            engine={polySynth.current}
+            name={"amplitude"}
+            attack={attack}
+            setAttack={setAttack}
+            decay={decay}
+            setDecay={setDecay}
+            sustain={sustain}
+            setSustain={setSustain}
+            release={release}
+            setRelease={setRelease}
+          />
+        </div>
       </div>
       <div className={styles.bottom}>
         <div className={styles.LFOs}>
           <LFO
             engine={polySynth.current}
-            name={"lfo1"}
+            lfoNumber={1}
             type={LFO1Type}
             setType={setLFO1Type}
             rate={LFO1Rate}
@@ -361,12 +375,11 @@ const PolySynth = () => {
             setSync={setLFO1Sync}
             destinations={LFO1Destinations}
             setDestinations={setLFO1Destinations}
-            isSelecting={isSelectingLFOTarget}
             setIsSelecting={setIsSelectingLFOTarget}
           />
           <LFO
             engine={polySynth.current}
-            name={"lfo2"}
+            lfoNumber={2}
             type={LFO2Type}
             setType={setLFO2Type}
             rate={LFO2Rate}
@@ -375,9 +388,12 @@ const PolySynth = () => {
             setSync={setLFO2Sync}
             destinations={LFO2Destinations}
             setDestinations={setLFO2Destinations}
-            isSelecting={isSelectingLFOTarget}
             setIsSelecting={setIsSelectingLFOTarget}
           />
+
+        </div>
+        <div className={styles.effects}>
+          <SectionWrapper name={"effects"}>fx</SectionWrapper>
         </div>
       </div>
       {/* <button onClick={() => Tone.start()}>Start</button> */}
