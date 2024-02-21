@@ -8,7 +8,7 @@ import { Slider } from "../Slider/Slider";
 
 type LFOProps = {
   engine?: CustomPolySynth;
-  name: string;
+  lfoNumber: 1 | 2;
   type: "sine" | "triangle" | "sawtooth" | "square";
   setType: (type: "sine" | "triangle" | "sawtooth" | "square") => void;
   rate: Tone.Unit.Frequency | Tone.FrequencyClass | number | string;
@@ -17,13 +17,12 @@ type LFOProps = {
   setSync: (sync: boolean) => void;
   destinations: [];
   setDestinations: ([]) => void;
-  isSelecting: false | 1 | 2;
   setIsSelecting: (lfo: false | 1 | 2) => void;
 };
 
 export const LFO = ({
   engine,
-  name,
+  lfoNumber,
   type,
   setType,
   rate,
@@ -32,55 +31,32 @@ export const LFO = ({
   setSync,
   destinations,
   setDestinations,
-  isSelecting,
   setIsSelecting,
 }: LFOProps) => {
+  const selectedLFO = lfoNumber === 1 ? engine?.LFO1 : engine?.LFO2;
   const handleAssignClick = () => {
-    setIsSelecting(name === "lfo1" ? 1 : 2);
+    setIsSelecting(lfoNumber);
   };
 
   const updateWaveformType = (
     type: "sine" | "sawtooth" | "square" | "triangle"
   ) => {
     setType(type);
-    name === "lfo1"
-      ? engine?.LFO1.forEach((lfo) => (lfo.LFO.type = type))
-      : engine?.LFO2.forEach((lfo) => (lfo.LFO.type = type));
+
+    selectedLFO?.forEach((lfo) => (lfo.LFO.type = type));
   };
 
   const updateRate = (value: Tone.Unit.Frequency) => {
     setRate(value);
-    name === "lfo1"
-      ? engine?.LFO1.forEach((lfo) => (lfo.LFO.frequency.value = value))
-      : engine?.LFO2.forEach((lfo) => (lfo.LFO.frequency.value = value));
+
+    selectedLFO?.forEach((lfo) => (lfo.LFO.frequency.value = value));
   };
 
   const handleDoubleClick = (target: LFOTarget) => {
-    if (name === "lfo1") {
-      setDestinations([
-        ...destinations.filter((d: LFODestination) => d.target !== target),
-      ]);
-      engine?.LFO1.forEach((lfo) => {
-        if (lfo.target === target) {
-          lfo.LFO.stop();
-          lfo.LFO.disconnect();
-        }
-      });
-      const filteredLFOs = engine?.LFO1.filter((lfo) => lfo.target !== target);
-      if (engine) engine.LFO1 = filteredLFOs ?? [];
-    } else {
-      setDestinations([
-        ...destinations.filter((d: LFODestination) => d.target !== target),
-      ]);
-      engine?.LFO2.forEach((lfo) => {
-        if (lfo.target === target) {
-          lfo.LFO.stop();
-          lfo.LFO.disconnect();
-        }
-      });
-      const filteredLFOs = engine?.LFO2.filter((lfo) => lfo.target !== target);
-      if (engine) engine.LFO2 = filteredLFOs ?? [];
-    }
+    setDestinations([
+      ...destinations.filter((d: LFODestination) => d.target !== target),
+    ]);
+    engine?.disconnectLFO(target, lfoNumber);
   };
 
   const updateLFOAmount = (target: LFOTarget, amount: number) => {
@@ -89,26 +65,20 @@ export const LFO = ({
         d.target === target ? { ...d, amount: amount } : d
       ),
     ]);
-    name === "lfo1"
-      ? engine?.LFO1.forEach((lfo) => {
-          if (lfo.target === target) {
-            lfo.LFO.amplitude.value = amount;
-          }
-        })
-      : engine?.LFO2.forEach((lfo) => {
-          if (lfo.target === target) {
-            lfo.LFO.amplitude.value = amount;
-          }
-        });
+    selectedLFO?.forEach((lfo) => {
+      if (lfo.target === target) {
+        lfo.LFO.amplitude.value = amount;
+      }
+    });
   };
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.name}>{name}</div>
+      <div className={styles.name}>{`lfo${lfoNumber}`}</div>
       <div
         className={[
           styles.container,
-          name === "lfo1" ? styles.borderLFO1 : styles.borderLFO2,
+          lfoNumber === 1 ? styles.borderLFO1 : styles.borderLFO2,
         ].join(" ")}
       >
         <div>
@@ -169,7 +139,7 @@ export const LFO = ({
             className={[
               styles.sync,
               sync
-                ? name === "lfo1"
+                ? lfoNumber === 1
                   ? styles.sync_activeLFO1
                   : styles.sync_activeLFO2
                 : "",
@@ -197,7 +167,7 @@ export const LFO = ({
             {destinations.map((d, i) => (
               <Slider
                 key={i}
-                lfoName={name}
+                lfoName={`lfo${lfoNumber}`}
                 target={d.target}
                 value={d.amount}
                 min={0}
