@@ -49,9 +49,12 @@ const Oscillator: React.FC<OscillatorProps> = ({
     type: "sine" | "sawtooth" | "pulse" | "triangle"
   ) => {
     setOscillatorType(type);
-    name === "osc1"
-      ? engine?.voices.forEach((v) => (v.oscillator.type = type))
-      : engine?.voices.forEach((v) => (v.oscillator2.type = type));
+    if (name === "osc1") {
+      engine?.voices.forEach((v) => (v.oscillator.type = type));
+      engine?.disconnectLFO("osc1 pulse width", 1);
+    } else {
+      engine?.voices.forEach((v) => (v.oscillator2.type = type));
+    }
 
     if (type === "pulse") {
       name === "osc1"
@@ -64,51 +67,17 @@ const Oscillator: React.FC<OscillatorProps> = ({
 
   const updatePulseWidth = (value: number) => {
     setPulseWidth(value);
-    if (name === "osc1") {
-      engine?.LFO1.find((lfo) => lfo.target === "osc1 pulse width")?.LFO.set({
-        min: -1 + value,
-        max: 1 + value,
-      });
-      engine?.LFO2.find((lfo) => lfo.target === "osc1 pulse width")?.LFO.set({
-        min: -1 + value,
-        max: 1 + value,
-      });
-      engine?.voices.forEach((v) => (v.oscillator.width.value = value));
-    } else {
-      engine?.LFO1.find((lfo) => lfo.target === "osc2 pulse width")?.LFO.set({
-        min: -1 + value,
-        max: 1 + value,
-      });
-      engine?.LFO2.find((lfo) => lfo.target === "osc2 pulse width")?.LFO.set({
-        min: -1 + value,
-        max: 1 + value,
-      });
-      engine?.voices.forEach((v) => (v.oscillator2.width.value = value));
-    }
+    name === "osc1"
+      ? engine?.voices.forEach((v) => (v.oscillator.width.value = value))
+      : engine?.voices.forEach((v) => (v.oscillator2.width.value = value));
   };
 
   const updateCoarse = (value: number) => {
     setCoarse(value);
-    engine?.LFO1.find((lfo) => lfo.target === "osc1 coarse")?.LFO.set({
-      min: -2400 + value * 100,
-      max: 2400 + value * 100,
-    });
-    engine?.LFO2.find((lfo) => lfo.target === "osc1 coarse")?.LFO.set({
-      min: -2400 + value * 100,
-      max: 2400 + value * 100,
-    });
-    engine?.LFO1.find((lfo) => lfo.target === "osc2 coarse")?.LFO.set({
-      min: -2400 + value * 100,
-      max: 2400 + value * 100,
-    });
-    engine?.LFO2.find((lfo) => lfo.target === "osc2 coarse")?.LFO.set({
-      min: -2400 + value * 100,
-      max: 2400 + value * 100,
-    });
-
     const coarseValue = value * 100 + detune;
+
     name === "osc1"
-      ? engine?.voices.forEach((v) => (v.oscillator.detune.value = coarseValue))
+      ? engine?.voices.forEach((v) => v.oscillator.set({ detune: coarseValue }))
       : engine?.voices.forEach(
           (v) => (v.oscillator2.detune.value = coarseValue)
         );
@@ -116,22 +85,6 @@ const Oscillator: React.FC<OscillatorProps> = ({
 
   const updateFine = (value: number) => {
     setDetune(value);
-    engine?.LFO1.find((lfo) => lfo.target === "osc1 fine")?.LFO.set({
-      min: -100 + value,
-      max: 100 + value,
-    });
-    engine?.LFO2.find((lfo) => lfo.target === "osc1 fine")?.LFO.set({
-      min: -100 + value,
-      max: 100 + value,
-    });
-    engine?.LFO1.find((lfo) => lfo.target === "osc2 fine")?.LFO.set({
-      min: -100 + value,
-      max: 100 + value,
-    });
-    engine?.LFO2.find((lfo) => lfo.target === "osc2 fine")?.LFO.set({
-      min: -100 + value,
-      max: 100 + value,
-    });
     const fineValue = value + coarse * 100;
     name === "osc1"
       ? engine?.voices.forEach((v) => (v.oscillator.detune.value = fineValue))
@@ -228,7 +181,7 @@ const Oscillator: React.FC<OscillatorProps> = ({
           startingPoint={"middle"}
           interactive={true}
           assignLFO={assignLFO}
-          lfoAmount={lfo1?.find((lfo) => lfo.target === "osc1 coarse")?.amount}
+          // lfoAmount={lfo1?.find((lfo) => lfo.target === "osc1 coarse")?.amount}
         />
         <Knob
           exponent={1}
