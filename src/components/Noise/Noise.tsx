@@ -2,16 +2,14 @@ import Knob from "../Knob/Knob";
 import styles from "./Noise.module.css";
 import { NoiseShape } from "../Shapes";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
-import { LFOTarget } from "@/lib/types/types";
+import { LFOTarget, Preset } from "@/lib/types/types";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 
 type NoiseProps = {
   engine: CustomPolySynth | undefined;
   name: string;
-  type: "white" | "pink" | "brown";
-  setType: (type: "white" | "pink" | "brown") => void;
-  volume: number;
-  setVolume: (volume: number) => void;
+  settings: Preset["noise"];
+  updateSettings: (settings: Preset["noise"]) => void;
   isSelectingLFO: false | 1 | 2;
   assignLFO: (target: LFOTarget, lfo: 1 | 2) => void;
 };
@@ -19,25 +17,23 @@ type NoiseProps = {
 export default function Noise({
   engine,
   name,
-  type,
-  setType,
-  volume,
-  setVolume,
+  settings,
+  updateSettings,
   isSelectingLFO,
   assignLFO,
 }: NoiseProps) {
   const colorValue =
-    type === "white" ? "#FFFFFF" : type === "pink" ? "#E859FF" : "#FF543D";
+    settings.type === "white" ? "#FFFFFF" : settings.type === "pink" ? "#E859FF" : "#FF543D";
 
   const updateType = (type: "white" | "pink" | "brown") => {
-    setType(type);
+    updateSettings({ ...settings, type: type });
     engine?.voices.forEach((voice) => {
       voice.noise.type = type;
     });
   };
 
   const updateVolume = (value: number) => {
-    setVolume(value);
+    updateSettings({ ...settings, volume: value });
     engine?.LFO1.find((lfo) => lfo.target === "noise volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
@@ -54,19 +50,19 @@ export default function Noise({
         <ul className={styles.types}>
           <li
             onClick={() => updateType("white")}
-            className={type === "white" ? styles.selected : ""}
+            className={settings.type === "white" ? styles.selected : ""}
           >
             white
           </li>
           <li
             onClick={() => updateType("pink")}
-            className={type === "pink" ? styles.selected : ""}
+            className={settings.type === "pink" ? styles.selected : ""}
           >
             pink
           </li>
           <li
             onClick={() => updateType("brown")}
-            className={type === "brown" ? styles.selected : ""}
+            className={settings.type === "brown" ? styles.selected : ""}
           >
             red
           </li>
@@ -83,7 +79,7 @@ export default function Noise({
           minValue={-70}
           maxValue={12}
           unit={"db"}
-          currentValue={volume}
+          currentValue={settings.volume}
           step={0.5}
           onChange={updateVolume}
           radius={24}

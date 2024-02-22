@@ -7,6 +7,8 @@ import { useDrag } from "@use-gesture/react";
 import Dial from "../Dial/Dial";
 import { LFOTarget } from "@/lib/types/types";
 
+// knob like in jss  
+
 const subdivisions = [
   "1m",
   "1n",
@@ -51,7 +53,7 @@ type KnobProps = {
   maxValue: number;
   currentValue: string | number | Tone.Unit.Frequency | Tone.FrequencyClass;
   step: number;
-  onChange?: (value: number | string) => void;
+  onChange: (value: number | string) => void;
   exponent: number;
   assignLFO?: (target: LFOTarget, lfo: 1 | 2) => void;
   sync?: boolean;

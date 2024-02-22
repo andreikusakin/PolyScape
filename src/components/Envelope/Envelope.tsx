@@ -3,55 +3,44 @@ import Knob from "../Knob/Knob";
 import * as Tone from "tone/build/esm/index";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
+import { Preset } from "@/lib/types/types";
 
 type EnvelopeProps = {
   engine: CustomPolySynth | undefined;
   name: string;
-  attack: number;
-  setAttack: (attack: number) => void;
-  decay: number;
-  setDecay: (decay: number) => void;
-  sustain: number;
-  setSustain: (sustain: number) => void;
-  release: number;
-  setRelease: (release: number) => void;
+  settings: Preset["envelope"];
+  updateSettings: (settings: Preset["envelope"]) => void;
 };
 
 export const Envelope = ({
   engine,
   name,
-  attack,
-  setAttack,
-  decay,
-  setDecay,
-  sustain,
-  setSustain,
-  release,
-  setRelease,
+  settings,
+  updateSettings,
 }: EnvelopeProps) => {
   const updateAttack = (attack: number) => {
-    setAttack(attack);
+    updateSettings({ ...settings, attack: attack });
     engine?.voices.forEach((voice) => {
       voice.envelope.attack = attack;
     });
   };
 
   const updateDecay = (decay: number) => {
-    setDecay(decay);
+    updateSettings({ ...settings, decay: decay });
     engine?.voices.forEach((voice) => {
       voice.envelope.decay = decay;
     });
   };
 
   const updateSustain = (sustain: number) => {
-    setSustain(sustain);
+    updateSettings({ ...settings, sustain: sustain });
     engine?.voices.forEach((voice) => {
       voice.envelope.sustain = sustain;
     });
   };
 
   const updateRelease = (release: number) => {
-    setRelease(release);
+    updateSettings({ ...settings, release: release });
     engine?.voices.forEach((voice) => {
       voice.envelope.release = release;
     });
@@ -66,7 +55,7 @@ export const Envelope = ({
           unit={"s"}
           minValue={0}
           maxValue={20}
-          currentValue={attack}
+          currentValue={settings.attack}
           step={0.01}
           onChange={updateAttack}
           radius={24}
@@ -80,7 +69,7 @@ export const Envelope = ({
           unit={"s"}
           minValue={0}
           maxValue={20}
-          currentValue={decay}
+          currentValue={settings.decay}
           step={0.01}
           onChange={updateDecay}
           radius={24}
@@ -93,7 +82,7 @@ export const Envelope = ({
           label="sustain"
           minValue={0}
           maxValue={1}
-          currentValue={sustain}
+          currentValue={settings.sustain}
           step={0.01}
           onChange={updateSustain}
           radius={24}
@@ -107,7 +96,7 @@ export const Envelope = ({
           unit={"s"}
           minValue={0}
           maxValue={20}
-          currentValue={release}
+          currentValue={settings.release}
           step={0.01}
           onChange={updateRelease}
           radius={24}
