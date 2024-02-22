@@ -1,4 +1,124 @@
+.wrapper {
+  display: flex;
+  align-self: flex-end;
+  max-height: 46px;
+}
+
 .container {
-    display: flex;
-    padding: 10px;
+  display: flex;
+  padding: 10px;
+  align-items: center;
+  justify-content: space-between;
+  
+}
+
+.midi {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.midi label {
+  padding-left: calc(var(--main-synth-ui-font-size) * 0.2);
+  padding-top: calc(var(--main-synth-ui-font-size) * 0.1);
+}
+
+.midi_selector {
+  background: rgb(26, 26, 26);
+  color: #ffffff92;
+  width: 180px;
+  height: 26px;
+  padding-left: 10px;
+
+  border-radius: 6px;
+  border: 1px solid #acacac47;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  /* overflow: hidden; */
+  position: relative;
+  cursor: pointer;
+}
+
+.midi_selector label {
+  padding-top: calc(var(--main-synth-ui-font-size) * 0.1);
+  overflow: hidden;
+  cursor: pointer;
+  
+}
+
+.midi_selector::after {
+  content: "";
+  position: absolute;
+  border-radius: 6px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  left: 100px;
+  margin: auto;
+  font-size: 12px;
+  background: linear-gradient(0.25turn, #ffffff00, rgb(26, 26, 26));
+}
+
+.no_midi_support {
+  cursor: unset;
+  width: 300px;
+}
+
+.selecting_midi {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: rgb(26, 26, 26);
+  backdrop-filter: blur(22px);
+  color: #ffffffa7;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #acacac47;
+  position: absolute;
+  top: 28px;
+  left: 0;
+}
+
+.selecting_midi div:hover {
+  color: #fffffff9;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.buttons button {
+  font-size: var(--main-synth-ui-font-size);
+  padding-top: calc(var(--main-synth-ui-font-size) * 0.1);
+  
+  text-transform: uppercase;
+  letter-spacing: calc(var(--main-synth-ui-font-size) * 0.2);
+  background: rgb(26, 26, 26);
+  color: #ffffffa7;
+  border-radius: 6px;
+  border: 1px solid #acacac47;
+  padding-left: calc(var(--main-synth-ui-font-size) * 0.15 + 10px);
+  padding-right: 10px;
+  height: 26px;
+}
+
+.buttons button:hover {
+  color: #fffffff9;
+}
+
+.show_ui_button {
+  font-size: var(--main-synth-ui-font-size);
+  padding-top: calc(var(--main-synth-ui-font-size) * 0.1);
+  margin: 10px;
+  text-transform: uppercase;
+  letter-spacing: calc(var(--main-synth-ui-font-size) * 0.2);
+  background: rgb(26, 26, 26);
+  color: #ffffffa7;
+  border-radius: 6px;
+  border: 1px solid #acacac47;
+  padding-left: calc(var(--main-synth-ui-font-size) * 0.15 + 10px);
+  padding-right: 10px;
+  height: 26px;
 }
