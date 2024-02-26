@@ -2,10 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  
-  height: fit-content;
+  width: 100%;
   text-transform: uppercase;
-  width: fit-content;
 }
 
 .name {
@@ -24,3 +22,4 @@
   backdrop-filter: blur(22px);
   line-height: calc(var(--main-synth-ui-font-size) - 1px);
 }
+
