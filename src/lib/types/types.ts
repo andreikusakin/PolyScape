@@ -1,4 +1,22 @@
 import * as Tone from "tone/build/esm/index";
+import Effects from "../engines/Effects";
+
+type ReverbSettings = {
+  decay: number;
+  wet: Tone.Unit.NormalRange;
+  preDelay: number;
+};
+
+type PingPongDelaySettings = {
+  feedback: number;
+  wet: Tone.Unit.NormalRange;
+  delayTime: Tone.Unit.Time;
+};
+
+export type Effect = {
+  type: string;
+  settings: ReverbSettings | PingPongDelaySettings;
+}
 
 export type Preset = {
   osc1: {
@@ -55,21 +73,10 @@ export type Preset = {
     sync: boolean;
     destinations: {target: LFOTarget, amount: number}[];
   };
-  effects?:{
-    reverb?: {
-      decay: number;
-      wet: number;
-      preDelay: number;
-    };
-    feedbackDelay?: {
-      delayTime: Tone.Unit.Time;
-      feedback: number;
-      wet: number;
-    };
-    
-  }
-  
+  effects: Effect[];
 };
+
+
 
 export type LFOTarget =
   | "osc1 coarse"
@@ -99,4 +106,12 @@ export type LFODestination = {
   setAmount: (amount: number) => void;
   minLFO: number;
   maxLFO: number;
+};
+
+
+export type fxProps = {
+  engine: Effects | undefined;
+  settings: Preset["effects"];
+  updateSettings: (settings: Preset["effects"]) => void;
+  index: number;
 };
