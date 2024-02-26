@@ -1,110 +1,157 @@
 import * as Tone from "tone/build/esm/index";
 import { Preset } from "../types/types";
 
+const effectConfig = {
+  wet: 0.5,
+  decay: 2,
+  preDelay: 0.01,
+}
+//mute all effects
+
 export default class Effects {
-  reverb: Tone.Reverb;
-  private pingPongDelay: Tone.PingPongDelay;
-  private distortion: Tone.Distortion;
-  private chorus: Tone.Chorus;
-  private vibrato: Tone.Vibrato;
-  private feedbackDelay: Tone.FeedbackDelay;
-  private bitCrusher: Tone.BitCrusher;
-  private autoPanner: Tone.AutoPanner;
-  private currentChain: Tone.ToneAudioNode[] = [];
+  currentChain: Tone.ToneAudioNode[] = [];
   readonly outputNode: Tone.Gain;
   private inputNode: Tone.Gain;
-
+  
   constructor(inputNode: Tone.Gain, preset: Preset["effects"]) {
+    this.currentChain = [];
     this.inputNode = inputNode;
     this.outputNode = new Tone.Gain({ gain: 0.2 });
     this.inputNode.connect(this.outputNode);
-    this.reverb = new Tone.Reverb().connect(this.outputNode);
-    this.pingPongDelay = new Tone.PingPongDelay();
-    this.distortion = new Tone.Distortion();
-    this.chorus = new Tone.Chorus();
-    this.vibrato = new Tone.Vibrato();
-    this.feedbackDelay = new Tone.FeedbackDelay().connect(this.outputNode);
-    this.bitCrusher = new Tone.BitCrusher();
-    this.autoPanner = new Tone.AutoPanner();
+    // this.reverb = new Tone.Reverb({ decay: 2, preDelay: 0, wet: 0.5})
+    // this.pingPongDelay = new Tone.PingPongDelay();
+    // this.distortion = new Tone.Distortion();
+    // this.chorus = new Tone.Chorus();
+    // this.vibrato = new Tone.Vibrato();
+    // this.feedbackDelay = new Tone.FeedbackDelay()
+    // this.bitCrusher = new Tone.BitCrusher();
+    // this.autoPanner = new Tone.AutoPanner();
+
+    
     this.loadPreset(preset);
+    
+    
   }
 
   private loadPreset(preset: Preset["effects"]) {
-    if (preset?.reverb) {
-      this.reverb.set(preset.reverb);
-    }
+    
+    preset?.forEach((effect) => {
+      switch (effect.type) {
+        case "reverb":
+          const reverb = new Tone.Reverb({
+            decay: effect.settings.decay,
+            preDelay: effect.settings.preDelay,
+            wet: effect.settings.wet / 100,
+          }
+           
+          );
+          this.currentChain.push(reverb);
+          break;
+        case "pingPongDelay":
+          const pingPongDelay = new Tone.PingPongDelay({
+            feedback: effect.settings.feedback,
+            wet: effect.settings.wet / 100,
+            delayTime: effect.settings.delayTime,
+          });
+          this.currentChain.push(pingPongDelay);
+          break;
+        // case "distortion":
+        //   const distortion = new Tone.Distortion(effect.settings);
+        //   this.currentChain.push(distortion);
+        //   break;
+        // case "chorus":
+        //   const chorus = new Tone.Chorus(effect.settings);
+        //   this.currentChain.push(chorus);
+        //   break;
+        // case "vibrato":
+        //   const vibrato = new Tone.Vibrato(effect.settings);
+        //   this.currentChain.push(vibrato);
+        //   break;
+        // case "feedbackDelay":
+        //   const feedbackDelay = new Tone.FeedbackDelay(effect.settings);
+        //   this.currentChain.push(feedbackDelay);
+        //   break;
+        // case "bitCrusher":
+        //   const bitCrusher = new Tone.BitCrusher(effect.settings);
+        //   this.currentChain.push(bitCrusher);
+        //   break;
+        // case "autoPanner":
+        //   const autoPanner = new Tone.AutoPanner(effect.settings);
+        //   this.currentChain.push(autoPanner);
+        //   break;
+        default:
+          break;
+      }
+    });
+    this.inputNode.disconnect();
+    
+    this.inputNode.chain(...this.currentChain, this.outputNode);
   }
 
   addEffect(name: string) {
+    let effect;
     switch (name) {
       case "reverb":
-        this.currentChain.push(this.reverb);
+        effect = new Tone.Reverb({
+          decay: effectConfig.decay,
+          preDelay: effectConfig.preDelay,
+          wet: effectConfig.wet,
+        });
+        this.currentChain.push(effect);
         break;
       case "pingPongDelay":
-        this.currentChain.push(this.pingPongDelay);
+        effect = new Tone.PingPongDelay({
+          feedback: effectConfig.feedback,
+          wet: effectConfig.wet,
+          delayTime: effectConfig.delayTime,
+        });
+        this.currentChain.push(effect);
         break;
-      case "distortion":
-        this.currentChain.push(this.distortion);
-        break;
-      case "chorus":
-        this.currentChain.push(this.chorus);
-        break;
-      case "vibrato":
-        this.currentChain.push(this.vibrato);
-        break;
-      case "feedbackDelay":
-        this.currentChain.push(this.feedbackDelay);
-        break;
-      case "bitCrusher":
-        this.currentChain.push(this.bitCrusher);
-        break;
-      case "autoPanner":
-        this.currentChain.push(this.autoPanner);
-        break;
+      // case "distortion":
+      //   const distortion = new Tone.Distortion();
+      //   this.currentChain.push(distortion);
+      //   break;
+      // case "chorus":
+      //   const chorus = new Tone.Chorus();
+      //   this.currentChain.push(chorus);
+      //   break;
+      // case "vibrato":
+      //   const vibrato = new Tone.Vibrato();
+      //   this.currentChain.push(vibrato);
+      //   break;
+      // case "feedbackDelay":
+      //   const feedbackDelay = new Tone.FeedbackDelay();
+      //   this.currentChain.push(feedbackDelay);
+      //   break;
+      // case "bitCrusher":
+      //   const bitCrusher = new Tone.BitCrusher();
+      //   this.currentChain.push(bitCrusher);
+      //   break;
+      // case "autoPanner":
+      //   const autoPanner = new Tone.AutoPanner();
+      //   this.currentChain.push(autoPanner);
+      //   break;
       default:
         break;
     }
     this.inputNode.disconnect();
-    this.inputNode.chain(...this.currentChain);
+    
+    this.inputNode.chain(...this.currentChain, this.outputNode);
+    console.log(this.currentChain)
+    
   }
 
-  removeEffect(name: string) {
-    switch (name) {
-      case "reverb":
-        this.currentChain.splice(this.currentChain.indexOf(this.reverb), 1);
-        break;
-      case "pingPongDelay":
-        this.currentChain.splice(
-          this.currentChain.indexOf(this.pingPongDelay),
-          1
-        );
-        break;
-      case "distortion":
-        this.currentChain.splice(this.currentChain.indexOf(this.distortion), 1);
-        break;
-      case "chorus":
-        this.currentChain.splice(this.currentChain.indexOf(this.chorus), 1);
-        break;
-      case "vibrato":
-        this.currentChain.splice(this.currentChain.indexOf(this.vibrato), 1);
-        break;
-      case "feedbackDelay":
-        this.currentChain.splice(
-          this.currentChain.indexOf(this.feedbackDelay),
-          1
-        );
-        break;
-      case "bitCrusher":
-        this.currentChain.splice(this.currentChain.indexOf(this.bitCrusher), 1);
-        break;
-      case "autoPanner":
-        this.currentChain.splice(this.currentChain.indexOf(this.autoPanner), 1);
-        break;
-
-      default:
-        break;
-    }
+ deleteEffect(index: number) {
+    console.log('called delete effect')
+    this.currentChain[index].disconnect();
+    this.currentChain[index].dispose();
+    this.currentChain.splice(index, 1);
     this.inputNode.disconnect();
-    this.inputNode.chain(...this.currentChain);
+    this.inputNode.chain(...this.currentChain, this.outputNode);
+    console.log(this.currentChain)
+ }
+
+  muteEffect(index: number) {
+    
   }
 }
