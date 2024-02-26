@@ -5,8 +5,7 @@ import styles from "./Reverb.module.css";
 import localFont from "next/font/local";
 import { fxProps } from "@/lib/types/types";
 import * as Tone from "tone/build/esm/index";
-
-const kodeMono = localFont({ src: "./KodeMono-VariableFont_wght.ttf" });
+import { Cube } from "./Cube/Cube";
 
 export const Reverb = ({
   engine,
@@ -47,9 +46,9 @@ export const Reverb = ({
 
   const handleDelete = () => {
     if (engine) {
-    const newSettings = settings.filter((effect, i) => i !== index);
-    updateSettings(newSettings);
-   
+      const newSettings = settings.filter((effect, i) => i !== index);
+      updateSettings(newSettings);
+
       engine.deleteEffect(index);
     }
   };
@@ -62,10 +61,11 @@ export const Reverb = ({
       currentWet={settings[index].settings.wet}
     >
       <div className={styles.grid}>
-        <div className={`${styles.label} ${kodeMono.className}`}>
+        {/* <div className={`${styles.label} `}>
           <h3>rev</h3>
           <h3>erb</h3>
-        </div>
+        </div> */}
+        <Cube />
         <Knob
           onChange={updateMix}
           minValue={0}

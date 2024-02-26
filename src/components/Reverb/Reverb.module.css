@@ -1,6 +1,7 @@
 .label {
-  font-size: 30px;
-  line-height: 30px;
+  font-size: 22px;
+  line-height: 22px;
+  letter-spacing: 0;
 }
 
 .label h3 {
