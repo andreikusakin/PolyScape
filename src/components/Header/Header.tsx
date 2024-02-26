@@ -17,13 +17,17 @@ export const Header = ({
   setIsUiVisible,
 }: HeaderProps) => {
 
-  const [midiInputs, setMidiInputs] = useState<typeof WebMidi.inputs>();
+  const [midiInputs, setMidiInputs] = useState<typeof WebMidi.inputs>([]);
+  const [currentMidiDevice, setCurrentMidiDevice] = useState("no midi devices detected");
   const [isMidiSupported, setIsMidiSupported] = useState<boolean>(false);
   const [isSelectingMidi, setIsSelectingMidi] = useState<boolean>(false);
   useEffect(() => {
     if (WebMidi.enabled) {
+      
       setMidiInputs(WebMidi.inputs);
-
+      if (WebMidi.inputs.length > 0) {
+        setCurrentMidiDevice(WebMidi.inputs[engine?.midiInputIndex]?.name);
+      }
       console.log(WebMidi.enabled);
     }
     setIsMidiSupported(engine?.isMidiSupported);
@@ -50,7 +54,7 @@ export const Header = ({
               exit={{ opacity: 0 }}
             >
               <div className={styles.midi}>
-                <label>Midi</label>
+                <span>Midi</span>
                 {!isMidiSupported && !midiInputs && (
                   <div
                     className={[
@@ -66,8 +70,8 @@ export const Header = ({
                     className={styles.midi_selector}
                     onClick={() => setIsSelectingMidi(!isSelectingMidi)}
                   >
-                    <label>{midiInputs[engine?.midiInputIndex].name}</label>
-                    {isSelectingMidi && (
+                    <label>{currentMidiDevice}</label>
+                    {isSelectingMidi && midiInputs.length !== 0 && (
                       <div className={styles.selecting_midi}>
                         {midiInputs.map((input, i) => (
                           <div
@@ -86,10 +90,11 @@ export const Header = ({
               <div className={styles.bpm}>bpm</div>
 
               <div className={styles.buttons}>
-                <button className={styles.button}>fx</button>
+              <button className={styles.header_button}>synth</button>
+                <button className={styles.header_button}>fx</button>
 
                 <button
-                  className={styles.button}
+                  className={styles.header_button}
                   onClick={() => setIsUiVisible(!isUiVisible)}
                 >
                   hide ui
@@ -103,7 +108,7 @@ export const Header = ({
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
               exit={{ opacity: 0 }}
-              className={styles.show_ui_button}
+              className={[styles.header_button, styles.show_ui].join(" ")}
               onClick={() => setIsUiVisible(!isUiVisible)}
             >
               show ui
