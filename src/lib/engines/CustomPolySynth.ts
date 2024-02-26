@@ -21,24 +21,15 @@ type LFO = {
 };
 
 export default class CustomPolySynth {
+  isMidiSupported: boolean = false;
+  midiInputIndex = 0;
+  midiInputs;
+  midiInput;
   private voiceCount: number = 16;
-  LFO1Destinations = [];
-  LFO2Destinations: Tone.InputNode[] | undefined = [];
   voices: CustomVoice[] = [];
   private activeVoices: Map<number, CustomVoice> = new Map();
   private keyboard: AudioKeys;
   unison: boolean = false;
-  private maxDetuneOSC: number[][] = [
-    [31, -49, 49, -45, 24, -40, 42, -32],
-    [-41, 38, -25, 49, 15, -49, 18, 39],
-  ];
-  private currentDetuneOSCValues: number[][] = [
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-  ];
-  private maxPanSpreadPerVoice: number[] = [
-    -0.7, 0.1, -1, 0.9, -0.7, 0.2, -0.8, 1,
-  ];
   LFO1: LFO[] = [];
   LFO2: LFO[] = [];
   private preset: Preset;
@@ -51,7 +42,10 @@ export default class CustomPolySynth {
     this.loadFilterPreset(preset);
     this.loadLFOs(preset);
     this.setupKeyboard();
-    this.setupMidi();
+    if (navigator.userAgent.includes("Chrome")) {
+      this.setupMidi();
+    }
+
     this.unison = preset.unison;
   }
 
@@ -158,21 +152,39 @@ export default class CustomPolySynth {
         console.log("WebMidi could not be enabled.", err);
       } else {
         console.log(WebMidi.inputs);
+        this.isMidiSupported = true;
         if (WebMidi.inputs.length < 1) {
           console.log("No MIDI devices detected");
           return;
         }
-        const input = WebMidi.inputs[1];
-        input.addListener("noteon", "all", (e) => {
-          const frequency = Tone.Frequency(e.note.number, "midi").toFrequency();
-          this.triggerAttack(frequency, Tone.now(), e.velocity);
-        });
-        input.addListener("noteoff", "all", (e) => {
-          const frequency = Tone.Frequency(e.note.number, "midi").toFrequency();
-          this.triggerRelease(frequency);
-        });
+        this.midiInputs = WebMidi.inputs;
+        this.midiInput = WebMidi.inputs[this.midiInputIndex];
+        this.midiListener(this.midiInput);
       }
     });
+  }
+
+  setMidiInputByIndex(index: number) {
+    this.midiInputIndex = index;
+    this.midiInput.destroy();
+    this.midiInput = WebMidi.inputs[index];
+    this.midiListener(this.midiInput);
+    
+  }
+
+  midiListener(input) {
+    input.addListener("noteon", "all", (e) => {
+      const frequency = Tone.Frequency(e.note.number, "midi").toFrequency();
+      this.triggerAttack(frequency, Tone.now(), e.velocity);
+    });
+    input.addListener("noteoff", "all", (e) => {
+      const frequency = Tone.Frequency(e.note.number, "midi").toFrequency();
+      this.triggerRelease(frequency);
+    });
+  }
+
+  getMidiInputs() {
+    return WebMidi.inputs;
   }
 
   triggerAttack(frequency: number, time: Tone.Unit.Time, velocity: number) {
@@ -313,7 +325,6 @@ export default class CustomPolySynth {
         lfoSelected.push({ target: target, LFO: LFO, gain: gain });
         break;
       case `osc1 volume`:
-        
         LFO = new Tone.LFO({
           min: -70 + (currentValue ? currentValue : this.preset.osc1.volume),
           max: 12 + (currentValue ? currentValue : this.preset.osc1.volume),
