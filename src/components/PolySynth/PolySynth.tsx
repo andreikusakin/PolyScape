@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, use, useReducer } from "react";
 import * as Tone from "tone/build/esm/index";
 import styles from "./PolySynth.module.css";
-import { LFOTarget, Preset } from "@/lib/types/types";
+import { Effect, LFOTarget, Preset } from "@/lib/types/types";
 import Knob from "../Knob/Knob";
 import Oscillator from "../Oscillator/Oscillator";
 import Noise from "../Noise/Noise";
@@ -17,12 +17,15 @@ import { Header } from "../Header/Header";
 import { WebMidi } from "webmidi";
 import { motion, AnimatePresence } from "framer-motion";
 import { initPreset } from "@/lib/presets/Init";
+import { Reverb } from "../Reverb/Reverb";
+import { PingPongDelay } from "../PingPongDelay/PingPongDelay";
 
 type PolySynthProps = {
   preset: Preset;
 };
 
 const PolySynth = ({ preset }: PolySynthProps) => {
+  const [enginesReady, setEnginesReady] = useState<boolean>(false);
   const [isUiVisible, setIsUiVisible] = useState<boolean>(true);
   const polySynth = useRef<CustomPolySynth>();
   const effects = useRef<Effects>();
@@ -37,27 +40,14 @@ const PolySynth = ({ preset }: PolySynthProps) => {
 
   // envelope amplitude
   const [envelopeSettings, setEnvelopeSettings] = useState(preset.envelope);
-  const [filterEnvelopeSettings, setFilterEnvelopeSettings] = useState(preset.filterEnvelope);
+  const [filterEnvelopeSettings, setFilterEnvelopeSettings] = useState(
+    preset.filterEnvelope
+  );
 
-  // filter
-  const [filterType, setFilterType] = useState<
-    "lowpass" | "highpass" | "bandpass" | "notch"
-  >("lowpass");
-  const [filterFrequency, setFilterFrequency] = useState<number>(0);
-  const [filterRolloff, setFilterRolloff] = useState<Tone.FilterRollOff>(-12);
-  const [filterQ, setFilterQ] = useState<number>(0);
+  const [fxSettings, setFxSettings] = useState<Effect[]>(preset.effects || []);
+  console.log(fxSettings)
 
-  const [filterEnvelopeAttack, setFilterEnvelopeAttack] = useState<number>(0);
-  const [filterEnvelopeDecay, setFilterEnvelopeDecay] = useState<number>(0);
-  const [filterEnvelopeSustain, setFilterEnvelopeSustain] = useState<number>(0);
-  const [filterEnvelopeRelease, setFilterEnvelopeRelease] = useState<number>(0);
-  const [filterEnvelopeBaseFrequency, setFilterEnvelopeBaseFrequency] =
-    useState<number>(0);
-  const [filterEnvelopeOctaves, setFilterEnvelopeOctaves] = useState<number>(0);
-  const [filterEnvelopeExponent, setFilterEnvelopeExponent] =
-    useState<number>(0);
-
-  // fx
+  // misc
   const [panSpread, setPanSpread] = useState<number>(0);
   const [unison, setUnison] = useState<boolean>(false);
 
@@ -121,6 +111,15 @@ const PolySynth = ({ preset }: PolySynthProps) => {
     }
   };
 
+  function addNewEffect(type: string) {
+    const newEffect = {
+      type: type,
+      settings: { wet: 50 },
+    };
+    setFxSettings([...fxSettings, newEffect]);
+    effects.current?.addEffect(type);
+  }
+
   // initialize synth
   useEffect(() => {
     polySynth.current = new CustomPolySynth(preset);
@@ -130,8 +129,8 @@ const PolySynth = ({ preset }: PolySynthProps) => {
       effects.current.outputNode,
       Tone.Destination
     );
-    // effects.current.addEffect("feedbackDelay");
-    effects.current.addEffect("reverb");
+    console.log(polySynth.current, effects.current);
+    setEnginesReady(true);
   }, []);
 
   // // update fx
@@ -150,8 +149,9 @@ const PolySynth = ({ preset }: PolySynthProps) => {
   }, [unison]);
 
   return (
+    
     <div className={styles.wrapper}>
-      <Header
+      {enginesReady && (<><Header
         engine={polySynth.current}
         isUiVisible={isUiVisible}
         setIsUiVisible={setIsUiVisible}
@@ -251,13 +251,44 @@ const PolySynth = ({ preset }: PolySynthProps) => {
                 />
               </div>
               <div className={styles.effects}>
-                <SectionWrapper name={"effects"}>fx</SectionWrapper>
+                <SectionWrapper name={"effects"}>
+                  <div className="flex">
+                    {fxSettings?.map((effect, index) => {
+                      switch (effect.type) {
+                        case "reverb":
+                          return (
+                            <Reverb
+                              key={index}
+                              index={index}
+                              engine={effects.current}
+                              settings={fxSettings}
+                              updateSettings={setFxSettings}
+                            />
+                          );
+                        case "pingPongDelay":
+                          return (
+                            <PingPongDelay
+                              key={index}
+                              index={index}
+                              engine={effects.current}
+                              settings={fxSettings}
+                              updateSettings={setFxSettings}
+                            />
+                          );
+                        default:
+                          return null;
+                      }
+                    })}
+                  </div>
+                  <button onClick={() => addNewEffect("reverb")} className={styles.add_effect}>add effect</button>
+                </SectionWrapper>
               </div>
             </motion.div>
           </>
         )}
-      </AnimatePresence>
-      {/* <button onClick={() => Tone.start()}>Start</button> */}
+      </AnimatePresence></>)}
+      
+      
     </div>
   );
 };
