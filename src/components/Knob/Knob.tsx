@@ -47,14 +47,14 @@ type KnobProps = {
   isSelectingLFO?: false | 1 | 2;
   lfoParameter?: LFOTarget;
   lfoAmount?: number;
-  startingPoint: "beginning" | "middle";
+  startingPoint?: "beginning" | "middle";
   interactive?: boolean;
   minValue: number;
   maxValue: number;
   currentValue: string | number | Tone.Unit.Frequency | Tone.FrequencyClass;
   step: number;
-  onChange: (value: number | string) => void;
-  exponent: number;
+  onChange: (value: number) => void;
+  exponent?: number;
   assignLFO?: (target: LFOTarget, lfo: 1 | 2) => void;
   sync?: boolean;
 };
