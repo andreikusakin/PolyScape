@@ -8,11 +8,11 @@
 .container {
   display: flex;
   --height: 200px;
-  --white-width: calc(var(--height, 100)/4.2);
-  --black-width: calc(var(--white-width)*0.6);
+  --white-width: calc(var(--height, 100) / 4.2);
+  --black-width: calc(var(--white-width) * 0.6);
   overflow: hidden;
   border-radius: 12px;
-    box-shadow: 0 0 0 3px rgb(5, 5, 5), 0 0 0 6px rgb(55, 55, 55);
+  box-shadow: 0 0 0 3px rgb(5, 5, 5), 0 0 0 6px rgb(55, 55, 55);
 }
 
 .key {
@@ -20,41 +20,96 @@
   height: 200px;
   border-radius: 6px;
   background-color: rgba(70, 70, 70, 0.9);
-    position: relative;
+  position: relative;
 }
 
 .white {
-  box-shadow: inset 0 0 0 3px rgb(5, 5, 5), inset 0 0 0 6px rgb(55, 55, 55), inset 0 0 24px 0px rgba(var(--color-rgb), 0.3);
+  box-shadow: inset 0 0 0 3px rgb(5, 5, 5), inset 0 0 0 6px rgb(55, 55, 55),
+    inset 0 0 24px 0px rgba(var(--color-rgb), 0.3);
+}
+
+.white:hover {
+  box-shadow: inset 0 0 0 3px rgb(5, 5, 5),
+    inset 0 0 0 6px
+      color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+    inset 0 0 24px 0px rgba(var(--color-rgb), 0.7);
+}
+
+.white:active {
+    box-shadow: inset 0 0 0 3px rgb(5, 5, 5),
+      inset 0 0 0 6px
+        color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+      inset 0 0 52px 0px rgba(var(--color-rgb), 1),
+      inset 0 0 10px 8px rgba(var(--color-rgb), 1);
+  }
+
+.whitePressed {
+  box-shadow: inset 0 0 0 3px rgb(5, 5, 5),
+    inset 0 0 0 6px
+      color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+    inset 0 0 52px 0px rgba(var(--color-rgb), 1),
+    inset 0 0px 10px 8px rgba(var(--color-rgb), 1);
 }
 
 .black {
   position: relative;
-  box-shadow: inset 0px -6px 0px 6px rgb(5, 5, 5), inset 0 -6px 0 8px rgb(55, 55, 55), inset 0 0 12px 0px rgba(var(--color-rgb), 1);
+  box-shadow: inset 0px -6px 0px 6px rgb(5, 5, 5),
+    inset 0 -6px 0 8px rgb(55, 55, 55),
+    inset 0 0 12px 0px rgba(var(--color-rgb), 1);
   min-width: var(--black-width);
   height: 120px;
   z-index: 10;
   margin-left: calc(var(--white-width) * -0.6);
   left: calc(var(--black-width) * 0.6);
+}
 
+.black:hover {
+  box-shadow: inset 0px -6px 0px 6px rgb(5, 5, 5),
+    inset 0 -6px 0 8px color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+    inset 0 0 18px 0px rgba(var(--color-rgb), 1);
+}
+
+.black:active {
+    box-shadow: inset 0px -6px 0px 6px rgb(5, 5, 5),
+      inset 0 -6px 0 8px color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+      inset 0 0 18px 4px rgba(var(--color-rgb), 1),
+      inset 0 -6px 10px 8px rgba(var(--color-rgb), 1);
+  }
+  
+
+.blackPressed {
+  box-shadow: inset 0px -6px 0px 6px rgb(5, 5, 5),
+    inset 0 -6px 0 8px color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+    inset 0 0 18px 4px rgba(var(--color-rgb), 1),
+    inset 0 -6px 10px 8px rgba(var(--color-rgb), 1);
 }
 
 .black:nth-child(12n + 2) {
-    left: calc(var(--black-width) * 0.4);
+  left: calc(var(--black-width) * 0.4);
 }
 
 .black:nth-child(12n + 7) {
-    left: calc(var(--black-width) * 0.4);
+  left: calc(var(--black-width) * 0.4);
 }
 .black:nth-child(12n + 9) {
-    left: calc(var(--black-width) * 0.49);
+  left: calc(var(--black-width) * 0.49);
 }
 .white::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   background-color: rgba(var(--color-rgb), 1);
   height: 2px;
   width: var(--white-width);
   box-shadow: 0px 7px 20px 1px rgba(var(--color-rgb), 1);
-
 }
+
+.black::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    background-color: rgba(var(--color-rgb), 1);
+    width: var(--black-width);
+    box-shadow: 0 0px 10px 2px rgba(var(--color-rgb), 1);
+    z-index: 11;
+  }
