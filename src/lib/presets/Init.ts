@@ -1,6 +1,7 @@
 import { Preset } from "../types/types";
 
 export const initPreset: Preset = {
+    presetName: "Init",
     osc1: {
       type: "sawtooth",
       detune: 0,
@@ -19,7 +20,7 @@ export const initPreset: Preset = {
       type: "white",
       volume: -70,
     },
-    envelope: {
+    envelopeAmplitude: {
       attack: 0.01,
       decay: 0.01,
       sustain: 1,
@@ -56,6 +57,6 @@ export const initPreset: Preset = {
     },
     effects: 
       [{type: "reverb", settings: { decay: 5, preDelay: 0.01, wet: 50 }},
-      {type: "pingPongDelay", settings: { feedback: 0.2, wet: 50, delayTime: 1 }}
+      // {type: "pingPongDelay", settings: { feedback: 0.2, wet: 50, delayTime: 1 }}
       ]
   };

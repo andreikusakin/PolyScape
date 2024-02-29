@@ -6,6 +6,7 @@ import { Preset, LFOTarget, LFODestination } from "../types/types";
 import NoiseEngine from "./NoiseEngine";
 import { CustomVoice } from "./CustomVoice";
 
+
 //TODO
 
 //pan spread, midi keyboard, unison
@@ -21,6 +22,7 @@ type LFO = {
 };
 
 export default class CustomPolySynth {
+  notesPressed: number[] = [];
   isMidiSupported: boolean = false;
   midiInputIndex = 0;
   midiInputs;
@@ -28,7 +30,7 @@ export default class CustomPolySynth {
   private voiceCount: number = 16;
   voices: CustomVoice[] = [];
   private activeVoices: Map<number, CustomVoice> = new Map();
-  private keyboard: AudioKeys;
+  keyboard: AudioKeys;
   unison: boolean = false;
   LFO1: LFO[] = [];
   LFO2: LFO[] = [];
@@ -47,6 +49,7 @@ export default class CustomPolySynth {
     }
 
     this.unison = preset.unison;
+   
   }
 
   private initializeVoices(node: Tone.ToneAudioNode, preset: Preset) {
@@ -79,10 +82,10 @@ export default class CustomPolySynth {
     voice.noise.type = preset.noise.type;
     voice.noise.volume.value = preset.noise.volume;
     // Load Envelope from preset
-    voice.envelope.attack = preset.envelope.attack;
-    voice.envelope.decay = preset.envelope.decay;
-    voice.envelope.sustain = preset.envelope.sustain;
-    voice.envelope.release = preset.envelope.release;
+    voice.envelope.attack = preset.envelopeAmplitude.attack;
+    voice.envelope.decay = preset.envelopeAmplitude.decay;
+    voice.envelope.sustain = preset.envelopeAmplitude.sustain;
+    voice.envelope.release = preset.envelopeAmplitude.release;
   }
 
   private loadFilterPreset(preset: Preset) {
@@ -138,18 +141,18 @@ export default class CustomPolySynth {
     });
     this.keyboard.down((key: any) => {
       const velocity = key.velocity / 127;
-      this.triggerAttack(key.frequency, Tone.now(), velocity);
+      this.triggerAttack(key.note, Tone.now(), velocity);
     });
 
     this.keyboard.up((key: any) => {
-      this.triggerRelease(key.frequency);
+      this.triggerRelease(key.note);
     });
   }
 
   private setupMidi() {
     WebMidi.enable((err) => {
       if (err) {
-        console.log("WebMidi could not be enabled.", err);
+        console.error("WebMidi could not be enabled.", err);
       } else {
         console.log(WebMidi.inputs);
         this.isMidiSupported = true;
@@ -174,12 +177,13 @@ export default class CustomPolySynth {
 
   midiListener(input) {
     input.addListener("noteon", "all", (e) => {
-      const frequency = Tone.Frequency(e.note.number, "midi").toFrequency();
-      this.triggerAttack(frequency, Tone.now(), e.velocity);
+
+      console.log(e)
+      this.triggerAttack(e.note.number, Tone.now(), e.velocity);
     });
     input.addListener("noteoff", "all", (e) => {
-      const frequency = Tone.Frequency(e.note.number, "midi").toFrequency();
-      this.triggerRelease(frequency);
+
+      this.triggerRelease(e.note.number);
     });
   }
 
@@ -187,7 +191,9 @@ export default class CustomPolySynth {
     return WebMidi.inputs;
   }
 
-  triggerAttack(frequency: number, time: Tone.Unit.Time, velocity: number) {
+  triggerAttack(note: number, time: Tone.Unit.Time, velocity: number) {
+    this.notesPressed.push(note);
+    const frequency = Tone.Frequency(note, "midi").toFrequency();
     if (this.unison) {
       this.voices.forEach((v) => {
         v.triggerAttack(frequency, time, velocity);
@@ -206,7 +212,9 @@ export default class CustomPolySynth {
     }
   }
 
-  triggerRelease(frequency: number) {
+  triggerRelease(note: number) {
+    this.notesPressed = this.notesPressed.filter((n) => n !== note);
+    const frequency = Tone.Frequency(note, "midi").toFrequency();
     if (this.unison) {
       this.voices.forEach((v) => {
         v.triggerRelease();

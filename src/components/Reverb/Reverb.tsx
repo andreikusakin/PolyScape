@@ -1,8 +1,6 @@
-import Effects from "@/lib/engines/Effects";
 import { FxWrapper } from "../FxWrapper/FxWrapper";
 import Knob from "../Knob/Knob";
 import styles from "./Reverb.module.css";
-import localFont from "next/font/local";
 import { fxProps } from "@/lib/types/types";
 import * as Tone from "tone/build/esm/index";
 import { Cube } from "./Cube/Cube";

@@ -8,7 +8,7 @@ const effectConfig = {
 }
 //mute all effects
 
-export default class Effects {
+export default class CustomEffects {
   currentChain: Tone.ToneAudioNode[] = [];
   readonly outputNode: Tone.Gain;
   private inputNode: Tone.Gain;

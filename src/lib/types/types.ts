@@ -1,5 +1,5 @@
 import * as Tone from "tone/build/esm/index";
-import Effects from "../engines/Effects";
+import CustomEffects from "../engines/CustomEffects";
 
 type ReverbSettings = {
   decay: number;
@@ -19,6 +19,7 @@ export type Effect = {
 }
 
 export type Preset = {
+  presetName: string;
   osc1: {
     type: "sawtooth" | "sine" | "pulse" | "triangle";
     detune: number;
@@ -37,7 +38,7 @@ export type Preset = {
     type: "white" | "pink" | "brown";
     volume: number;
   };
-  envelope: {
+  envelopeAmplitude: {
     attack: number;
     decay: number;
     sustain: number;
@@ -110,8 +111,14 @@ export type LFODestination = {
 
 
 export type fxProps = {
-  engine: Effects | undefined;
+  engine: CustomEffects | undefined;
   settings: Preset["effects"];
   updateSettings: (settings: Preset["effects"]) => void;
   index: number;
+};
+
+export type UiSettings = {
+  isKeyboardOpen: boolean;
+  isFxOpen: boolean;
+  isUiVisible: boolean;
 };

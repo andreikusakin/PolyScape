@@ -1,53 +1,50 @@
-import styles from "./Envelope.module.css";
+import styles from "./EnvelopeAmplitude.module.css";
 import Knob from "../Knob/Knob";
 import * as Tone from "tone/build/esm/index";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import { Preset } from "@/lib/types/types";
+import { useSynthSettingsStore } from "@/lib/store/settingsStore";
 
 type EnvelopeProps = {
   engine: CustomPolySynth | undefined;
-  name: string;
-  settings: Preset["envelope"];
-  updateSettings: (settings: Preset["envelope"]) => void;
 };
 
-export const Envelope = ({
-  engine,
-  name,
-  settings,
-  updateSettings,
-}: EnvelopeProps) => {
+export const EnvelopeAmplitude = ({ engine }: EnvelopeProps) => {
+  const { settings, updateSettings } = useSynthSettingsStore((state) => ({
+    settings: state.envelopeAmplitude,
+    updateSettings: state.setEnvAmplitudeParams,
+  }));
   const updateAttack = (attack: number) => {
-    updateSettings({ ...settings, attack: attack });
+    updateSettings({ attack: attack });
     engine?.voices.forEach((voice) => {
       voice.envelope.attack = attack;
     });
   };
 
   const updateDecay = (decay: number) => {
-    updateSettings({ ...settings, decay: decay });
+    updateSettings({ decay: decay });
     engine?.voices.forEach((voice) => {
       voice.envelope.decay = decay;
     });
   };
 
   const updateSustain = (sustain: number) => {
-    updateSettings({ ...settings, sustain: sustain });
+    updateSettings({ sustain: sustain });
     engine?.voices.forEach((voice) => {
       voice.envelope.sustain = sustain;
     });
   };
 
   const updateRelease = (release: number) => {
-    updateSettings({ ...settings, release: release });
+    updateSettings({ release: release });
     engine?.voices.forEach((voice) => {
       voice.envelope.release = release;
     });
   };
 
   return (
-    <SectionWrapper name={name}>
+    <SectionWrapper name={"amplitude"}>
       <div className={styles.grid}>
         <Knob
           exponent={1}

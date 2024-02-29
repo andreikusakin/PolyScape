@@ -99,9 +99,36 @@
   height: 26px;
 }
 
+
+
+.keyboard_button {
+  padding-left: 8px;
+  padding-right: 8px;
+  background: #ffffff0e;
+  border: 1px solid #acacac47;
+  border-radius: 6px;
+}
+
+.keyboard_button:hover  {
+  background: #ffffff28;
+}
+
+.keyboard_button img {
+ opacity: 0.65;
+ 
+}
+
+
 .header_button:hover {
   color: #fffffff8;
   background: #ffffff28;
+}
+
+.selected {
+  box-shadow: inset 0px 0px 14px 0px rgba(255, 255, 255, 0.538), 0px 0px 5px 0px rgba(255, 255, 255, 0.521);
+  color: #fffffff9;
+  text-shadow: 0px 0px 3px #ffffff;
+  border: 1px solid #ffffff96;
 }
 
 .show_ui {

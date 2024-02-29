@@ -4,36 +4,39 @@ import { NoiseShape } from "../Shapes";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { LFOTarget, Preset } from "@/lib/types/types";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
+import { useSynthSettingsStore } from "@/lib/store/settingsStore";
 
 type NoiseProps = {
   engine: CustomPolySynth | undefined;
-  name: string;
-  settings: Preset["noise"];
-  updateSettings: (settings: Preset["noise"]) => void;
   isSelectingLFO: false | 1 | 2;
   assignLFO: (target: LFOTarget, lfo: 1 | 2) => void;
 };
 
 export default function Noise({
   engine,
-  name,
-  settings,
-  updateSettings,
   isSelectingLFO,
   assignLFO,
 }: NoiseProps) {
+  const { settings, updateSettings } = useSynthSettingsStore((state) => ({
+    settings: state.noise,
+    updateSettings: state.setNoiseParams,
+  }));
   const colorValue =
-    settings.type === "white" ? "#FFFFFF" : settings.type === "pink" ? "#E859FF" : "#FF543D";
+    settings.type === "white"
+      ? "#FFFFFF"
+      : settings.type === "pink"
+      ? "#E859FF"
+      : "#FF543D";
 
   const updateType = (type: "white" | "pink" | "brown") => {
-    updateSettings({ ...settings, type: type });
+    updateSettings({ type: type });
     engine?.voices.forEach((voice) => {
       voice.noise.type = type;
     });
   };
 
   const updateVolume = (value: number) => {
-    updateSettings({ ...settings, volume: value });
+    updateSettings({ volume: value });
     engine?.LFO1.find((lfo) => lfo.target === "noise volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
@@ -45,7 +48,7 @@ export default function Noise({
     engine?.voices.forEach((v) => (v.noise.volume.value = value));
   };
   return (
-    <SectionWrapper name={name}>
+    <SectionWrapper name={"noise"}>
       <div className={styles.grid}>
         <ul className={styles.types}>
           <li

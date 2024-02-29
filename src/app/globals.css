@@ -34,3 +34,9 @@ ul {
   padding: 0;
   margin: 0;
 }
+
+canvas {
+  background-color: #06092c;
+  width: 100%;
+  height: 100%;
+}

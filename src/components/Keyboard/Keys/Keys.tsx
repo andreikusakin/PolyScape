@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as Tone from "tone/build/esm/index";
 import { useMemo } from "react";
 import styles from "./Keys.module.css";
@@ -40,19 +40,13 @@ const colorMap: ColorMap = {
 export const Keys = ({ engine, osc1Type, osc2Type }: keysProps) => {
   const [notesPressed, setNotesPressed] = useState<number[]>([]);
   const [colorRGB, setColorRGB] = useState<string>("255, 0, 0");
-  const audioKeys = useRef(
-    new AudioKeys({ polyphony: 16, rows: 1, priority: "last" })
-  );
 
-  audioKeys.current.down((key: any) => {
+  engine.keyboard.down((key: any) => {
     setNotesPressed([...notesPressed, key.note]);
-    const velocity = key.velocity / 127;
-    engine.triggerAttack(key.frequency, Tone.now(), velocity);
   });
 
-  audioKeys.current.up((key: any) => {
+  engine.keyboard.up((key: any) => {
     setNotesPressed(notesPressed.filter((note) => note !== key.note));
-    engine.triggerRelease(key.frequency);
   });
 
   const generateKeys = () => {
@@ -81,14 +75,12 @@ export const Keys = ({ engine, osc1Type, osc2Type }: keysProps) => {
 
   const handleMouseDown = (note: number) => {
     setNotesPressed([...notesPressed, note]);
-    const frequency = Tone.Frequency(note, "midi").toFrequency();
-    engine.triggerAttack(frequency, Tone.now(), 1);
+    engine.triggerAttack(note, Tone.now(), 1);
   };
 
   const handleMouseUp = (note: number) => {
     setNotesPressed(notesPressed.filter((n) => n !== note));
-    const frequency = Tone.Frequency(note, "midi").toFrequency();
-    engine.triggerRelease(frequency);
+    engine.triggerRelease(note);
   };
 
   useEffect(() => {
@@ -97,14 +89,16 @@ export const Keys = ({ engine, osc1Type, osc2Type }: keysProps) => {
   }, [osc1Type, osc2Type]);
 
   return (
-    <div className={styles.wrapper}>
-      <ul className={styles.container}>
-        {keys.map((k) => (
-          <li
-            key={k.note}
-            onMouseDown={() => handleMouseDown(k.note)}
-            onMouseUp={() => handleMouseUp(k.note)}
-            className={`${styles.key} ${styles[k.type]}
+    <div className={styles.wrapper}
+    style={{ "--color-rgb": colorRGB } as React.CSSProperties}>
+      <div className={styles.container}>
+        <ul className={styles.keys}>
+          {keys.map((k) => (
+            <li
+              key={k.note}
+              onMouseDown={() => handleMouseDown(k.note)}
+              onMouseUp={() => handleMouseUp(k.note)}
+              className={`${styles.key} ${styles[k.type]}
             ${
               notesPressed.includes(k.note)
                 ? k.type === "white"
@@ -113,10 +107,11 @@ export const Keys = ({ engine, osc1Type, osc2Type }: keysProps) => {
                 : ""
             }
 `}
-            style={{ "--color-rgb": colorRGB } as React.CSSProperties}
-          ></li>
-        ))}
-      </ul>
+              
+            ></li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

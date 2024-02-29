@@ -4,26 +4,56 @@ import styles from "./Header.module.css";
 import { WebMidi } from "webmidi";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { UiSettings } from "@/lib/types/types";
+import { useUiStore } from "@/lib/store/uiStore";
 
 type HeaderProps = {
   engine: CustomPolySynth;
-  isUiVisible: boolean;
-  setIsUiVisible: (isUiVisible: boolean) => void;
 };
 
-export const Header = ({
-  engine,
-  isUiVisible,
-  setIsUiVisible,
-}: HeaderProps) => {
-
+export const Header = ({ engine }: HeaderProps) => {
   const [midiInputs, setMidiInputs] = useState<typeof WebMidi.inputs>([]);
-  const [currentMidiDevice, setCurrentMidiDevice] = useState("no midi devices detected");
+  const [currentMidiDevice, setCurrentMidiDevice] = useState(
+    "no midi devices detected"
+  );
   const [isMidiSupported, setIsMidiSupported] = useState<boolean>(false);
   const [isSelectingMidi, setIsSelectingMidi] = useState<boolean>(false);
+
+  const {
+    isKeyboardOpen,
+    isFxOpen,
+    isUiVisible,
+    toggleKeyboardOpen,
+    toggleFxOpen,
+    toggleUiVisible,
+  } = useUiStore((state) => ({
+    isKeyboardOpen: state.isKeyboardOpen,
+    isFxOpen: state.isFxOpen,
+    isUiVisible: state.isUiVisible,
+    toggleKeyboardOpen: state.toggleKeyboardOpen,
+    toggleFxOpen: state.toggleFxOpen,
+    toggleUiVisible: state.toggleUiVisible,
+  }));
+
+  // const handleKeyboardOpen = () => {
+  //   setUiSettings({
+  //     ...uiSettings,
+  //     isKeyboardOpen: !isKeyboardOpen,
+  //     isFxOpen: isKeyboardOpen ? isFxOpen : false,
+  //   });
+  // };
+
+  // const handleFxOpen = () => {
+  //   setUiSettings({
+  //     ...uiSettings,
+  //     isFxOpen: !isFxOpen,
+  //     isKeyboardOpen: isFxOpen ? isKeyboardOpen : false,
+  //   });
+  // };
+
   useEffect(() => {
     if (WebMidi.enabled) {
-      
       setMidiInputs(WebMidi.inputs);
       if (WebMidi.inputs.length > 0) {
         setCurrentMidiDevice(WebMidi.inputs[engine?.midiInputIndex]?.name);
@@ -31,7 +61,7 @@ export const Header = ({
       console.log(WebMidi.enabled);
     }
     setIsMidiSupported(engine?.isMidiSupported);
-  }, [engine]);
+  }, []);
 
   const hideUiAnimation = {
     width: isUiVisible ? "100%" : "fit-content",
@@ -90,12 +120,26 @@ export const Header = ({
               <div className={styles.bpm}>bpm</div>
 
               <div className={styles.buttons}>
-              <button className={styles.header_button}>synth</button>
-                <button className={styles.header_button}>fx</button>
+                <button
+                  className={`${styles.keyboard_button} ${
+                    isKeyboardOpen && styles.selected
+                  }`}
+                  onClick={toggleKeyboardOpen}
+                >
+                  <img src="/piano_keyboard.svg" alt="keyboard icon" />
+                </button>
+                <button
+                  className={`${styles.header_button} ${
+                    isFxOpen && styles.selected
+                  }`}
+                  onClick={toggleFxOpen}
+                >
+                  fx
+                </button>
 
                 <button
                   className={styles.header_button}
-                  onClick={() => setIsUiVisible(!isUiVisible)}
+                  onClick={toggleUiVisible}
                 >
                   hide ui
                 </button>
@@ -109,7 +153,7 @@ export const Header = ({
               transition={{ delay: 0.5, duration: 0.5 }}
               exit={{ opacity: 0 }}
               className={[styles.header_button, styles.show_ui].join(" ")}
-              onClick={() => setIsUiVisible(!isUiVisible)}
+              onClick={toggleUiVisible}
             >
               show ui
             </motion.button>

@@ -1,4 +1,3 @@
-import Effects from "@/lib/engines/Effects";
 import styles from "./FxWrapper.module.css";
 import { useState, useEffect } from "react";
 import { Effect } from "@/lib/types/types";
