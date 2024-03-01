@@ -29,26 +29,21 @@ const PolySynth = ({ preset }: PolySynthProps) => {
   //   isUiVisible: true,
   // });
 
-  const {isKeyboardOpen, isFxOpen, isUiVisible} = useUiStore(
-    (state) => ({
-      isKeyboardOpen: state.isKeyboardOpen,
-      isFxOpen: state.isFxOpen,
-      isUiVisible: state.isUiVisible,
-    })
-  );
+  const { isKeyboardOpen, isFxOpen, isUiVisible } = useUiStore((state) => ({
+    isKeyboardOpen: state.isKeyboardOpen,
+    isFxOpen: state.isFxOpen,
+    isUiVisible: state.isUiVisible,
+  }));
   const polySynth = useRef<CustomPolySynth>();
   const effects = useRef<CustomEffects>();
   const [isSelectingLFOTarget, setIsSelectingLFOTarget] = useState<
     false | 1 | 2
   >(false);
 
-  const [osc1Settings, setOsc1Settings] = useState(preset.osc1);
-  const [osc2Settings, setOsc2Settings] = useState(preset.osc2);
-  const [noiseSettings, setNoiseSettings] = useState(preset.noise);
   const [filterSettings, setFilterSettings] = useState(preset.filter);
 
   // envelope amplitude
-  const [envelopeSettings, setEnvelopeSettings] = useState(preset.envelope);
+
   const [filterEnvelopeSettings, setFilterEnvelopeSettings] = useState(
     preset.filterEnvelope
   );
@@ -164,9 +159,7 @@ const PolySynth = ({ preset }: PolySynthProps) => {
     <div className={styles.wrapper}>
       {enginesReady && (
         <>
-          <Header
-            engine={polySynth.current}
-          />
+          <Header engine={polySynth.current} />
           <AnimatePresence>
             {isUiVisible && (
               <>
@@ -180,23 +173,18 @@ const PolySynth = ({ preset }: PolySynthProps) => {
                   >
                     <Oscillator
                       engine={polySynth.current}
-                      name={"osc1"}
-                      settings={osc1Settings}
-                      updateSettings={setOsc1Settings}
+                      oscNumber={1}
                       isSelectingLFO={isSelectingLFOTarget}
                       assignLFO={assignLFO}
                     />
                     <Oscillator
                       engine={polySynth.current}
-                      name={"osc2"}
-                      settings={osc2Settings}
-                      updateSettings={setOsc2Settings}
+                      oscNumber={2}
                       isSelectingLFO={isSelectingLFOTarget}
                       assignLFO={assignLFO}
                     />
                     <Noise
                       engine={polySynth.current}
-                     
                       isSelectingLFO={isSelectingLFOTarget}
                       assignLFO={assignLFO}
                     />
@@ -216,11 +204,7 @@ const PolySynth = ({ preset }: PolySynthProps) => {
                       envSettings={filterEnvelopeSettings}
                       updateEnvSettings={setFilterEnvelopeSettings}
                     />
-                    <EnvelopeAmplitude
-                      
-                      engine={polySynth.current}
-                     
-                    />
+                    <EnvelopeAmplitude engine={polySynth.current} />
                     <LFO
                       engine={polySynth.current}
                       lfoNumber={1}
@@ -256,9 +240,7 @@ const PolySynth = ({ preset }: PolySynthProps) => {
                   transition={{ duration: 0.5 }}
                   exit={{ opacity: 0, y: 100 }}
                 >
-                  <div className={styles.LFOs}>
-                    
-                  </div>
+                  <div className={styles.LFOs}></div>
                 </motion.div>
                 {isFxOpen && (
                   <Effects
@@ -267,13 +249,9 @@ const PolySynth = ({ preset }: PolySynthProps) => {
                     engine={effects.current}
                   />
                 )}
-                <div
-                  className={`${isKeyboardOpen ? "flex" : "hidden"}`}
-                >
+                <div className={`${isKeyboardOpen ? "flex" : "hidden"}`}>
                   <Keyboard
                     engine={polySynth.current}
-                    osc1Type={osc1Settings.type}
-                    osc2Type={osc2Settings.type}
                   />
                 </div>
               </>
