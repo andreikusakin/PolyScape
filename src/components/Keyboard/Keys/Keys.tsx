@@ -7,40 +7,16 @@ import styles from "./Keys.module.css";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 // @ts-ignore
 import AudioKeys from "audiokeys";
+import { useWaveformColor } from "@/lib/store/settingsStore";
 
 type keysProps = {
   engine: CustomPolySynth;
-  osc1Type: string;
-  osc2Type: string;
 };
 
-type ColorMap = {
-  [key: string]: string;
-};
-
-const colorMap: ColorMap = {
-  "sine-sine": "255, 0, 0",
-  "sine-sawtooth": "255, 255, 0",
-  "sawtooth-sine": "255, 255, 0",
-  "sine-pulse": "0, 255, 0",
-  "pulse-sine": "0, 255, 0",
-  "sine-triangle": "0, 255, 255",
-  "triangle-sine": "0, 255, 255",
-  "sawtooth-sawtooth": "0, 255, 0",
-  "sawtooth-pulse": "0, 255, 255",
-  "pulse-sawtooth": "0, 255, 255",
-  "sawtooth-triangle": "20, 120, 255",
-  "triangle-sawtooth": "20, 120, 255",
-  "pulse-pulse": "80, 80, 255",
-  "pulse-triangle": "140, 40, 255",
-  "triangle-pulse": "140, 40, 255",
-  "triangle-triangle": "255, 0, 255",
-};
-
-export const Keys = ({ engine, osc1Type, osc2Type }: keysProps) => {
+export const Keys = ({ engine }: keysProps) => {
   const [notesPressed, setNotesPressed] = useState<number[]>([]);
-  const [colorRGB, setColorRGB] = useState<string>("255, 0, 0");
-
+  // const [colorRGB, setColorRGB] = useState<string>("255, 0, 0");
+  const colorRGB = useWaveformColor();
   engine.keyboard.down((key: any) => {
     setNotesPressed([...notesPressed, key.note]);
   });
@@ -83,10 +59,6 @@ export const Keys = ({ engine, osc1Type, osc2Type }: keysProps) => {
     engine.triggerRelease(note);
   };
 
-  useEffect(() => {
-    const key = `${osc1Type}-${osc2Type}`;
-    setColorRGB(colorMap[key]);
-  }, [osc1Type, osc2Type]);
 
   return (
     <div className={styles.wrapper}

@@ -12,17 +12,14 @@
   content: "";
   min-width: 20px;
   max-width: calc(var(--white-width) * 48.9);
-  /* 2332.86px */
   height: var(--height);
   width: calc(100% - 40px);
-  /* background-color: blue; */
   position: absolute;
   top: 20px;
   border-radius: 12px;
-  box-shadow: 0 0 0 3px rgb(5, 5, 5), 0 0 0 6px rgb(55, 55, 55);
+  box-shadow: 0 0 0 3px rgb(5, 5, 5), 0 0 0 6px rgba(40, 40, 40, 0.5);
   pointer-events: none;
   z-index: 11;
-  /* border: 2px solid red; */
 }
 
 .container {
@@ -65,26 +62,26 @@
   min-width: var(--white-width);
   height: var(--height);
   border-radius: 6px;
-  background-color: rgba(70, 70, 70, 0.9);
+  background-color: rgba(80, 80, 80, 0.7);
   position: relative;
 }
 
 .white {
-  box-shadow: inset 0 0 0 calc(var(--height) / 66.66) rgb(5, 5, 5), inset 0 0 0 calc(var(--height) / 33.33) rgb(55, 55, 55),
+  box-shadow: inset 0 0 0 calc(var(--height) / 66.66) rgb(5, 5, 5), inset 0 0 0 calc(var(--height) / 33.33) rgba(40, 40, 40, 0.5),
     inset 0 0 calc(var(--height) / 8.33) 0px rgba(var(--color-rgb), 0.3);
 }
 
 .white:hover {
   box-shadow: inset 0 0 0 3px rgb(5, 5, 5),
     inset 0 0 0 6px
-      color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+      color-mix(in srgb, rgba(40, 40, 40, 0.5) 90%, rgb(var(--color-rgb))),
     inset 0 0 24px 0px rgba(var(--color-rgb), 0.7);
 }
 
 .white:active {
   box-shadow: inset 0 0 0 3px rgb(5, 5, 5),
     inset 0 0 0 6px
-      color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+      color-mix(in srgb, rgba(40, 40, 40, 0.5) 90%, rgb(var(--color-rgb))),
     inset 0 0 52px 0px rgba(var(--color-rgb), 1),
     inset 0 0 10px 8px rgba(var(--color-rgb), 1);
 }
@@ -92,7 +89,7 @@
 .whitePressed {
   box-shadow: inset 0 0 0 3px rgb(5, 5, 5),
     inset 0 0 0 6px
-      color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+      color-mix(in srgb, rgba(40, 40, 40, 0.5) 90%, rgb(var(--color-rgb))),
     inset 0 0 52px 0px rgba(var(--color-rgb), 1),
     inset 0 0px 10px 8px rgba(var(--color-rgb), 1);
 }
@@ -100,31 +97,33 @@
 .black {
   position: relative;
   box-shadow: inset 0px calc(var(--height) / -33.33) 0px calc(var(--height) / 33.33) rgb(5, 5, 5),
-    inset 0 calc(var(--height) / -33.33) 0 calc(var(--height) / 25) rgb(55, 55, 55),
+    inset 0 calc(var(--height) / -33.33) 0 calc(var(--height) / 25) rgba(40, 40, 40, 0.5),
     inset 0 0 calc(var(--height) / 16.66) 0px rgba(var(--color-rgb), 1);
   min-width: var(--black-width);
   height: calc(var(--height) * 0.6);
   z-index: 10;
   margin-left: calc(var(--white-width) * -0.6);
   left: calc(var(--black-width) * 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .black:hover {
   box-shadow: inset 0px -6px 0px 6px rgb(5, 5, 5),
-    inset 0 -6px 0 8px color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+    inset 0 -6px 0 8px color-mix(in srgb, rgba(40, 40, 40, 0.5) 90%, rgb(var(--color-rgb))),
     inset 0 0 18px 0px rgba(var(--color-rgb), 1);
 }
 
 .black:active {
   box-shadow: inset 0px -6px 0px 6px rgb(5, 5, 5),
-    inset 0 -6px 0 8px color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+    inset 0 -6px 0 8px color-mix(in srgb, rgba(40, 40, 40, 0.5) 90%, rgb(var(--color-rgb))),
     inset 0 0 18px 4px rgba(var(--color-rgb), 1),
     inset 0 -6px 10px 8px rgba(var(--color-rgb), 1);
 }
 
 .blackPressed {
   box-shadow: inset 0px -6px 0px 6px rgb(5, 5, 5),
-    inset 0 -6px 0 8px color-mix(in srgb, rgb(55, 55, 55) 90%, rgb(var(--color-rgb))),
+    inset 0 -6px 0 8px color-mix(in srgb, rgba(40, 40, 40, 0.5) 90%, rgb(var(--color-rgb))),
     inset 0 0 18px 4px rgba(var(--color-rgb), 1),
     inset 0 -6px 10px 8px rgba(var(--color-rgb), 1);
 }
