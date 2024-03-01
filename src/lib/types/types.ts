@@ -18,6 +18,10 @@ export type Effect = {
   settings: ReverbSettings | PingPongDelaySettings;
 }
 
+export type ColorMap = {
+  [key: string]: number[];
+};
+
 export type Preset = {
   presetName: string;
   osc1: {
