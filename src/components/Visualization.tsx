@@ -9,6 +9,8 @@ import * as THREE from "three";
 import { Bloom } from "@react-three/postprocessing";
 import { BlurPass, Resizer, KernelSize, Resolution } from "postprocessing";
 
+//halo effect
+
 const Dust = ({ count, color }) => {
   const mesh = useRef();
   const particles = useMemo(() => {
@@ -60,7 +62,7 @@ const Dust = ({ count, color }) => {
   return (
     <>
       <instancedMesh ref={mesh} args={[null, null, count]}>
-        <dodecahedronGeometry args={[0.2, 1]} />
+        <dodecahedronGeometry args={[0.05, 1]} />
         <meshStandardMaterial color={`rgb(${color})`} />
       </instancedMesh>
     </>
@@ -73,11 +75,13 @@ const Scene = () => {
     <>
       <OrbitControls />
       <ambientLight intensity={1} />
-      <pointLight position={[0, 3, 1]} intensity={10} />
+      <pointLight position={[0, 2, 1]} intensity={10} />
+
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial color={`rgb(${color})`} />
       </mesh>
+
       <Dust count={1000} color={color} />
     </>
   );
@@ -91,18 +95,19 @@ export const Visualization = () => {
         <Scene />
         <EffectComposer>
           <DepthOfField focusDistance={0} focalLength={0.1} bokehScale={4} />
+
           <Bloom
-            intensity={15} // The bloom intensity.
+            intensity={20} // The bloom intensity.
             blurPass={undefined} // A blur pass.
             kernelSize={KernelSize.LARGE} // blur kernel size
-            luminanceThreshold={0.2} // luminance threshold. Raise this value to mask out darker elements in the scene.
-            luminanceSmoothing={0.8} // smoothness of the luminance threshold. Range is [0, 1]
+            luminanceThreshold={0.01} // luminance threshold. Raise this value to mask out darker elements in the scene.
+            luminanceSmoothing={0.5} // smoothness of the luminance threshold. Range is [0, 1]
             mipmapBlur={true} // Enables or disables mipmap blur.
             resolutionX={Resolution.AUTO_SIZE} // The horizontal resolution.
             resolutionY={Resolution.AUTO_SIZE} // The vertical resolution.
           />
         </EffectComposer>
-       
+        
       </Canvas>
     </div>
   );
