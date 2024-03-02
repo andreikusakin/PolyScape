@@ -16,7 +16,7 @@ type PingPongDelaySettings = {
 export type Effect = {
   type: string;
   settings: ReverbSettings | PingPongDelaySettings;
-}
+};
 
 export type ColorMap = {
   [key: string]: number[];
@@ -63,25 +63,26 @@ export type Preset = {
     octaves: number;
     exponent: number;
   };
-  unison: boolean;
-  panSpread: number;
-  volume: number;
+  miscParams?: {
+    unison: boolean;
+    panSpread: number;
+    masterVolume: number;
+  };
+
   LFO1?: {
     type: "sine" | "triangle" | "sawtooth" | "square";
     rate: Tone.Unit.Frequency;
     sync: boolean;
-    destinations: {target: LFOTarget, amount: number}[];
+    destinations: { target: LFOTarget; amount: number }[];
   };
   LFO2?: {
     type: "sine" | "triangle" | "sawtooth" | "square";
     rate: Tone.Unit.Frequency;
     sync: boolean;
-    destinations: {target: LFOTarget, amount: number}[];
+    destinations: { target: LFOTarget; amount: number }[];
   };
   effects: Effect[];
 };
-
-
 
 export type LFOTarget =
   | "osc1 coarse"
@@ -113,9 +114,8 @@ export type LFODestination = {
   maxLFO: number;
 };
 
-
 export type fxProps = {
-  engine: CustomEffects | undefined;
+  engine: CustomEffects;
   settings: Preset["effects"];
   updateSettings: (settings: Preset["effects"]) => void;
   index: number;
