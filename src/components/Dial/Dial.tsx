@@ -18,7 +18,7 @@ const Dial: React.FC<DialProps> = ({
   isSelectingLFO,
 }) => {
   
-  const strokeWidth = radius * 0.1;
+  const strokeWidth = radius >= 24 ? radius * 0.1 : radius * 0.25;
   const innerRadius = radius - strokeWidth / 2;
   const circumference = 2 * Math.PI * innerRadius;
   const arc = circumference * (270 / 360);
