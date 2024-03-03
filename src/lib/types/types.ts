@@ -24,6 +24,9 @@ export type ColorMap = {
 
 export type Preset = {
   presetName: string;
+  author: string;
+  type: "template" | "pluck" | "pad" | "bass" | "fx" | "lead" | "keys";
+  description?: string;
   osc1: {
     type: "sawtooth" | "sine" | "pulse" | "triangle";
     detune: number;
@@ -63,12 +66,10 @@ export type Preset = {
     octaves: number;
     exponent: number;
   };
-  miscParams?: {
-    unison: boolean;
-    panSpread: number;
-    masterVolume: number;
-  };
-
+  unison: boolean;
+  panSpread: number;
+  masterVolume: number;
+  detune: number;
   LFO1?: {
     type: "sine" | "triangle" | "sawtooth" | "square";
     rate: Tone.Unit.Frequency;
