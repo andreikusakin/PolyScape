@@ -7,13 +7,10 @@ import styles from "./Keys.module.css";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 // @ts-ignore
 import AudioKeys from "audiokeys";
-import { useWaveformColor } from "@/lib/store/settingsStore";
+import { useSynthEngineStore, useWaveformColor } from "@/lib/store/settingsStore";
 
-type keysProps = {
-  engine: CustomPolySynth;
-};
-
-export const Keys = ({ engine }: keysProps) => {
+export const Keys = () => {
+  const engine = useSynthEngineStore((state) => state.synthEngine);
   const [notesPressed, setNotesPressed] = useState<number[]>([]);
   // const [colorRGB, setColorRGB] = useState<string>("255, 0, 0");
   const colorRGB = useWaveformColor();
@@ -59,15 +56,18 @@ export const Keys = ({ engine }: keysProps) => {
     engine.triggerRelease(note);
   };
 
-
   return (
-    <div className={styles.wrapper}
-    style={{ "--color-rgb": colorRGB } as React.CSSProperties}>
+    <div
+      className={styles.wrapper}
+      style={{ "--color-rgb": colorRGB } as React.CSSProperties}
+    >
       <div className={styles.container}>
         <ul className={styles.keys}>
           {keys.map((k) => (
             <li
               key={k.note}
+              onTouchStart={() => handleMouseDown(k.note)}
+              onTouchEnd={() => handleMouseUp(k.note)}
               onMouseDown={() => handleMouseDown(k.note)}
               onMouseUp={() => handleMouseUp(k.note)}
               className={`${styles.key} ${styles[k.type]}
@@ -79,7 +79,7 @@ export const Keys = ({ engine }: keysProps) => {
                 : ""
             }
 `}
-              
+              id={k.type === "white" ? "white" : "black"}
             ></li>
           ))}
         </ul>
