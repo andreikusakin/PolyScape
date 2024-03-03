@@ -19,6 +19,7 @@ export class CustomVoice extends Monophonic<CustomVoiceOptions> {
   oscillator2: Tone.OmniOscillator<any>;
   noise: Tone.Noise;
   panner: Tone.Panner;
+  pan: Tone.Param<"audioRange">;
   frequency: Tone.Signal<"frequency">;
   detune: Tone.Signal<"cents">;
   frequency2: Tone.Signal<"frequency">;
@@ -34,6 +35,7 @@ export class CustomVoice extends Monophonic<CustomVoiceOptions> {
     this.oscillator2 = new Tone.OmniOscillator();
     this.noise = new Tone.Noise();
     this.panner = new Tone.Panner();
+    this.pan = this.panner.pan;
     this.frequency = this.oscillator.frequency;
     this.detune = this.oscillator.detune;
     this.frequency2 = this.oscillator2.frequency;
