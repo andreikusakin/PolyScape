@@ -1,4 +1,4 @@
-import { initPreset } from "../presets/Init";
+import { initPreset } from "../presets/init";
 import { create } from "zustand";
 import { Preset } from "../types/types";
 import { colorMap } from "../utils/colorMap";
@@ -32,6 +32,19 @@ export const useSynthSettingsStore = create((set, get) => ({
   fxSettings: initPreset.effects,
   lfo1: initPreset.LFO1,
   lfo2: initPreset.LFO2,
+  panSpread: initPreset.panSpread,
+  unison: initPreset.unison,
+  detune: initPreset.detune,
+  masterVolume: initPreset.masterVolume,
+  setDetune: (value: number) => {
+    set(() => ({ detune: value }));
+  },
+  setMasterVolume: (value: number) => {
+    set(() => ({ masterVolume: value }));
+  },
+  setUnison: (value: number) => {
+    set(() => ({ unison: value }));
+  },
   setAllParamsFromPreset: (preset: Preset) => {
     set({
       presetName: preset.presetName,
@@ -68,6 +81,9 @@ export const useSynthSettingsStore = create((set, get) => ({
     set((state) => ({
       envelopeAmplitude: { ...state.envelopeAmplitude, ...param },
     }));
+  },
+  setPanSpread: (param) => {
+    set((state) => ({ panSpread: param }));
   },
   setLFO1Params: (param) => {
     set((state) => ({ lfo1: { ...state.lfo1, ...param } }));
