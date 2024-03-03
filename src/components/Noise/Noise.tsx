@@ -4,23 +4,20 @@ import { NoiseShape } from "../Shapes";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { LFOTarget, Preset } from "@/lib/types/types";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
-import { useSynthSettingsStore } from "@/lib/store/settingsStore";
+import {
+  useSynthEngineStore,
+  useSynthSettingsStore,
+} from "@/lib/store/settingsStore";
+import { useShallow } from "zustand/react/shallow";
 
-type NoiseProps = {
-  engine: CustomPolySynth | undefined;
-  isSelectingLFO: false | 1 | 2;
-  assignLFO: (target: LFOTarget, lfo: 1 | 2) => void;
-};
-
-export default function Noise({
-  engine,
-  isSelectingLFO,
-  assignLFO,
-}: NoiseProps) {
-  const { settings, updateSettings } = useSynthSettingsStore((state) => ({
+export default function Noise() {
+  console.log("RERENDER NOISE")
+  const engine = useSynthEngineStore((state) => state.synthEngine);
+  const { settings, updateSettings } = useSynthSettingsStore(useShallow((state) => ({
     settings: state.noise,
     updateSettings: state.setNoiseParams,
-  }));
+  })));
+  console.log(settings)
   const colorValue =
     settings.type === "white"
       ? "#FFFFFF"
@@ -30,22 +27,22 @@ export default function Noise({
 
   const updateType = (type: "white" | "pink" | "brown") => {
     updateSettings({ type: type });
-    engine?.voices.forEach((voice) => {
+    engine.voices.forEach((voice) => {
       voice.noise.type = type;
     });
   };
 
   const updateVolume = (value: number) => {
     updateSettings({ volume: value });
-    engine?.LFO1.find((lfo) => lfo.target === "noise volume")?.LFO.set({
+    engine.LFO1.find((lfo) => lfo.target === "noise volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
-    engine?.LFO2.find((lfo) => lfo.target === "noise volume")?.LFO.set({
+    engine.LFO2.find((lfo) => lfo.target === "noise volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
-    engine?.voices.forEach((v) => (v.noise.volume.value = value));
+    engine.voices.forEach((v) => (v.noise.volume.value = value));
   };
   return (
     <SectionWrapper name={"noise"}>
@@ -88,8 +85,7 @@ export default function Noise({
           radius={24}
           startingPoint={"middle"}
           interactive={true}
-          assignLFO={assignLFO}
-          isSelectingLFO={isSelectingLFO}
+       
         />
       </div>
     </SectionWrapper>

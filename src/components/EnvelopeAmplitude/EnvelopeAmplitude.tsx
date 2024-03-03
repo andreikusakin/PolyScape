@@ -4,41 +4,41 @@ import * as Tone from "tone/build/esm/index";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import { Preset } from "@/lib/types/types";
-import { useSynthSettingsStore } from "@/lib/store/settingsStore";
+import { useSynthEngineStore, useSynthSettingsStore } from "@/lib/store/settingsStore";
+import { useShallow } from "zustand/react/shallow";
 
-type EnvelopeProps = {
-  engine: CustomPolySynth | undefined;
-};
 
-export const EnvelopeAmplitude = ({ engine }: EnvelopeProps) => {
-  const { settings, updateSettings } = useSynthSettingsStore((state) => ({
+export const EnvelopeAmplitude = () => {
+  console.log("RERENDER ENVELOPE AMPLITUDE")
+  const engine = useSynthEngineStore((state) => state.synthEngine);
+  const { settings, updateSettings } = useSynthSettingsStore(useShallow((state) => ({
     settings: state.envelopeAmplitude,
     updateSettings: state.setEnvAmplitudeParams,
-  }));
+  })));
   const updateAttack = (attack: number) => {
     updateSettings({ attack: attack });
-    engine?.voices.forEach((voice) => {
+    engine.voices.forEach((voice) => {
       voice.envelope.attack = attack;
     });
   };
 
   const updateDecay = (decay: number) => {
     updateSettings({ decay: decay });
-    engine?.voices.forEach((voice) => {
+    engine.voices.forEach((voice) => {
       voice.envelope.decay = decay;
     });
   };
 
   const updateSustain = (sustain: number) => {
     updateSettings({ sustain: sustain });
-    engine?.voices.forEach((voice) => {
+    engine.voices.forEach((voice) => {
       voice.envelope.sustain = sustain;
     });
   };
 
   const updateRelease = (release: number) => {
     updateSettings({ release: release });
-    engine?.voices.forEach((voice) => {
+    engine.voices.forEach((voice) => {
       voice.envelope.release = release;
     });
   };
@@ -48,12 +48,12 @@ export const EnvelopeAmplitude = ({ engine }: EnvelopeProps) => {
       <div className={styles.grid}>
         <Knob
           exponent={1}
-          label="attack"
+          label={"attack"}
           unit={"s"}
-          minValue={0}
+          minValue={0.001}
           maxValue={20}
           currentValue={settings.attack}
-          step={0.01}
+          step={0.001}
           onChange={updateAttack}
           radius={24}
           lfo={false}
@@ -64,7 +64,7 @@ export const EnvelopeAmplitude = ({ engine }: EnvelopeProps) => {
           exponent={1}
           label="decay"
           unit={"s"}
-          minValue={0}
+          minValue={0.001}
           maxValue={20}
           currentValue={settings.decay}
           step={0.01}

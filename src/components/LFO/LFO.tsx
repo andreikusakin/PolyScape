@@ -5,66 +5,73 @@ import Knob from "../Knob/Knob";
 import { OscillatorWaveform } from "../OscillatorWaveform";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { Slider } from "../Slider/Slider";
+import {
+  useSynthEngineStore,
+  useSynthSettingsStore,
+} from "@/lib/store/settingsStore";
+import { update } from "three/examples/jsm/libs/tween.module.js";
+import { useShallow } from "zustand/react/shallow";
 
 type LFOProps = {
-  engine?: CustomPolySynth;
   lfoNumber: 1 | 2;
-  type: "sine" | "triangle" | "sawtooth" | "square";
-  setType: (type: "sine" | "triangle" | "sawtooth" | "square") => void;
-  rate: Tone.Unit.Frequency | Tone.FrequencyClass | number | string;
-  setRate: (rate: Tone.Unit.Frequency) => void;
-  sync: boolean;
-  setSync: (sync: boolean) => void;
-  destinations: [];
-  setDestinations: ([]) => void;
-  setIsSelecting: (lfo: false | 1 | 2) => void;
 };
 
-export const LFO = ({
-  engine,
-  lfoNumber,
-  type,
-  setType,
-  rate,
-  setRate,
-  sync,
-  setSync,
-  destinations,
-  setDestinations,
-  setIsSelecting,
-}: LFOProps) => {
-  const selectedLFO = lfoNumber === 1 ? engine?.LFO1 : engine?.LFO2;
+export const LFO = ({ lfoNumber }: LFOProps) => {
+  console.log("RERENDER LFO");
+  const engine = useSynthEngineStore((state) => state.synthEngine);
+  const { settings, updateSettings, setIsSelecting } = useSynthSettingsStore(
+    useShallow(
+    (state) => ({
+      settings: lfoNumber === 1 ? state.lfo1 : state.lfo2,
+      updateSettings:
+        lfoNumber === 1 ? state.setLFO1Params : state.setLFO2Params,
+      setIsSelecting: state.setIsSelectingLFO,
+    }))
+  );
+
+  const selectedLFO = lfoNumber === 1 ? engine.LFO1 : engine.LFO2;
+
   const handleAssignClick = () => {
     setIsSelecting(lfoNumber);
   };
 
   const updateWaveformType = (
-    type: "sine" | "sawtooth" | "square" | "triangle"
+    newType: "sine" | "sawtooth" | "square" | "triangle"
   ) => {
-    setType(type);
-
-    selectedLFO?.forEach((lfo) => (lfo.LFO.type = type));
+    updateSettings({ ...settings, type: newType });
+    selectedLFO?.forEach((lfo) => (lfo.LFO.type = newType));
   };
 
   const updateRate = (value: Tone.Unit.Frequency) => {
-    setRate(value);
-
+    updateSettings({ ...settings, rate: value });
     selectedLFO?.forEach((lfo) => (lfo.LFO.frequency.value = value));
   };
 
   const handleDoubleClick = (target: LFOTarget) => {
-    setDestinations([
-      ...destinations.filter((d: LFODestination) => d.target !== target),
-    ]);
+    // setDestinations([
+    //   ...destinations.filter((d: LFODestination) => d.target !== target),
+    // ]);
+    updateSettings({
+      ...settings,
+      destinations: settings.destinations.filter(
+        (d: LFODestination) => d.target !== target
+      ),
+    });
     engine?.disconnectLFO(target, lfoNumber);
   };
 
   const updateLFOAmount = (target: LFOTarget, amount: number) => {
-    setDestinations([
-      ...destinations.map((d: LFODestination) =>
+    // setDestinations([
+    //   ...destinations.map((d: LFODestination) =>
+    //     d.target === target ? { ...d, amount: amount } : d
+    //   ),
+    // ]);
+    updateSettings({
+      ...settings,
+      destinations: settings.destinations.map((d: LFODestination) =>
         d.target === target ? { ...d, amount: amount } : d
       ),
-    ]);
+    });
     selectedLFO?.forEach((lfo) => {
       if (lfo.target === target) {
         lfo.LFO.amplitude.value = amount;
@@ -85,25 +92,25 @@ export const LFO = ({
           <ul className={styles.shapes}>
             <li
               onClick={() => updateWaveformType("sine")}
-              className={type === "sine" ? styles.selected : ""}
+              className={settings.type === "sine" ? styles.selected : ""}
             >
               sine
             </li>
             <li
               onClick={() => updateWaveformType("sawtooth")}
-              className={type === "sawtooth" ? styles.selected : ""}
+              className={settings.type === "sawtooth" ? styles.selected : ""}
             >
               sawtooth
             </li>
             <li
               onClick={() => updateWaveformType("square")}
-              className={type === "square" ? styles.selected : ""}
+              className={settings.type === "square" ? styles.selected : ""}
             >
               square
             </li>
             <li
               onClick={() => updateWaveformType("triangle")}
-              className={type === "triangle" ? styles.selected : ""}
+              className={settings.type === "triangle" ? styles.selected : ""}
             >
               triangle
             </li>
@@ -116,29 +123,34 @@ export const LFO = ({
               minValue={0}
               maxValue={200}
               step={0.01}
-              currentValue={rate}
+              currentValue={settings.rate || 0}
               onChange={updateRate}
               exponent={1}
               startingPoint={"beginning"}
-              sync={sync}
-              unit={sync ? "" : "Hz"}
+              sync={settings.sync}
+              unit={settings.sync ? "" : "Hz"}
             />
           </div>
         </div>
         <div>
           <div className={styles.waveform}>
             <div className={styles.waveformAnimation}>
-              <OscillatorWaveform oscType={type} />
+              <OscillatorWaveform oscType={settings.type} />
             </div>
           </div>
           <div
             onClick={() => {
-              setSync(!sync);
-              setRate(sync ? "4n" : 1);
+              updateSettings({
+                ...settings,
+                sync: !settings.sync,
+                rate: settings.sync ? "4n" : 1,
+              });
+
+              // setRate(settings.sync ? "4n" : 1);
             }}
             className={[
               styles.sync,
-              sync
+              settings.sync
                 ? lfoNumber === 1
                   ? styles.sync_activeLFO1
                   : styles.sync_activeLFO2
@@ -164,7 +176,7 @@ export const LFO = ({
             </div>
           </div>
           <div className={styles.targets}>
-            {destinations.map((d, i) => (
+            {settings.destinations.map((d, i) => (
               <Slider
                 key={i}
                 lfoName={`lfo${lfoNumber}`}

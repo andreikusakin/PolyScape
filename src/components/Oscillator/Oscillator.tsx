@@ -5,96 +5,109 @@ import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { LFOTarget, Preset } from "@/lib/types/types";
 import { OscillatorWaveform } from "../OscillatorWaveform";
-import { useSynthSettingsStore } from "@/lib/store/settingsStore";
+import {
+  useSynthEngineStore,
+  useSynthSettingsStore,
+} from "@/lib/store/settingsStore";
+import { useShallow } from "zustand/react/shallow";
 
 type OscillatorProps = {
-  engine: CustomPolySynth | undefined;
   oscNumber: number;
-  isSelectingLFO: false | 1 | 2;
-  assignLFO: (target: LFOTarget, lfo: 1 | 2) => void;
 };
 
-const Oscillator: React.FC<OscillatorProps> = ({
-  engine,
-  oscNumber,
-  isSelectingLFO,
-  assignLFO,
-}) => {
-  const { settings, updateSettings } = useSynthSettingsStore((state) => (
-    {
-      settings: oscNumber === 1 ? state.osc1 : state.osc2,
-      updateSettings: oscNumber === 1 ? state.setOsc1Params : state.setOsc2Params,
-    }
-  )
-    
-  );
+const Oscillator = ({ oscNumber }: OscillatorProps) => {
+  console.log("RERENDER OSCILLATOR")
+  const engine = useSynthEngineStore((state) => state.synthEngine);
+  const { settings, updateSettings } = useSynthSettingsStore(useShallow((state) => ({
+    settings: oscNumber === 1 ? state.osc1 : state.osc2,
+    updateSettings: oscNumber === 1 ? state.setOsc1Params : state.setOsc2Params,
+  })));
   const updateWaveformType = (
     type: "sine" | "sawtooth" | "pulse" | "triangle"
   ) => {
-    updateSettings({ ...settings, type: type });
+    updateSettings({ type: type });
     if (oscNumber === 1) {
-      engine?.voices.forEach((v) => (v.oscillator.type = type));
-      engine?.disconnectLFO("osc1 pulse width", 1);
+      engine.voices.forEach((v) => (v.oscillator.type = type));
+      engine.disconnectLFO("osc1 pulse width", 1);
     } else {
-      engine?.voices.forEach((v) => (v.oscillator2.type = type));
+      engine.voices.forEach((v) => (v.oscillator2.type = type));
     }
 
     if (type === "pulse") {
       oscNumber === 1
-        ? engine?.voices.forEach((v) => (v.oscillator.width.value = settings.pulseWidth))
-        : engine?.voices.forEach(
+        ? engine.voices.forEach(
+            (v) => (v.oscillator.width.value = settings.pulseWidth)
+          )
+        : engine.voices.forEach(
             (v) => (v.oscillator2.width.value = settings.pulseWidth)
           );
     }
   };
 
   const updatePulseWidth = (value: number) => {
-    updateSettings({ ...settings, pulseWidth: value });
+    updateSettings({ pulseWidth: value });
     oscNumber === 1
-      ? engine?.voices.forEach((v) => (v.oscillator.width.value = value))
-      : engine?.voices.forEach((v) => (v.oscillator2.width.value = value));
+      ? engine.voices.forEach((v) => (v.oscillator.width.value = value))
+      : engine.voices.forEach((v) => (v.oscillator2.width.value = value));
   };
 
   const updateCoarse = (value: number) => {
-    updateSettings({ ...settings, transpose: value });
-    const coarseValue = value * 100 + settings.detune;
+    updateSettings({ transpose: value });
+    // const coarseValue = value * 100 + settings.detune;
 
     oscNumber === 1
-      ? engine?.voices.forEach((v) => v.oscillator.set({ detune: coarseValue }))
-      : engine?.voices.forEach(
-          (v) => (v.oscillator2.detune.value = coarseValue)
+      ? engine.voices.forEach(
+          (v) =>
+            (v.oscillator.detune.value =
+              v.oscillator.detune.value -
+              settings.transpose * 100 +
+              value * 100)
+        )
+      : engine.voices.forEach(
+          (v) =>
+            (
+              v.oscillator2.detune.value =
+              v.oscillator2.detune.value -
+              settings.transpose * 100 +
+              value * 100
+            )
         );
   };
 
   const updateFine = (value: number) => {
-    updateSettings({ ...settings, detune: value });
-    const fineValue = value + settings.transpose * 100;
+    updateSettings({ detune: value });
     oscNumber === 1
-      ? engine?.voices.forEach((v) => (v.oscillator.detune.value = fineValue))
-      : engine?.voices.forEach((v) => (v.oscillator2.detune.value = fineValue));
+      ? engine.voices.forEach((v) => {
+          v.oscillator.detune.value =
+            v.oscillator.detune.value - settings.detune + value;
+        })
+      : engine.voices.forEach((v) => {
+          v.oscillator2.detune.value =
+            v.oscillator2.detune.value - settings.detune + value;
+        })
   };
 
   const updateVolume = (value: number) => {
-    updateSettings({ ...settings, volume: value });
-    engine?.LFO1.find((lfo) => lfo.target === "osc1 volume")?.LFO.set({
+    updateSettings({ volume: value });
+    engine.LFO1.find((lfo) => lfo.target === "osc1 volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
-    engine?.LFO2.find((lfo) => lfo.target === "osc1 volume")?.LFO.set({
+    engine.LFO2.find((lfo) => lfo.target === "osc1 volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
-    engine?.LFO1.find((lfo) => lfo.target === "osc2 volume")?.LFO.set({
+    engine.LFO1.find((lfo) => lfo.target === "osc2 volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
-    engine?.LFO2.find((lfo) => lfo.target === "osc2 volume")?.LFO.set({
+    engine.LFO2.find((lfo) => lfo.target === "osc2 volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
     oscNumber === 1
-      ? engine?.voices.forEach((v) => (v.oscillator.volume.value = value))
-      : engine?.voices.forEach((v) => (v.oscillator2.volume.value = value));
+      ? engine.voices.forEach((v) => (v.oscillator.volume.value = value))
+      : engine.voices.forEach((v) => (v.oscillator2.volume.value = value));
   };
   return (
     <SectionWrapper name={`osc${oscNumber}`}>
@@ -143,11 +156,9 @@ const Oscillator: React.FC<OscillatorProps> = ({
           currentValue={settings.pulseWidth}
           step={0.01}
           onChange={updatePulseWidth}
-          isSelectingLFO={isSelectingLFO}
           // lfoPercent={100}
           startingPoint={"middle"}
           interactive={settings.type === "pulse" ? true : false}
-          assignLFO={assignLFO}
         />
 
         <Knob
@@ -160,10 +171,9 @@ const Oscillator: React.FC<OscillatorProps> = ({
           step={1}
           onChange={updateCoarse}
           radius={24}
-          isSelectingLFO={isSelectingLFO}
           startingPoint={"middle"}
           interactive={true}
-          assignLFO={assignLFO}
+
           // lfoAmount={lfo1?.find((lfo) => lfo.target === "osc1 coarse")?.amount}
         />
         <Knob
@@ -176,10 +186,8 @@ const Oscillator: React.FC<OscillatorProps> = ({
           step={1}
           onChange={updateFine}
           radius={24}
-          isSelectingLFO={isSelectingLFO}
           startingPoint={"beginning"}
           interactive={true}
-          assignLFO={assignLFO}
         />
         <Knob
           exponent={1}
@@ -192,10 +200,8 @@ const Oscillator: React.FC<OscillatorProps> = ({
           step={0.5}
           onChange={updateVolume}
           radius={24}
-          isSelectingLFO={isSelectingLFO}
           startingPoint={"middle"}
           interactive={true}
-          assignLFO={assignLFO}
         />
       </div>
     </SectionWrapper>

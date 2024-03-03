@@ -6,8 +6,10 @@ import styles from "./Knob.module.css";
 import { useDrag } from "@use-gesture/react";
 import Dial from "../Dial/Dial";
 import { LFOTarget } from "@/lib/types/types";
+import { useSynthSettingsStore } from "@/lib/store/settingsStore";
+import { useShallow } from "zustand/react/shallow";
 
-// knob like in jss  
+// knob like in jss
 
 const subdivisions = [
   "1m",
@@ -41,7 +43,7 @@ const subdivisions = [
 
 type KnobProps = {
   radius: number;
-  label: string;
+  label?: string;
   label2?: string;
   unit?: string;
   isSelectingLFO?: false | 1 | 2;
@@ -74,19 +76,17 @@ const Knob: React.FC<KnobProps> = ({
   interactive,
   onChange,
   exponent,
-  isSelectingLFO,
-  assignLFO,
+  // isSelectingLFO,
+  // assignLFO,
   sync,
 }) => {
-
-    if (sync) {
-      step = 1;
-      minValue = 0;
-      maxValue = subdivisions.length - 1;
-      currentValue = subdivisions.indexOf(currentValue as string);
-    }
-
-  
+  console.log("Knob Rerender");
+  if (sync) {
+    step = 1;
+    minValue = 0;
+    maxValue = subdivisions.length - 1;
+    currentValue = subdivisions.indexOf(currentValue as string);
+  }
 
   const adjustValueToStep = (value: number, step: number) => {
     const roundedSteps = Math.round((value - minValue) / step);
@@ -104,12 +104,20 @@ const Knob: React.FC<KnobProps> = ({
   const percentToValue = (percent: number) => {
     return (percent / 100) * (maxValue - minValue) + minValue;
   };
-
-  const [percent, setPercent] = useState<number>(valueToPercent(Number(currentValue)));
+  const { isSelectingLFO, assignLFO } = useSynthSettingsStore(
+    useShallow((state) => ({
+      isSelectingLFO: state.isSelectingLFO,
+      assignLFO: state.assignLFOToTarget,
+    }))
+  );
+  const [percent, setPercent] = useState<number>(
+    valueToPercent(Number(currentValue))
+  );
   const [displayLabel, setDisplayLabel] = useState<string>(label);
   const [displayLabel2, setDisplayLabel2] = useState(label2);
   const [isDragging, setIsDragging] = useState(false);
   const [subdivisionIndex, setSubdivisionIndex] = useState<number>(0);
+  const [dialRadius, setDialRadius] = useState<number>(radius);
 
   useEffect(() => {
     const newPercent = valueToPercent(Number(currentValue));
@@ -130,7 +138,9 @@ const Knob: React.FC<KnobProps> = ({
         setDisplayLabel(subdivisions[subdivisionIndex]);
         setDisplayLabel2("");
       } else {
-        setDisplayLabel(`${Number(currentValue).toFixed(2)} ${unit ? unit : ""}`);
+        setDisplayLabel(
+          `${Number(currentValue).toFixed(2)} ${unit ? unit : ""}`
+        );
         setDisplayLabel2("");
       }
     } else {
@@ -152,7 +162,6 @@ const Knob: React.FC<KnobProps> = ({
         let newValue = percentToValue(newPercent);
 
         newValue = updateValue(newValue);
-          console.log("newValue", newValue);
         setPercent(valueToPercent(newValue));
         if (onChange) {
           onChange(newValue);
@@ -168,10 +177,9 @@ const Knob: React.FC<KnobProps> = ({
         let newIndex = percentToValue(newPercent);
 
         newIndex = updateValue(newIndex);
-          setSubdivisionIndex(newIndex);
+        setSubdivisionIndex(newIndex);
         setPercent(valueToPercent(newIndex));
 
-        console.log("newIndex", newIndex);
         if (onChange) {
           onChange(subdivisions[newIndex]);
         }
@@ -197,19 +205,23 @@ const Knob: React.FC<KnobProps> = ({
       onDoubleClick={() => onChange && onChange(0)}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
+      // onMouseEnter={() => setDialRadius(radius * 1.22)}
+      // onMouseLeave={() => setDialRadius(radius)}
     >
       {" "}
       <Dial
-        radius={radius}
+        radius={dialRadius}
         percent={percent}
         lfoAmount={lfoAmount}
         startingPoint={startingPoint}
-        isSelectingLFO={isSelectingLFO}
+        isSelectingLFO={lfoParameter && isSelectingLFO}
       />
-      <div className={styles.labels}>
-        <span>{displayLabel}</span>
-        <span>{displayLabel2}</span>
-      </div>
+      {label && (
+        <div className={styles.labels}>
+          <span>{displayLabel}</span>
+          <span>{displayLabel2}</span>
+        </div>
+      )}
     </div>
   );
 };

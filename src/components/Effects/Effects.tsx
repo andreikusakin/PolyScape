@@ -4,14 +4,19 @@ import { Reverb } from "../Reverb/Reverb";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import styles from "./Effects.module.css";
 import CustomEffects from "@/lib/engines/CustomEffects";
+import { useEffectsEngineStore, useSynthSettingsStore } from "@/lib/store/settingsStore";
+import { useShallow } from "zustand/react/shallow";
 
 type EffectsProps = {
-  settings: Preset["effects"];
-  updateSettings: (settings: Preset["effects"]) => void;
-  engine: CustomEffects;
+  
 };
 
-export const Effects = ({ settings, updateSettings, engine }: EffectsProps) => {
+export const Effects = () => {
+  const engine = useEffectsEngineStore((state) => state.effectsEngine);
+  const {settings, updateSettings} = useSynthSettingsStore(useShallow((state) => ({
+    settings: state.fxSettings,
+    updateSettings: state.setFxSettings,
+  })));
   const addNewEffect = (type: string) => {
     const newEffect = {
       type: type,
@@ -20,12 +25,12 @@ export const Effects = ({ settings, updateSettings, engine }: EffectsProps) => {
     updateSettings([...settings, newEffect]);
     engine.addEffect(type);
   };
-
+ console.log("RERENDER EFFECTS")
   return (
     <div className={styles.wrapper}>
       <SectionWrapper>
         <div className={styles.container}>
-          {settings?.map((effect, index) => {
+          {settings && settings.map((effect, index) => {
             switch (effect.type) {
               case "reverb":
                 return (
