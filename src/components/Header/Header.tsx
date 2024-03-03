@@ -2,17 +2,19 @@ import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import styles from "./Header.module.css";
 import { WebMidi } from "webmidi";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { UiSettings } from "@/lib/types/types";
 import { useUiStore } from "@/lib/store/uiStore";
+import { useSynthEngineStore } from "@/lib/store/settingsStore";
+import { PresetLibrary } from "../PresetLibrary/PresetLibrary";
+import Knob from "../Knob/Knob";
 
-type HeaderProps = {
-  engine: CustomPolySynth;
-};
-
-export const Header = ({ engine }: HeaderProps) => {
+export const Header = () => {
+  const { engine } = useSynthEngineStore((state) => ({
+    engine: state.synthEngine,
+  }));
   const [midiInputs, setMidiInputs] = useState<typeof WebMidi.inputs>([]);
   const [currentMidiDevice, setCurrentMidiDevice] = useState(
     "no midi devices detected"
@@ -116,10 +118,21 @@ export const Header = ({ engine }: HeaderProps) => {
                   </div>
                 )}
               </div>
-              <div className={styles.preset}>preset</div>
+              <div className={styles.preset}>
+                <span>preset</span>
+                <PresetLibrary />
+              </div>
               <div className={styles.bpm}>bpm</div>
-
+              <div className={styles.master_volume}><Knob 
+                            radius={10}
+                            minValue={-70}
+                            maxValue={12}
+                            currentValue={0}
+                            interactive
+                          /></div>
+                          
               <div className={styles.buttons}>
+                
                 <button
                   className={`${styles.keyboard_button} ${
                     isKeyboardOpen && styles.selected
