@@ -6,7 +6,6 @@ import { Preset, LFOTarget, LFODestination } from "../types/types";
 import NoiseEngine from "./NoiseEngine";
 import { CustomVoice } from "./CustomVoice";
 
-
 //TODO
 
 //pan spread, midi keyboard, unison
@@ -23,10 +22,11 @@ type LFO = {
 
 export default class CustomPolySynth {
   notesPressed: number[] = [];
-  isMidiSupported: boolean = false;
-  midiInputIndex = 0;
+  // isMidiSupported: boolean = false;
+  // midiInputIndex = 0;
   midiInputs;
   midiInput;
+  panSpread: number = 0;
   private voiceCount: number = 16;
   voices: CustomVoice[] = [];
   private activeVoices: Map<number, CustomVoice> = new Map();
@@ -42,14 +42,14 @@ export default class CustomPolySynth {
     this.outputNode = new Tone.Gain({ gain: 0.2 });
     this.initializeVoices(this.outputNode, preset);
     this.loadFilterPreset(preset);
+    this.loadMiscParamsFromPreset(preset);
     this.loadLFOs(preset);
     this.setupKeyboard();
-    if (navigator.userAgent.includes("Chrome")) {
-      this.setupMidi();
-    }
+    // if (navigator.userAgent.includes("Chrome")) {
+    //   this.setupMidi();
+    // }
 
     this.unison = preset.unison;
-   
   }
 
   private initializeVoices(node: Tone.ToneAudioNode, preset: Preset) {
@@ -100,6 +100,11 @@ export default class CustomPolySynth {
       v.filterEnvelope.release = preset.filterEnvelope.release;
       v.filterEnvelope.baseFrequency = preset.filterEnvelope.baseFrequency;
     });
+  }
+
+  private loadMiscParamsFromPreset(preset: Preset) {
+    this.unison = preset.unison;
+    this.panSpread = preset.panSpread;
   }
 
   private loadLFOs(preset: Preset) {
@@ -172,17 +177,14 @@ export default class CustomPolySynth {
     this.midiInput.destroy();
     this.midiInput = WebMidi.inputs[index];
     this.midiListener(this.midiInput);
-    
   }
 
   midiListener(input) {
     input.addListener("noteon", "all", (e) => {
-
-      console.log(e)
+      console.log(e);
       this.triggerAttack(e.note.number, Tone.now(), e.velocity);
     });
     input.addListener("noteoff", "all", (e) => {
-
       this.triggerRelease(e.note.number);
     });
   }
@@ -402,5 +404,19 @@ export default class CustomPolySynth {
     });
     const filteredLFOs = lfoSelected.filter((lfo) => lfo.target !== target);
     lfo === 1 ? (this.LFO1 = filteredLFOs) : (this.LFO2 = filteredLFOs);
+  }
+
+  setPanSpread(value: number) {
+    this.panSpread = value;
+    this.voices.forEach((v, i) => {
+      v.pan.value = (value * (i % 2 === 0 ? -1 : 1)) / 100;
+    });
+  }
+
+  setDetune(value: number) {
+    this.voices.forEach((v, i) => {
+      v.oscillator.detune.value = value;
+      v.oscillator2.detune.value = value;
+    });
   }
 }
