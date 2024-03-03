@@ -12,34 +12,34 @@ export const Reverb = ({
   index,
 }: fxProps) => {
   const updateMix = (value: number) => {
-    const newSettings = settings?.map((effect, i) =>
+    const newSettings = settings.map((effect, i) =>
       i === index
         ? { ...effect, settings: { ...effect.settings, wet: value } }
         : effect
     );
     updateSettings(newSettings);
-    if (engine?.currentChain[index])
-      (engine?.currentChain[index] as Tone.Reverb).set({ wet: value / 100 });
+    if (engine.currentChain[index])
+      (engine.currentChain[index] as Tone.Reverb).set({ wet: value / 100 });
   };
   const updateDecay = (value: number) => {
-    const newSettings = settings?.map((effect, i) =>
+    const newSettings = settings.map((effect, i) =>
       i === index
         ? { ...effect, settings: { ...effect.settings, decay: value } }
         : effect
     );
     updateSettings(newSettings);
-    if (engine?.currentChain[index])
-      (engine?.currentChain[index] as Tone.Reverb).set({ decay: value });
+    if (engine.currentChain[index])
+      (engine.currentChain[index] as Tone.Reverb).set({ decay: value });
   };
   const updatePreDelay = (value: number) => {
-    const newSettings = settings?.map((effect, i) =>
+    const newSettings = settings.map((effect, i) =>
       i === index
         ? { ...effect, settings: { ...effect.settings, preDelay: value } }
         : effect
     );
     updateSettings(newSettings);
-    if (engine?.currentChain[index])
-      (engine?.currentChain[index] as Tone.Reverb).set({ preDelay: value });
+    if (engine.currentChain[index])
+      (engine.currentChain[index] as Tone.Reverb).set({ preDelay: value });
   };
 
   const handleDelete = () => {
@@ -55,7 +55,7 @@ export const Reverb = ({
     <FxWrapper
       effectName="reverb"
       deleteFunction={handleDelete}
-      effect={engine?.currentChain[index]}
+      effect={engine.currentChain[index]}
       currentWet={settings[index].settings.wet}
     >
       <div className={styles.grid}>
