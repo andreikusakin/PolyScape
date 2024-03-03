@@ -4,15 +4,12 @@ import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import { Keys } from "./Keys/Keys";
 import { useState } from "react";
 
-type KeyboardProps = {
-  engine: CustomPolySynth;
-};
 
-export const Keyboard = ({ engine }: KeyboardProps) => {
+export const Keyboard = () => {
   return (
     <SectionWrapper>
       <div className={styles.container}>
-        <Keys engine={engine} />
+        <Keys />
       </div>
     </SectionWrapper>
   );
