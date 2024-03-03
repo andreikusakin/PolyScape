@@ -1,16 +1,19 @@
 import { Preset } from "../types/types";
 
 export const initPreset: Preset = {
-    presetName: "Init",
+    presetName: "init",
+    author: "Andrew Kusakin",
+    type: "template",
+    description: "Initial preset",
     osc1: {
       type: "sawtooth",
       detune: 0,
-      transpose: 12,
+      transpose: 0,
       pulseWidth: 0,
       volume: 0,
     },
     osc2: {
-      type: "triangle",
+      type: "pulse",
       detune: 0,
       transpose: 0,
       pulseWidth: 0,
@@ -37,8 +40,9 @@ export const initPreset: Preset = {
       exponent: 5,
     },
     unison: false,
+    detune: 0,
     panSpread: 0,
-    volume: 0,
+    masterVolume: 0,
     LFO1: {
       type: "sine",
       rate: "8n",
