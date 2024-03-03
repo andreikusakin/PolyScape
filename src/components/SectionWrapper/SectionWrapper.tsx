@@ -9,7 +9,7 @@ type SectionWrapperProps = {
 export const SectionWrapper = ({ name, children }: SectionWrapperProps) => {
   return (
     <section className={styles.wrapper}>
-      <div className={styles.name}>{name}</div>
+      {name && <div className={styles.name}>{name}</div>}
       <div className={styles.container}>{children}</div>
     </section>
   );
