@@ -26,8 +26,15 @@ export default class CustomPolySynth {
   // midiInputIndex = 0;
   midiInputs;
   midiInput;
+  osc1Fine: number;
+  osc1Coarse: number;
+  osc2Fine: number;
+  osc2Coarse: number;
+  hold: boolean ;
+  currentDetuneOsc1: number[] = [];
+  currentDetuneOsc2: number[] = [];
   panSpread: number = 0;
-  private voiceCount: number = 16;
+  private voiceCount: number = 10;
   voices: CustomVoice[] = [];
   private activeVoices: Map<number, CustomVoice> = new Map();
   keyboard: AudioKeys;
@@ -39,7 +46,7 @@ export default class CustomPolySynth {
 
   constructor(preset: Preset) {
     this.preset = preset;
-    this.outputNode = new Tone.Gain({ gain: 0.2 });
+    this.outputNode = new Tone.Gain({ gain: 0.5 });
     this.initializeVoices(this.outputNode, preset);
     this.loadFilterPreset(preset);
     this.loadMiscParamsFromPreset(preset);
@@ -48,8 +55,13 @@ export default class CustomPolySynth {
     // if (navigator.userAgent.includes("Chrome")) {
     //   this.setupMidi();
     // }
-
+    this.osc1Fine = preset.osc1.detune;
+    this.osc1Coarse = preset.osc1.transpose;
+    this.osc2Fine = preset.osc2.detune;
+    this.osc2Coarse = preset.osc2.transpose;
     this.unison = preset.unison;
+    this.setDetune(preset.detune);
+    this.hold = preset.hold;
   }
 
   private initializeVoices(node: Tone.ToneAudioNode, preset: Preset) {
@@ -58,11 +70,14 @@ export default class CustomPolySynth {
       this.loadOsccillatorPreset(preset, voice);
       voice.connect(node);
       this.voices.push(voice);
+      this.currentDetuneOsc1.push(voice.oscillator.detune.value);
+      this.currentDetuneOsc2.push(voice.oscillator2.detune.value);
     }
   }
 
   private loadOsccillatorPreset(preset: Preset, voice: CustomVoice) {
     // Load Oscillator 1 from preset
+    
     voice.oscillator.type = preset.osc1.type;
     voice.oscillator.detune.value =
       preset.osc1.detune + preset.osc1.transpose * 100;
@@ -71,6 +86,7 @@ export default class CustomPolySynth {
     }
     voice.oscillator.volume.value = preset.osc1.volume;
     // Load Oscillator 2 from preset
+    
     voice.oscillator2.type = preset.osc2.type;
     voice.oscillator2.detune.value =
       preset.osc2.detune + preset.osc2.transpose * 100;
@@ -136,6 +152,21 @@ export default class CustomPolySynth {
         });
       });
     }
+  }
+
+  updateHold() {
+    this.hold = !this.hold;
+    this.voices.forEach((v) => {
+      v.triggerRelease();
+    });
+  }
+
+  updatetUnison() {
+    this.unison = !this.unison;
+    this.voices.forEach((v) => {
+      v.triggerRelease();
+    });
+    this.outputNode.gain.value = this.unison ? 0.15 : 0.5;
   }
 
   private setupKeyboard() {
@@ -215,6 +246,7 @@ export default class CustomPolySynth {
   }
 
   triggerRelease(note: number) {
+    if (this.hold) return;
     this.notesPressed = this.notesPressed.filter((n) => n !== note);
     const frequency = Tone.Frequency(note, "midi").toFrequency();
     if (this.unison) {
@@ -413,10 +445,59 @@ export default class CustomPolySynth {
     });
   }
 
+  setFine(value: number, osc: 1 | 2) {
+    if (osc === 1) {
+      this.voices.forEach((v, i) => {
+        v.oscillator.detune.value =
+          v.oscillator.detune.value - this.osc1Fine + value;
+          
+      });
+      this.osc1Fine = value;
+    } else {
+      this.voices.forEach((v, i) => {
+        v.oscillator2.detune.value =
+          v.oscillator2.detune.value - this.osc2Fine + value;
+         
+      });
+      this.osc2Fine = value;
+    }
+    console.log(this.currentDetuneOsc1)
+    console.log(this.voices[0].oscillator.detune.value)
+  }
+
+  setCoarse(value: number, osc: 1 | 2) {
+    if (osc === 1) {
+      this.voices.forEach((v, i) => {
+        
+        v.oscillator.detune.value =
+          v.oscillator.detune.value - this.osc1Coarse * 100 + value * 100;
+          
+      });
+      this.osc1Coarse = value;
+      
+    } else {
+      this.voices.forEach((v, i) => {
+        v.oscillator2.detune.value =
+          v.oscillator2.detune.value - this.osc2Coarse * 100 + value * 100;
+          
+      });
+      this.osc2Coarse = value;
+    }
+  }
+
   setDetune(value: number) {
+    
     this.voices.forEach((v, i) => {
-      v.oscillator.detune.value = value;
-      v.oscillator2.detune.value = value;
+      
+      const coefficientOsc1 = i % 2 === 0 ? -1 : 1;
+      const coefficientOsc2 = i % 2 === 0 ? 1 : -1;
+      const randomValue = Math.random() * (value - value / 4 + 1) + value / 4;
+      v.oscillator.detune.value = v.oscillator.detune.value - this.currentDetuneOsc1[i] + (coefficientOsc1 * randomValue);
+      v.oscillator2.detune.value = v.oscillator2.detune.value - this.currentDetuneOsc2[i] + (coefficientOsc2 * randomValue);
+      this.currentDetuneOsc1[i] = coefficientOsc1 * randomValue;
+      this.currentDetuneOsc2[i] = coefficientOsc2 * randomValue;
+      
     });
+    
   }
 }
