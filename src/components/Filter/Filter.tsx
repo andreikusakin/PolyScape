@@ -5,89 +5,87 @@ import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import { Preset } from "@/lib/types/types";
 import { env } from "process";
+import {
+  useSynthEngineStore,
+  useSynthSettingsStore,
+} from "@/lib/store/settingsStore";
+import { useShallow } from "zustand/react/shallow";
 
-type FilterProps = {
-  engine: CustomPolySynth | undefined;
-  name: string;
-  settings: Preset["filter"]
-  updateSettings: (settings: Preset["filter"]) => void;
-  envSettings: Preset["filterEnvelope"];
-  updateEnvSettings: (settings: Preset["filterEnvelope"]) => void;
-};
 
-export const Filter = ({
-  engine,
-  name,
-  settings,
-  updateSettings,
-  envSettings,
-  updateEnvSettings,
-}: FilterProps) => {
+export const Filter = () => {
+  console.log("RERENDER FILTER")
+  const engine = useSynthEngineStore((state) => state.synthEngine);
+  const { settings, updateSettings, envSettings, updateEnvSettings } = useSynthSettingsStore(useShallow((state) => ({
+    settings: state.filter,
+    updateSettings: state.setFilterParams,
+    envSettings: state.filterEnvelope,
+    updateEnvSettings: state.setFilterEnvelopeParams,
+  })));
   const updateType = (type: "lowpass" | "highpass" | "bandpass" | "notch") => {
-    updateSettings({ ...settings, type: type });
-    engine?.voices.forEach((voice) => {
+    updateSettings({type: type });
+    engine.voices.forEach((voice) => {
       voice.filter.type = type;
     });
   };
 
   const updateRolloff = (rolloff: Tone.FilterRollOff) => {
-    updateSettings({ ...settings, rolloff: rolloff });
-    engine?.voices.forEach((voice) => {
+    updateSettings({rolloff: rolloff });
+    engine.voices.forEach((voice) => {
       voice.filter.rolloff = rolloff;
     });
   };
 
   const updateCutoff = (cutoff: number) => {
-    updateEnvSettings({ ...envSettings, baseFrequency: cutoff });
-    engine?.voices.forEach((voice) => {
+    updateEnvSettings({baseFrequency: cutoff });
+    engine.voices.forEach((voice) => {
       voice.filterEnvelope.baseFrequency = cutoff;
     });
   };
 
   const updateResonance = (resonance: number) => {
-    updateSettings({ ...settings, Q: resonance });
-    engine?.voices.forEach((voice) => {
+    updateSettings({Q: resonance });
+    engine.voices.forEach((voice) => {
       voice.filter.Q.value = resonance;
     });
   };
 
   const updateEnvelopeAmount = (amount: number) => {
-    updateEnvSettings({ ...envSettings, octaves: amount });
-    engine?.voices.forEach((voice) => {
+    updateEnvSettings({ octaves: amount });
+    engine.voices.forEach((voice) => {
       voice.filterEnvelope.octaves = amount;
     });
   };
 
   const updateAttack = (attack: number) => {
-    updateEnvSettings({ ...envSettings, attack: attack });
-    engine?.voices.forEach((voice) => {
+    updateEnvSettings({ attack: attack });
+    engine.voices.forEach((voice) => {
       voice.filterEnvelope.attack = attack;
     });
   };
 
   const updateDecay = (decay: number) => {
-    updateEnvSettings({ ...envSettings, decay: decay });
-    engine?.voices.forEach((voice) => {
+    updateEnvSettings({ decay: decay });
+    engine.voices.forEach((voice) => {
       voice.filterEnvelope.decay = decay;
     });
   };
 
   const updateSustain = (sustain: number) => {
-    updateEnvSettings({ ...envSettings, sustain: sustain });
-    engine?.voices.forEach((voice) => {
+    updateEnvSettings({  sustain: sustain });
+    engine.voices.forEach((voice) => {
       voice.filterEnvelope.sustain = sustain;
     });
   };
 
   const updateRelease = (release: number) => {
-    updateEnvSettings({ ...envSettings, release: release });
-    engine?.voices.forEach((voice) => {
+    updateEnvSettings({ release: release });
+    engine.voices.forEach((voice) => {
       voice.filterEnvelope.release = release;
     });
   };
 
   return (
-    <SectionWrapper name={name}>
+    <SectionWrapper name={"filter"}>
       <div className={styles.grid}>
         <div className={styles.typescontainer}>
           <ul className={styles.types}>
