@@ -70,6 +70,7 @@ export type Preset = {
   panSpread: number;
   masterVolume: number;
   detune: number;
+  hold: boolean;
   LFO1?: {
     type: "sine" | "triangle" | "sawtooth" | "square";
     rate: Tone.Unit.Frequency;
