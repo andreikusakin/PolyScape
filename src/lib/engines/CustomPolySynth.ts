@@ -8,11 +8,7 @@ import { CustomVoice } from "./CustomVoice";
 
 //TODO
 
-//pan spread, midi keyboard, unison
-
 //https://github.com/Tonejs/Tone.js/wiki/Arpeggiator
-
-//fix voice allocation
 
 type LFO = {
   target: LFOTarget;
@@ -30,7 +26,7 @@ export default class CustomPolySynth {
   osc1Coarse: number;
   osc2Fine: number;
   osc2Coarse: number;
-  hold: boolean ;
+  hold: boolean;
   currentDetuneOsc1: number[] = [];
   currentDetuneOsc2: number[] = [];
   panSpread: number = 0;
@@ -77,7 +73,7 @@ export default class CustomPolySynth {
 
   private loadOsccillatorPreset(preset: Preset, voice: CustomVoice) {
     // Load Oscillator 1 from preset
-    
+
     voice.oscillator.type = preset.osc1.type;
     voice.oscillator.detune.value =
       preset.osc1.detune + preset.osc1.transpose * 100;
@@ -86,7 +82,7 @@ export default class CustomPolySynth {
     }
     voice.oscillator.volume.value = preset.osc1.volume;
     // Load Oscillator 2 from preset
-    
+
     voice.oscillator2.type = preset.osc2.type;
     voice.oscillator2.detune.value =
       preset.osc2.detune + preset.osc2.transpose * 100;
@@ -392,13 +388,30 @@ export default class CustomPolySynth {
         break;
       case "filter cutoff":
         LFO = new Tone.LFO({
-          min: this.preset.filter.frequency - 10000,
-          max: this.preset.filter.frequency + 10000,
+          min:
+            (currentValue ? currentValue : this.preset.filter.frequency) -
+            15000,
+          max:
+            (currentValue ? currentValue : this.preset.filter.frequency) +
+            15000,
           amplitude: 0.5,
           frequency: rate,
         }).start();
         this.voices.forEach((v) => {
           LFO.connect(v.filter.frequency);
+        });
+        lfoSelected.push({ target: target, LFO: LFO });
+        break;
+
+      case "filter resonance":
+        LFO = new Tone.LFO({
+          min: (currentValue ? currentValue : this.preset.filter.Q) - 15,
+          max: (currentValue ? currentValue : this.preset.filter.Q) + 15,
+          amplitude: 0.5,
+          frequency: rate,
+        }).start();
+        this.voices.forEach((v) => {
+          LFO.connect(v.filter.Q);
         });
         lfoSelected.push({ target: target, LFO: LFO });
         break;
@@ -450,54 +463,50 @@ export default class CustomPolySynth {
       this.voices.forEach((v, i) => {
         v.oscillator.detune.value =
           v.oscillator.detune.value - this.osc1Fine + value;
-          
       });
       this.osc1Fine = value;
     } else {
       this.voices.forEach((v, i) => {
         v.oscillator2.detune.value =
           v.oscillator2.detune.value - this.osc2Fine + value;
-         
       });
       this.osc2Fine = value;
     }
-    console.log(this.currentDetuneOsc1)
-    console.log(this.voices[0].oscillator.detune.value)
+    console.log(this.currentDetuneOsc1);
+    console.log(this.voices[0].oscillator.detune.value);
   }
 
   setCoarse(value: number, osc: 1 | 2) {
     if (osc === 1) {
       this.voices.forEach((v, i) => {
-        
         v.oscillator.detune.value =
           v.oscillator.detune.value - this.osc1Coarse * 100 + value * 100;
-          
       });
       this.osc1Coarse = value;
-      
     } else {
       this.voices.forEach((v, i) => {
         v.oscillator2.detune.value =
           v.oscillator2.detune.value - this.osc2Coarse * 100 + value * 100;
-          
       });
       this.osc2Coarse = value;
     }
   }
 
   setDetune(value: number) {
-    
     this.voices.forEach((v, i) => {
-      
       const coefficientOsc1 = i % 2 === 0 ? -1 : 1;
       const coefficientOsc2 = i % 2 === 0 ? 1 : -1;
       const randomValue = Math.random() * (value - value / 4 + 1) + value / 4;
-      v.oscillator.detune.value = v.oscillator.detune.value - this.currentDetuneOsc1[i] + (coefficientOsc1 * randomValue);
-      v.oscillator2.detune.value = v.oscillator2.detune.value - this.currentDetuneOsc2[i] + (coefficientOsc2 * randomValue);
+      v.oscillator.detune.value =
+        v.oscillator.detune.value -
+        this.currentDetuneOsc1[i] +
+        coefficientOsc1 * randomValue;
+      v.oscillator2.detune.value =
+        v.oscillator2.detune.value -
+        this.currentDetuneOsc2[i] +
+        coefficientOsc2 * randomValue;
       this.currentDetuneOsc1[i] = coefficientOsc1 * randomValue;
       this.currentDetuneOsc2[i] = coefficientOsc2 * randomValue;
-      
     });
-    
   }
 }
