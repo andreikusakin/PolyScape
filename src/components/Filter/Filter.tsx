@@ -139,6 +139,7 @@ export const Filter = () => {
         <Knob
           exponent={1}
           label={"cutoff"}
+          lfoParameter="filter cutoff"
           minValue={0}
           maxValue={20000}
           currentValue={envSettings.baseFrequency}
@@ -152,6 +153,7 @@ export const Filter = () => {
         />
         <Knob
           exponent={1}
+          lfoParameter="filter resonance"
           label={"resonance"}
           minValue={0.01}
           maxValue={15}
