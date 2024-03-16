@@ -19,30 +19,33 @@ export const MiscParameters = () => {
   console.log("RERENDER MISC PARAMETERS");
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const colorRGB = useWaveformColor();
-  const { panSpread, unison, setPanSpread, setUnison, detune, setDetune } =
+  const { panSpread, unison, updateUnison, setPanSpread, detune, setDetune, hold, updateHold } =
     useSynthSettingsStore(
       useShallow((state) => ({
         panSpread: state.panSpread,
         unison: state.unison,
         setPanSpread: state.setPanSpread,
-        setUnison: state.setUnison,
+        updateUnison: state.updateUnison,
         detune: state.detune,
         setDetune: state.setDetune,
+        hold: state.hold,
+        updateHold: state.updateHold,
       }))
     );
   const updatePanSpread = (value: number) => {
     engine.setPanSpread(value);
     setPanSpread(value);
   };
-  const updateUnison = (value: number) => {
-    engine.setUnison(value);
-    setUnison(value);
-  };
 
   const handleUnison = () => {
-    setUnison(!unison);
-    engine.unison = !unison;
+    updateUnison();
+    engine.updatetUnison();
   };
+
+  const handleHold = () => {
+    updateHold();
+    engine.updateHold();
+  }
 
   const updateDetune = (value: number) => {
     engine.setDetune(value);
@@ -80,14 +83,15 @@ export const MiscParameters = () => {
         />
         <div className={styles.right}>
           <div
-            className={[styles.button, unison ? styles.button_active : ""].join(
-              " "
-            )}
+            className={`${styles.button} ${unison ? styles.button_active : ""}`}
             onClick={handleUnison}
           >
             unison
           </div>
-          <div className={styles.button}>hold</div>
+          <div
+            className={`${styles.button} ${hold ? styles.button_active : ""}`}
+            onClick={handleHold}
+           >hold</div>
         </div>
       </div>
     </SectionWrapper>
