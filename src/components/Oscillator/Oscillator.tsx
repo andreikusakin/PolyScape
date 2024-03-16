@@ -53,38 +53,13 @@ const Oscillator = ({ oscNumber }: OscillatorProps) => {
 
   const updateCoarse = (value: number) => {
     updateSettings({ transpose: value });
-    // const coarseValue = value * 100 + settings.detune;
-
-    oscNumber === 1
-      ? engine.voices.forEach(
-          (v) =>
-            (v.oscillator.detune.value =
-              v.oscillator.detune.value -
-              settings.transpose * 100 +
-              value * 100)
-        )
-      : engine.voices.forEach(
-          (v) =>
-            (
-              v.oscillator2.detune.value =
-              v.oscillator2.detune.value -
-              settings.transpose * 100 +
-              value * 100
-            )
-        );
+    engine.setCoarse(value, oscNumber);
+  
   };
 
   const updateFine = (value: number) => {
     updateSettings({ detune: value });
-    oscNumber === 1
-      ? engine.voices.forEach((v) => {
-          v.oscillator.detune.value =
-            v.oscillator.detune.value - settings.detune + value;
-        })
-      : engine.voices.forEach((v) => {
-          v.oscillator2.detune.value =
-            v.oscillator2.detune.value - settings.detune + value;
-        })
+    engine.setFine(value, oscNumber);
   };
 
   const updateVolume = (value: number) => {
