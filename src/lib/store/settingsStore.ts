@@ -36,15 +36,20 @@ export const useSynthSettingsStore = create((set, get) => ({
   unison: initPreset.unison,
   detune: initPreset.detune,
   masterVolume: initPreset.masterVolume,
+  hold: initPreset.hold,
+  updateHold: () => {
+    set((state) => ({ hold: !state.hold }));
+  },
+  updateUnison: () => {
+    set((state) => ({ unison: !state.unison }));
+  },
   setDetune: (value: number) => {
     set(() => ({ detune: value }));
   },
   setMasterVolume: (value: number) => {
     set(() => ({ masterVolume: value }));
   },
-  setUnison: (value: number) => {
-    set(() => ({ unison: value }));
-  },
+  
   setAllParamsFromPreset: (preset: Preset) => {
     set({
       presetName: preset.presetName,
