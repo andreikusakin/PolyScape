@@ -1,6 +1,7 @@
 .wrapper {
   display: flex;
   align-self: flex-end;
+  z-index: 50;
 }
 
 .container {
@@ -41,6 +42,10 @@
   margin-top: calc(var(--main-synth-ui-font-size) * 0.1);
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.preset {
+  position: relative;
 }
 
 /* .midi_selector::after {
@@ -109,23 +114,36 @@
   border-radius: 6px;
 }
 
-.keyboard_button:hover  {
+.keyboard_button:hover {
   background: #ffffff28;
 }
 
 .keyboard_button img {
- opacity: 0.65;
- 
+  opacity: 0.65;
 }
-
 
 .header_button:hover {
   color: #fffffff8;
   background: #ffffff28;
 }
 
+.settings_button {
+  background: #ffffff0e;
+  color: #ffffffa7;
+  border-radius: 6px;
+  border: 1px solid #acacac47;
+  padding: 0 5px;
+  height: 26px;
+}
+
+.settings_button:hover {
+  color: #fffffff8;
+  background: #ffffff28;
+}
+
 .selected {
-  box-shadow: inset 0px 0px 14px 0px rgba(255, 255, 255, 0.538), 0px 0px 5px 0px rgba(255, 255, 255, 0.521);
+  box-shadow: inset 0px 0px 14px 0px rgba(255, 255, 255, 0.538),
+    0px 0px 5px 0px rgba(255, 255, 255, 0.521);
   color: #fffffff9;
   text-shadow: 0px 0px 3px #ffffff;
   border: 1px solid #ffffff96;

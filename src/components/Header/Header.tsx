@@ -10,6 +10,12 @@ import { useUiStore } from "@/lib/store/uiStore";
 import { useSynthEngineStore } from "@/lib/store/settingsStore";
 import { PresetLibrary } from "../PresetLibrary/PresetLibrary";
 import Knob from "../Knob/Knob";
+import { IconDownload } from "@tabler/icons-react";
+import { Modal } from "../Modal/Modal";
+import { SavePreset } from "../SavePreset/SavePreset";
+import { useShallow } from "zustand/react/shallow";
+import { IconSettings } from "@tabler/icons-react";
+import { IconAdjustments } from '@tabler/icons-react';
 
 export const Header = () => {
   const { engine } = useSynthEngineStore((state) => ({
@@ -26,17 +32,27 @@ export const Header = () => {
     isKeyboardOpen,
     isFxOpen,
     isUiVisible,
+    isSavePresetOpen,
+    isPresetLibraryOpen,
+    togglePresetLibraryOpen,
+    toggleSavePresetOpen,
     toggleKeyboardOpen,
     toggleFxOpen,
     toggleUiVisible,
-  } = useUiStore((state) => ({
-    isKeyboardOpen: state.isKeyboardOpen,
-    isFxOpen: state.isFxOpen,
-    isUiVisible: state.isUiVisible,
-    toggleKeyboardOpen: state.toggleKeyboardOpen,
-    toggleFxOpen: state.toggleFxOpen,
-    toggleUiVisible: state.toggleUiVisible,
-  }));
+  } = useUiStore(
+    useShallow((state) => ({
+      isKeyboardOpen: state.isKeyboardOpen,
+      isFxOpen: state.isFxOpen,
+      isUiVisible: state.isUiVisible,
+      isSavePresetOpen: state.isSavePresetOpen,
+      isPresetLibraryOpen: state.isPresetLibraryOpen,
+      togglePresetLibraryOpen: state.togglePresetLibraryOpen,
+      toggleSavePresetOpen: state.toggleSavePresetOpen,
+      toggleKeyboardOpen: state.toggleKeyboardOpen,
+      toggleFxOpen: state.toggleFxOpen,
+      toggleUiVisible: state.toggleUiVisible,
+    }))
+  );
 
   // const handleKeyboardOpen = () => {
   //   setUiSettings({
@@ -120,19 +136,24 @@ export const Header = () => {
               </div>
               <div className={styles.preset}>
                 <span>preset</span>
-                <PresetLibrary />
+                <div onClick={togglePresetLibraryOpen}>Preset Name</div>
+                <div onClick={toggleSavePresetOpen}>
+                  <IconDownload stroke={1} />
+                </div>
+                {isPresetLibraryOpen && <PresetLibrary />}
               </div>
               <div className={styles.bpm}>bpm</div>
-              <div className={styles.master_volume}><Knob 
-                            radius={10}
-                            minValue={-70}
-                            maxValue={12}
-                            currentValue={0}
-                            interactive
-                          /></div>
-                          
+              <div className={styles.master_volume}>
+                <Knob
+                  radius={10}
+                  minValue={-70}
+                  maxValue={12}
+                  currentValue={0}
+                  interactive
+                />
+              </div>
+
               <div className={styles.buttons}>
-                
                 <button
                   className={`${styles.keyboard_button} ${
                     isKeyboardOpen && styles.selected
@@ -149,7 +170,9 @@ export const Header = () => {
                 >
                   fx
                 </button>
-
+                <div className={styles.settings_button}>
+                  <IconAdjustments stroke={1} size={24} />
+                </div>
                 <button
                   className={styles.header_button}
                   onClick={toggleUiVisible}
@@ -173,6 +196,12 @@ export const Header = () => {
           )}
         </AnimatePresence>
       </SectionWrapper>
+
+      {isSavePresetOpen && (
+        <Modal>
+          <SavePreset />
+        </Modal>
+      )}
     </motion.div>
   );
 };
