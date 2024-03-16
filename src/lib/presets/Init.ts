@@ -43,6 +43,7 @@ export const initPreset: Preset = {
     detune: 0,
     panSpread: 0,
     masterVolume: 0,
+    hold: false,
     LFO1: {
       type: "sine",
       rate: "8n",
