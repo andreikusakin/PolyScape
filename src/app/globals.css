@@ -40,3 +40,12 @@ canvas {
   width: 100%;
   height: 100%;
 }
+
+*:focus {
+  outline: none;
+}
+
+button {
+  text-transform: uppercase;
+  letter-spacing: calc(var(--main-synth-ui-font-size)* 0.2);
+}
