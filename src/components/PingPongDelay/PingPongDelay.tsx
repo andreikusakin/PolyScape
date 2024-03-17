@@ -15,10 +15,51 @@ export const PingPongDelay = ({
   index,
 }: fxProps) => {
   const handleDelete = () => {
-    const newSettings = settings.filter((effect, i) => i !== index);
-    updateSettings(newSettings);
-    engine?.deleteEffect(index);
+    if (engine) {
+      const newSettings = settings.filter((effect, i) => i !== index);
+      updateSettings(newSettings);
+      engine.deleteEffect(index);
+    }
   };
+
+  const updateMix = (value: number) => {
+    const newSettings = settings.map((effect, i) =>
+      i === index
+        ? { ...effect, settings: { ...effect.settings, wet: value } }
+        : effect
+    );
+    updateSettings(newSettings);
+    if (engine.currentChain[index])
+      (engine.currentChain[index] as Tone.PingPongDelay).set({
+        wet: value / 100,
+      });
+  };
+  const updateRate = (value: number) => {
+    const newSettings = settings.map((effect, i) =>
+      i === index
+        ? { ...effect, settings: { ...effect.settings, delayTime: value } }
+        : effect
+    );
+    updateSettings(newSettings);
+    if (engine.currentChain[index])
+      (engine.currentChain[index] as Tone.PingPongDelay).set({
+        delayTime: value,
+      });
+  };
+
+  const updateFeedback = (value: number) => {
+    const newSettings = settings.map((effect, i) =>
+      i === index
+        ? { ...effect, settings: { ...effect.settings, feedback: value } }
+        : effect
+    );
+    updateSettings(newSettings);
+    if (engine.currentChain[index])
+      (engine.currentChain[index] as Tone.PingPongDelay).set({
+        feedback: value,
+      });
+  };
+
   return (
     <FxWrapper
       effectName="ping-pong-delay"
@@ -29,12 +70,39 @@ export const PingPongDelay = ({
       <div className={styles.grid}>
         <div className={`${styles.label} ${micro5.className}`}>
           <Rackets />
-          <h3>ping pong</h3>
-          <h3>delay</h3>
         </div>
-        <Knob label="mix" radius={24} interactive={true} />
-        <Knob label="rate" radius={24} interactive={true} />
-        <Knob label="feedback" radius={24} interactive={true} />
+        <Knob
+          onChange={updateMix}
+          minValue={0}
+          maxValue={100}
+          step={0.1}
+          unit={"%"}
+          currentValue={settings[index].settings.wet ?? 50}
+          label="mix"
+          radius={24}
+          interactive
+        />
+        <Knob
+          label="rate"
+          radius={24}
+          interactive={true}
+          sync={true}
+          minValue={0}
+          maxValue={200}
+          step={0.01}
+          currentValue={settings[index].settings.delayTime || "8n"}
+          onChange={updateRate}
+        />
+        <Knob
+          label="feedback"
+          radius={24}
+          interactive={true}
+          minValue={0}
+          maxValue={1}
+          step={0.01}
+          currentValue={settings[index].settings.feedback || 0.5}
+          onChange={updateFeedback}
+        />
       </div>
     </FxWrapper>
   );

@@ -24,3 +24,23 @@
     left: 24px;
     transform: scale(2);
 }
+
+.label {
+    font-size: 24px;
+    line-height: 16px;
+  }
+  
+  .label h3 {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 0 10px rgba(var(--ping-pong-delay-rgb), 0.5);
+    white-space: nowrap;
+    letter-spacing: 0;
+    z-index: 10;
+    position: relative;
+    text-align: left;
+  }
+  
+  .label h3:nth-child(3) {
+    color: rgba(var(--ping-pong-delay-rgb), 0.9);
+    text-shadow: 0 0 10px rgba(var(--ping-pong-delay-rgb), 0.5);
+  }
