@@ -1,10 +1,13 @@
 import * as Tone from "tone/build/esm/index";
 import { Preset } from "../types/types";
 
+
 const effectConfig = {
   wet: 0.5,
   decay: 2,
   preDelay: 0.01,
+  feedback: 0.2,
+  delayTime: "8n",
 }
 //mute all effects
 
@@ -47,7 +50,7 @@ export default class CustomEffects {
           );
           this.currentChain.push(reverb);
           break;
-        case "pingPongDelay":
+        case "ping pong delay":
           const pingPongDelay = new Tone.PingPongDelay({
             feedback: effect.settings.feedback,
             wet: effect.settings.wet / 100,
@@ -55,30 +58,13 @@ export default class CustomEffects {
           });
           this.currentChain.push(pingPongDelay);
           break;
-        // case "distortion":
-        //   const distortion = new Tone.Distortion(effect.settings);
-        //   this.currentChain.push(distortion);
-        //   break;
-        // case "chorus":
-        //   const chorus = new Tone.Chorus(effect.settings);
-        //   this.currentChain.push(chorus);
-        //   break;
-        // case "vibrato":
-        //   const vibrato = new Tone.Vibrato(effect.settings);
-        //   this.currentChain.push(vibrato);
-        //   break;
-        // case "feedbackDelay":
-        //   const feedbackDelay = new Tone.FeedbackDelay(effect.settings);
-        //   this.currentChain.push(feedbackDelay);
-        //   break;
-        // case "bitCrusher":
-        //   const bitCrusher = new Tone.BitCrusher(effect.settings);
-        //   this.currentChain.push(bitCrusher);
-        //   break;
-        // case "autoPanner":
-        //   const autoPanner = new Tone.AutoPanner(effect.settings);
-        //   this.currentChain.push(autoPanner);
-        //   break;
+       case "distortion":
+          const distortion = new Tone.Distortion({
+            distortion: effect.settings.distortion,
+            wet: effect.settings.wet / 100,
+          });
+          this.currentChain.push(distortion);
+          break;
         default:
           break;
       }
@@ -99,7 +85,7 @@ export default class CustomEffects {
         });
         this.currentChain.push(effect);
         break;
-      case "pingPongDelay":
+      case "ping pong delay":
         effect = new Tone.PingPongDelay({
           feedback: effectConfig.feedback,
           wet: effectConfig.wet,
@@ -107,10 +93,14 @@ export default class CustomEffects {
         });
         this.currentChain.push(effect);
         break;
-      // case "distortion":
-      //   const distortion = new Tone.Distortion();
-      //   this.currentChain.push(distortion);
-      //   break;
+      case "distortion":
+        effect = new Tone.Distortion({
+          distortion: effectConfig.distortion,
+          wet: effectConfig.wet,
+        });
+        this.currentChain.push(effect);
+        break;
+    
       // case "chorus":
       //   const chorus = new Tone.Chorus();
       //   this.currentChain.push(chorus);
