@@ -3,20 +3,25 @@ import { PingPongDelay } from "../PingPongDelay/PingPongDelay";
 import { Reverb } from "../Reverb/Reverb";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import styles from "./Effects.module.css";
-import CustomEffects from "@/lib/engines/CustomEffects";
-import { useEffectsEngineStore, useSynthSettingsStore } from "@/lib/store/settingsStore";
+import {
+  useEffectsEngineStore,
+  useSynthSettingsStore,
+} from "@/lib/store/settingsStore";
 import { useShallow } from "zustand/react/shallow";
+import { AddEffect } from "../AddEffect/AddEffect";
+import { useState } from "react";
+import { IconPlus } from '@tabler/icons-react';
 
-type EffectsProps = {
-  
-};
+type EffectsProps = {};
 
 export const Effects = () => {
   const engine = useEffectsEngineStore((state) => state.effectsEngine);
-  const {settings, updateSettings} = useSynthSettingsStore(useShallow((state) => ({
-    settings: state.fxSettings,
-    updateSettings: state.setFxSettings,
-  })));
+  const { settings, updateSettings } = useSynthSettingsStore(
+    useShallow((state) => ({
+      settings: state.fxSettings,
+      updateSettings: state.setFxSettings,
+    }))
+  );
   const addNewEffect = (type: string) => {
     const newEffect = {
       type: type,
@@ -25,44 +30,57 @@ export const Effects = () => {
     updateSettings([...settings, newEffect]);
     engine.addEffect(type);
   };
- console.log("RERENDER EFFECTS")
+  const [isAddEffectOpen, setIsAddEffectOpen] = useState(false);
+  console.log("RERENDER EFFECTS");
   return (
     <div className={styles.wrapper}>
       <SectionWrapper>
-        <div className={styles.container}>
-          {settings && settings.map((effect, index) => {
-            switch (effect.type) {
-              case "reverb":
-                return (
-                  <Reverb
-                    key={index}
-                    index={index}
-                    engine={engine}
-                    settings={settings}
-                    updateSettings={updateSettings}
-                  />
-                );
-              case "pingPongDelay":
-                return (
-                  <PingPongDelay
-                    key={index}
-                    index={index}
-                    engine={engine}
-                    settings={settings}
-                    updateSettings={updateSettings}
-                  />
-                );
-              default:
-                return null;
-            }
-          })}
-        </div>
-        <button
-          onClick={() => addNewEffect("reverb")}
-          className={styles.add_effect}
-        >
-          add effect
-        </button>
+        {isAddEffectOpen ? (
+          <AddEffect
+            addNewEffect={addNewEffect}
+            setIsAddEffectOpen={setIsAddEffectOpen}
+          />
+        ) : (
+          <>
+            <div className={styles.container}>
+              <div className={styles.effects}>
+              {settings &&
+                settings.map((effect, index) => {
+                  switch (effect.type) {
+                    case "reverb":
+                      return (
+                        <Reverb
+                          key={index}
+                          index={index}
+                          engine={engine}
+                          settings={settings}
+                          updateSettings={updateSettings}
+                        />
+                      );
+                    case "ping pong delay":
+                      return (
+                        <PingPongDelay
+                          key={index}
+                          index={index}
+                          engine={engine}
+                          settings={settings}
+                          updateSettings={updateSettings}
+                        />
+                      );
+                    default:
+                      return null;
+                  }
+                })}</div>
+              <div
+                onClick={() => setIsAddEffectOpen(!isAddEffectOpen)}
+                className={styles.add_effect}
+              >
+                <IconPlus stroke={1} size={40} />
+                <span>Add Effect</span>
+              </div>
+            </div>
+          </>
+        )}
       </SectionWrapper>
     </div>
   );
