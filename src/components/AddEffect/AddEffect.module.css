@@ -1,0 +1,36 @@
+.container {
+  padding: 20px;
+  overflow-x: scroll;
+}
+
+.effect_container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 200px;
+  align-items: center;
+}
+
+.effect {
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  height: 200px;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ffffff37;
+  border-radius: 6px;
+  padding: 40px 30px 40px 30px;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 1px;
+}
+
+.effect_name {
+    padding-left: 4px;
+}
+
+.effect:hover {
+  background-color: #ffffff39;
+}
