@@ -71,7 +71,7 @@ export const Reverb = ({
           step={0.1}
           unit={"%"}
           currentValue={settings[index].settings.wet ?? 50}
-          label="mix"
+          label="Dry/Wet"
           radius={24}
           interactive
         />
