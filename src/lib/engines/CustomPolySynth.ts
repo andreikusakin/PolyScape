@@ -17,6 +17,7 @@ type LFO = {
 };
 
 export default class CustomPolySynth {
+  lastVoiceUsedIndex: number = -1;
   notesPressed: number[] = [];
   // isMidiSupported: boolean = false;
   // midiInputIndex = 0;
@@ -228,16 +229,23 @@ export default class CustomPolySynth {
         v.triggerAttack(frequency, time, velocity);
       });
     } else {
-      let voice = Array.from(this.activeVoices.values()).find(
-        (v) => v.frequency.value === frequency
-      );
+      this.lastVoiceUsedIndex =
+        (this.lastVoiceUsedIndex + 1) % this.voices.length;
+
+      let voice = this.voices[this.lastVoiceUsedIndex];
       if (!voice) {
-        voice =
-          this.voices.find((v) => !this.activeVoices.has(v.frequency.value)) ||
-          this.voices[0];
-        this.activeVoices.set(frequency, voice);
-        voice.triggerAttack(frequency, time, velocity);
+        voice = this.voices[0];
+        this.lastVoiceUsedIndex = 0;
       }
+
+      while (this.activeVoices.has(voice.frequency.value)) {
+        this.lastVoiceUsedIndex =
+          (this.lastVoiceUsedIndex + 1) % this.voices.length;
+        voice = this.voices[this.lastVoiceUsedIndex];
+      }
+
+      this.activeVoices.set(frequency, voice);
+      voice.triggerAttack(frequency, time, velocity);
     }
   }
 
@@ -454,7 +462,7 @@ export default class CustomPolySynth {
   setPanSpread(value: number) {
     this.panSpread = value;
     this.voices.forEach((v, i) => {
-      v.pan.value = (value * (i % 2 === 0 ? -1 : 1)) / 100;
+      v.pan.value = (value * (i % 2 === 0 ? -1 : 1)) * Math.random() / 100;
     });
   }
 
