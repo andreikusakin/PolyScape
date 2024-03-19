@@ -1,7 +1,6 @@
 import * as Tone from "tone/build/esm/index";
 import { Preset } from "../types/types";
 
-
 const effectConfig = {
   wet: 0.5,
   decay: 2,
@@ -9,18 +8,19 @@ const effectConfig = {
   feedback: 0.2,
   delayTime: "8n",
   distortion: 0.5,
-  frequencyChorus: 4, 
+  frequencyChorus: 4,
   delayTimeChorus: 3.5,
   depthChorus: 0.7,
   feedbackChorus: 0.5,
-}
+  bits: 8,
+};
 //mute all effects
 
 export default class CustomEffects {
   currentChain: Tone.ToneAudioNode[] = [];
   readonly outputNode: Tone.Gain;
   private inputNode: Tone.Gain;
-  
+
   constructor(inputNode: Tone.Gain, preset: Preset["effects"]) {
     this.currentChain = [];
     this.inputNode = inputNode;
@@ -30,19 +30,14 @@ export default class CustomEffects {
     // this.pingPongDelay = new Tone.PingPongDelay();
     // this.distortion = new Tone.Distortion();
     // this.chorus = new Tone.Chorus();
-    // this.vibrato = new Tone.Vibrato();
     // this.feedbackDelay = new Tone.FeedbackDelay()
     // this.bitCrusher = new Tone.BitCrusher();
     // this.autoPanner = new Tone.AutoPanner();
 
-    
     this.loadPreset(preset);
-    
-    
   }
 
   private loadPreset(preset: Preset["effects"]) {
-    
     preset?.forEach((effect) => {
       switch (effect.type) {
         case "reverb":
@@ -50,9 +45,7 @@ export default class CustomEffects {
             decay: effect.settings.decay,
             preDelay: effect.settings.preDelay,
             wet: effect.settings.wet / 100,
-          }
-           
-          );
+          });
           this.currentChain.push(reverb);
           break;
         case "ping pong delay":
@@ -63,7 +56,7 @@ export default class CustomEffects {
           });
           this.currentChain.push(pingPongDelay);
           break;
-       case "distortion":
+        case "distortion":
           const distortion = new Tone.Distortion({
             distortion: effect.settings.distortion,
             wet: effect.settings.wet / 100,
@@ -80,13 +73,20 @@ export default class CustomEffects {
             wet: effect.settings.wet / 100,
           });
           this.currentChain.push(chorus);
-          break
+          break;
+        case "bitcrusher":
+          const bitCrusher = new Tone.BitCrusher({
+            bits: effect.settings.bits,
+          });
+          bitCrusher.wet.value = effect.settings.wet / 100;
+          this.currentChain.push(bitCrusher);
+          break;
         default:
           break;
       }
     });
     this.inputNode.disconnect();
-    
+
     this.inputNode.chain(...this.currentChain, this.outputNode);
   }
 
@@ -116,18 +116,25 @@ export default class CustomEffects {
         });
         this.currentChain.push(effect);
         break;
-        case "chorus":
-          effect = new Tone.Chorus({
-            frequency: effectConfig.frequencyChorus,
-            delayTime: effectConfig.delayTimeChorus,
-            depth: effectConfig.depthChorus,
-            feedback: effectConfig.feedbackChorus,
-            wet: effectConfig.wet,
-          });
-          this.currentChain.push(effect);
-          break;
-    
-      
+      case "chorus":
+        effect = new Tone.Chorus({
+          frequency: effectConfig.frequencyChorus,
+          delayTime: effectConfig.delayTimeChorus,
+          depth: effectConfig.depthChorus,
+          feedback: effectConfig.feedbackChorus,
+          wet: effectConfig.wet,
+        });
+        this.currentChain.push(effect);
+        break;
+
+      case "bitcrusher":
+        effect = new Tone.BitCrusher({
+          bits: effectConfig.bits,
+        });
+        effect.wet.value = effectConfig.wet;
+        this.currentChain.push(effect);
+        break;
+
       // case "vibrato":
       //   const vibrato = new Tone.Vibrato();
       //   this.currentChain.push(vibrato);
@@ -136,10 +143,7 @@ export default class CustomEffects {
       //   const feedbackDelay = new Tone.FeedbackDelay();
       //   this.currentChain.push(feedbackDelay);
       //   break;
-      // case "bitCrusher":
-      //   const bitCrusher = new Tone.BitCrusher();
-      //   this.currentChain.push(bitCrusher);
-      //   break;
+      
       // case "autoPanner":
       //   const autoPanner = new Tone.AutoPanner();
       //   this.currentChain.push(autoPanner);
@@ -148,23 +152,20 @@ export default class CustomEffects {
         break;
     }
     this.inputNode.disconnect();
-    
+
     this.inputNode.chain(...this.currentChain, this.outputNode);
-    console.log(this.currentChain)
-    
+    console.log(this.currentChain);
   }
 
- deleteEffect(index: number) {
-    console.log('called delete effect')
+  deleteEffect(index: number) {
+    console.log("called delete effect");
     this.currentChain[index].disconnect();
     this.currentChain[index].dispose();
     this.currentChain.splice(index, 1);
     this.inputNode.disconnect();
     this.inputNode.chain(...this.currentChain, this.outputNode);
-    console.log(this.currentChain)
- }
-
-  muteEffect(index: number) {
-    
+    console.log(this.currentChain);
   }
+
+  muteEffect(index: number) {}
 }

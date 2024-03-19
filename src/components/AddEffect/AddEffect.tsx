@@ -1,3 +1,4 @@
+import { BitCrusherImage } from "../BitCrusher/BitCrusherImage/BitCrusherImage";
 import { ChorusImage } from "../Chorus/ChorusImage/ChorusImage";
 import { DistortionIcon } from "../Distortion/DistortionIcon/DistortionIcon";
 import { Rackets } from "../PingPongDelay/Rackets/Rackets";
@@ -25,6 +26,10 @@ const effectTypes = [
   {
     name: "chorus",
     component: <ChorusImage />,
+  },
+  {
+    name: "bitcrusher",
+    component: <BitCrusherImage />,
   }
 ];
 

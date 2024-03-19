@@ -10,9 +10,10 @@ import {
 import { useShallow } from "zustand/react/shallow";
 import { AddEffect } from "../AddEffect/AddEffect";
 import { useState } from "react";
-import { IconPlus } from '@tabler/icons-react';
+import { IconPlus } from "@tabler/icons-react";
 import { Distortion } from "../Distortion/Distortion";
 import { Chorus } from "../Chorus/Chorus";
+import { BitCrusher } from "../BitCrusher/BitCrusher";
 
 type EffectsProps = {};
 
@@ -46,29 +47,29 @@ export const Effects = () => {
           <>
             <div className={styles.container}>
               <div className={styles.effects}>
-              {settings &&
-                settings.map((effect, index) => {
-                  switch (effect.type) {
-                    case "reverb":
-                      return (
-                        <Reverb
-                          key={index}
-                          index={index}
-                          engine={engine}
-                          settings={settings}
-                          updateSettings={updateSettings}
-                        />
-                      );
-                    case "ping pong delay":
-                      return (
-                        <PingPongDelay
-                          key={index}
-                          index={index}
-                          engine={engine}
-                          settings={settings}
-                          updateSettings={updateSettings}
-                        />
-                      );
+                {settings &&
+                  settings.map((effect, index) => {
+                    switch (effect.type) {
+                      case "reverb":
+                        return (
+                          <Reverb
+                            key={index}
+                            index={index}
+                            engine={engine}
+                            settings={settings}
+                            updateSettings={updateSettings}
+                          />
+                        );
+                      case "ping pong delay":
+                        return (
+                          <PingPongDelay
+                            key={index}
+                            index={index}
+                            engine={engine}
+                            settings={settings}
+                            updateSettings={updateSettings}
+                          />
+                        );
                       case "distortion":
                         return (
                           <Distortion
@@ -78,22 +79,33 @@ export const Effects = () => {
                             settings={settings}
                             updateSettings={updateSettings}
                           />
-                        )
-                        case "chorus":
-                          return (
-                            <Chorus
-                              key={index}
-                              index={index}
-                              engine={engine}
-                              settings={settings}
-                              updateSettings={updateSettings}
-                            />
-                          )
+                        );
+                      case "chorus":
+                        return (
+                          <Chorus
+                            key={index}
+                            index={index}
+                            engine={engine}
+                            settings={settings}
+                            updateSettings={updateSettings}
+                          />
+                        );
+                      case "bitcrusher":
+                        return (
+                          <BitCrusher
+                            key={index}
+                            index={index}
+                            engine={engine}
+                            settings={settings}
+                            updateSettings={updateSettings}
+                          />
+                        );
 
-                    default:
-                      return null;
-                  }
-                })}</div>
+                      default:
+                        return null;
+                    }
+                  })}
+              </div>
               <div
                 onClick={() => setIsAddEffectOpen(!isAddEffectOpen)}
                 className={styles.add_effect}
