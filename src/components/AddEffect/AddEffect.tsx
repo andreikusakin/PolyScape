@@ -1,3 +1,5 @@
+import { ChorusImage } from "../Chorus/ChorusImage/ChorusImage";
+import { DistortionIcon } from "../Distortion/DistortionIcon/DistortionIcon";
 import { Rackets } from "../PingPongDelay/Rackets/Rackets";
 import { Cube } from "../Reverb/Cube/Cube";
 import styles from "./AddEffect.module.css";
@@ -16,6 +18,14 @@ const effectTypes = [
     name: "ping pong delay",
     component: <Rackets />,
   },
+  {
+    name: "distortion",
+    component: <DistortionIcon />,
+  },
+  {
+    name: "chorus",
+    component: <ChorusImage />,
+  }
 ];
 
 export const AddEffect = ({
