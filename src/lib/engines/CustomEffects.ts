@@ -8,6 +8,11 @@ const effectConfig = {
   preDelay: 0.01,
   feedback: 0.2,
   delayTime: "8n",
+  distortion: 0.5,
+  frequencyChorus: 4, 
+  delayTimeChorus: 3.5,
+  depthChorus: 0.7,
+  feedbackChorus: 0.5,
 }
 //mute all effects
 
@@ -65,6 +70,17 @@ export default class CustomEffects {
           });
           this.currentChain.push(distortion);
           break;
+
+        case "chorus":
+          const chorus = new Tone.Chorus({
+            frequency: effect.settings.frequency,
+            delayTime: effect.settings.delayTime,
+            depth: effect.settings.depth,
+            feedback: effect.settings.feedback,
+            wet: effect.settings.wet / 100,
+          });
+          this.currentChain.push(chorus);
+          break
         default:
           break;
       }
@@ -100,11 +116,18 @@ export default class CustomEffects {
         });
         this.currentChain.push(effect);
         break;
+        case "chorus":
+          effect = new Tone.Chorus({
+            frequency: effectConfig.frequencyChorus,
+            delayTime: effectConfig.delayTimeChorus,
+            depth: effectConfig.depthChorus,
+            feedback: effectConfig.feedbackChorus,
+            wet: effectConfig.wet,
+          });
+          this.currentChain.push(effect);
+          break;
     
-      // case "chorus":
-      //   const chorus = new Tone.Chorus();
-      //   this.currentChain.push(chorus);
-      //   break;
+      
       // case "vibrato":
       //   const vibrato = new Tone.Vibrato();
       //   this.currentChain.push(vibrato);
