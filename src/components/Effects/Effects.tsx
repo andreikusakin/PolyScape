@@ -11,6 +11,8 @@ import { useShallow } from "zustand/react/shallow";
 import { AddEffect } from "../AddEffect/AddEffect";
 import { useState } from "react";
 import { IconPlus } from '@tabler/icons-react';
+import { Distortion } from "../Distortion/Distortion";
+import { Chorus } from "../Chorus/Chorus";
 
 type EffectsProps = {};
 
@@ -67,6 +69,27 @@ export const Effects = () => {
                           updateSettings={updateSettings}
                         />
                       );
+                      case "distortion":
+                        return (
+                          <Distortion
+                            key={index}
+                            index={index}
+                            engine={engine}
+                            settings={settings}
+                            updateSettings={updateSettings}
+                          />
+                        )
+                        case "chorus":
+                          return (
+                            <Chorus
+                              key={index}
+                              index={index}
+                              engine={engine}
+                              settings={settings}
+                              updateSettings={updateSettings}
+                            />
+                          )
+
                     default:
                       return null;
                   }
