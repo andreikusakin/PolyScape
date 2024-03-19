@@ -13,9 +13,22 @@ type PingPongDelaySettings = {
   delayTime: Tone.Unit.Time;
 };
 
+type DistortionSettings = {
+  distortion: number;
+  wet: number;
+};
+
+type ChorusSettings = {
+  frequency: Tone.Unit.Frequency;
+  delayTime: Tone.Unit.Milliseconds;
+  depth: Tone.Unit.NormalRange;
+  feedback: Tone.Unit.NormalRange;
+  wet: number;
+};
+
 export type Effect = {
   type: string;
-  settings: ReverbSettings | PingPongDelaySettings;
+  settings: ReverbSettings | PingPongDelaySettings | DistortionSettings | ChorusSettings;
 };
 
 export type ColorMap = {
