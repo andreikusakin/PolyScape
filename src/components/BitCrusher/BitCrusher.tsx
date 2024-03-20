@@ -1,6 +1,10 @@
 import { fxProps } from "@/lib/types/types";
 import styles from "./BitCrusher.module.css";
 import { FxWrapper } from "../FxWrapper/FxWrapper";
+import { BitCrusherImage } from "./BitCrusherImage/BitCrusherImage";
+import Knob from "../Knob/Knob";
+import * as Tone from "tone/build/esm/index";
+
 
 export const BitCrusher = ({
     engine,
@@ -15,6 +19,30 @@ export const BitCrusher = ({
           engine.deleteEffect(index);
         }
       };
+      const updateMix = (value: number) => {
+        const newSettings = settings.map((effect, i) =>
+          i === index
+            ? { ...effect, settings: { ...effect.settings, wet: value } }
+            : effect
+        );
+        updateSettings(newSettings);
+        if (engine.currentChain[index])
+          (engine.currentChain[index] as Tone.BitCrusher).set({
+            wet: value / 100,
+          });
+      };
+      const updateBitDepth = (value: number) => {
+        const newSettings = settings.map((effect, i) =>
+          i === index
+            ? { ...effect, settings: { ...effect.settings, bits: value } }
+            : effect
+        );
+        updateSettings(newSettings);
+        if (engine.currentChain[index])
+          (engine.currentChain[index] as Tone.BitCrusher).set({
+            bits: value,
+          });
+      }
   return (
     <FxWrapper
       effectName="bitcrusher"
@@ -24,16 +52,16 @@ export const BitCrusher = ({
     >
       <div className={styles.container}>
         
-        <DistortionIcon />
+        <BitCrusherImage />
         
           <Knob
-            onChange={updateDrive}
-            minValue={0}
-            maxValue={1}
-            step={0.01}
-            unit={""}
-            currentValue={settings[index].settings.distortion ?? 0.5}
-            label="drive"
+            onChange={updateBitDepth}
+            minValue={1}
+            maxValue={16}
+            step={0.1}
+            unit={"bits"}
+            currentValue={settings[index].settings.bits ?? 8}
+            label="Bit Depth"
             radius={24}
             interactive
           />
