@@ -1,24 +1,30 @@
 import * as Tone from "tone/build/esm/index";
 import CustomEffects from "../engines/CustomEffects";
 
-type ReverbSettings = {
+export type ReverbSettings = {
   decay: number;
   wet: Tone.Unit.NormalRange;
   preDelay: number;
 };
 
-type PingPongDelaySettings = {
+export type PingPongDelaySettings = {
   feedback: number;
   wet: Tone.Unit.NormalRange;
   delayTime: Tone.Unit.Time;
 };
 
-type DistortionSettings = {
+export type FeedbackDelaySettings = {
+  feedback: number;
+  wet: Tone.Unit.NormalRange;
+  delayTime: Tone.Unit.Time;
+};
+
+export type DistortionSettings = {
   distortion: number;
   wet: number;
 };
 
-type ChorusSettings = {
+export type ChorusSettings = {
   frequency: Tone.Unit.Frequency;
   delayTime: Tone.Unit.Milliseconds;
   depth: Tone.Unit.NormalRange;
@@ -26,9 +32,21 @@ type ChorusSettings = {
   wet: number;
 };
 
+export type BitCrusherSettings = {
+  bits: number;
+  wet: number;
+};
+
 export type Effect = {
   type: string;
-  settings: ReverbSettings | PingPongDelaySettings | DistortionSettings | ChorusSettings;
+  settings:
+    | ReverbSettings
+    | PingPongDelaySettings
+    | FeedbackDelaySettings
+    | DistortionSettings
+    | ChorusSettings
+    | BitCrusherSettings;
+
 };
 
 export type ColorMap = {
