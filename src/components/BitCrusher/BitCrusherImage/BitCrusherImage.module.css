@@ -1,0 +1,41 @@
+.container {
+  letter-spacing: normal;
+  text-transform: lowercase;
+  flex-direction: column;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  gap: 5px;
+}
+
+.row h3 {
+  font-size: 24px;
+  font-variation-settings: "BLED" 0, "SCAN" -40;
+  color: rgba(var(--bitcrusher-light), 0.7);
+  text-shadow: 0 0 5px rgba(var(--bitcrusher-light), 0.7);
+  position: relative;
+}
+
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 20px;
+  
+}
+
+.binary_numbers div {
+  width: 100%;
+  height: 100%;
+  font-size: 8px;
+  letter-spacing: 1px;
+  line-height: 8px;
+
+  color: rgba(var(--bitcrusher-light), 0.7);
+  text-shadow: 0 0 4px rgba(var(--bitcrusher-light), 0.5);
+}
