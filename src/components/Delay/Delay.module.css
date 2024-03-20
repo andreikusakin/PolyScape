@@ -1,0 +1,48 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 80px);
+    column-gap: 10px;
+    row-gap: 20px;
+    align-items: center;
+    justify-items: center;
+  }
+  
+  .drag {
+    cursor: grab;
+    position: absolute;
+    left: 0;
+    bottom: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .dot {
+    height: 5px;
+    width: 5px;
+    background: rgba(var(--ping-pong-delay-light), 0.8);
+    border-radius: 100%;
+    position: relative;
+  }
+  
+  .dot::before {
+    left: -8px;
+    position: absolute;
+    content: "";
+    height: 5px;
+    width: 5px;
+    background: inherit;
+    border-radius: 100%;
+  }
+  
+  .dot::after {
+    left: 8px;
+    position: absolute;
+    content: "";
+    height: 5px;
+    width: 5px;
+    background: inherit;
+    border-radius: 100%;
+  }
+  

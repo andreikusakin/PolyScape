@@ -14,6 +14,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { Distortion } from "../Distortion/Distortion";
 import { Chorus } from "../Chorus/Chorus";
 import { BitCrusher } from "../BitCrusher/BitCrusher";
+import { Delay } from "../Delay/Delay";
 
 type EffectsProps = {};
 
@@ -100,6 +101,16 @@ export const Effects = () => {
                             updateSettings={updateSettings}
                           />
                         );
+                        case "delay":
+                          return (
+                            <Delay
+                              key={index}
+                              index={index}
+                              engine={engine}
+                              settings={settings}
+                              updateSettings={updateSettings}
+                            />
+                          );
 
                       default:
                         return null;

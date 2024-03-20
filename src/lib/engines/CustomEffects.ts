@@ -1,5 +1,13 @@
 import * as Tone from "tone/build/esm/index";
-import { Preset } from "../types/types";
+import {
+  Preset,
+  ReverbSettings,
+  PingPongDelaySettings,
+  DistortionSettings,
+  ChorusSettings,
+  BitCrusherSettings,
+  FeedbackDelaySettings,
+} from "../types/types";
 
 const effectConfig = {
   wet: 0.5,
@@ -14,7 +22,6 @@ const effectConfig = {
   feedbackChorus: 0.5,
   bits: 8,
 };
-//mute all effects
 
 export default class CustomEffects {
   currentChain: Tone.ToneAudioNode[] = [];
@@ -26,14 +33,6 @@ export default class CustomEffects {
     this.inputNode = inputNode;
     this.outputNode = new Tone.Gain({ gain: 0.2 });
     this.inputNode.connect(this.outputNode);
-    // this.reverb = new Tone.Reverb({ decay: 2, preDelay: 0, wet: 0.5})
-    // this.pingPongDelay = new Tone.PingPongDelay();
-    // this.distortion = new Tone.Distortion();
-    // this.chorus = new Tone.Chorus();
-    // this.feedbackDelay = new Tone.FeedbackDelay()
-    // this.bitCrusher = new Tone.BitCrusher();
-    // this.autoPanner = new Tone.AutoPanner();
-
     this.loadPreset(preset);
   }
 
@@ -41,45 +40,60 @@ export default class CustomEffects {
     preset?.forEach((effect) => {
       switch (effect.type) {
         case "reverb":
+          const reverbSettings = effect.settings as ReverbSettings;
           const reverb = new Tone.Reverb({
-            decay: effect.settings.decay,
-            preDelay: effect.settings.preDelay,
-            wet: effect.settings.wet / 100,
+            decay: reverbSettings.decay,
+            preDelay: reverbSettings.preDelay,
+            wet: reverbSettings.wet / 100,
           });
           this.currentChain.push(reverb);
           break;
         case "ping pong delay":
+          const pingPongDelaySettings =
+            effect.settings as PingPongDelaySettings;
           const pingPongDelay = new Tone.PingPongDelay({
-            feedback: effect.settings.feedback,
-            wet: effect.settings.wet / 100,
-            delayTime: effect.settings.delayTime,
+            feedback: pingPongDelaySettings.feedback,
+            wet: pingPongDelaySettings.wet / 100,
+            delayTime: pingPongDelaySettings.delayTime,
           });
           this.currentChain.push(pingPongDelay);
           break;
         case "distortion":
+          const distortionSettings = effect.settings as DistortionSettings;
           const distortion = new Tone.Distortion({
-            distortion: effect.settings.distortion,
-            wet: effect.settings.wet / 100,
+            distortion: distortionSettings.distortion,
+            wet: distortionSettings.wet / 100,
           });
           this.currentChain.push(distortion);
           break;
 
         case "chorus":
+          const chorusSettings = effect.settings as ChorusSettings;
           const chorus = new Tone.Chorus({
-            frequency: effect.settings.frequency,
-            delayTime: effect.settings.delayTime,
-            depth: effect.settings.depth,
-            feedback: effect.settings.feedback,
-            wet: effect.settings.wet / 100,
+            frequency: chorusSettings.frequency,
+            delayTime: chorusSettings.delayTime,
+            depth: chorusSettings.depth,
+            feedback: chorusSettings.feedback,
+            wet: chorusSettings.wet / 100,
           });
           this.currentChain.push(chorus);
           break;
         case "bitcrusher":
+          const bitCrusherSettings = effect.settings as BitCrusherSettings;
           const bitCrusher = new Tone.BitCrusher({
-            bits: effect.settings.bits,
+            bits: bitCrusherSettings.bits,
           });
-          bitCrusher.wet.value = effect.settings.wet / 100;
+          bitCrusher.wet.value = bitCrusherSettings.wet / 100;
           this.currentChain.push(bitCrusher);
+          break;
+        case "delay":
+          const delaySettings = effect.settings as FeedbackDelaySettings;
+          const delay = new Tone.FeedbackDelay({
+            delayTime: delaySettings.delayTime,
+            feedback: delaySettings.feedback,
+            wet: delaySettings.wet / 100,
+          });
+          this.currentChain.push(delay);
           break;
         default:
           break;
@@ -134,20 +148,14 @@ export default class CustomEffects {
         effect.wet.value = effectConfig.wet;
         this.currentChain.push(effect);
         break;
-
-      // case "vibrato":
-      //   const vibrato = new Tone.Vibrato();
-      //   this.currentChain.push(vibrato);
-      //   break;
-      // case "feedbackDelay":
-      //   const feedbackDelay = new Tone.FeedbackDelay();
-      //   this.currentChain.push(feedbackDelay);
-      //   break;
-      
-      // case "autoPanner":
-      //   const autoPanner = new Tone.AutoPanner();
-      //   this.currentChain.push(autoPanner);
-      //   break;
+      case "delay":
+        effect = new Tone.FeedbackDelay({
+          delayTime: effectConfig.delayTime,
+          feedback: effectConfig.feedback,
+          wet: effectConfig.wet,
+        });
+        this.currentChain.push(effect);
+        break;
       default:
         break;
     }

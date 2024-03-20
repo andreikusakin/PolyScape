@@ -33,7 +33,6 @@
     gap: 10px;
     flex-shrink: 0;
     border-left: 1px solid #bebebe37;
-    border-radius: 6px;
     cursor: pointer;
     letter-spacing: 1px;
     height: 200px;
@@ -44,7 +43,7 @@
 }
 
 .add_effect:hover {
-    color: #fff;
-    text-shadow: 0 0 10px #fff;
+    color: #ffffffdd;
+    text-shadow: 0 0 10px #ffffffbc;
     border-left: 1px solid #bebebe6f;
 }
