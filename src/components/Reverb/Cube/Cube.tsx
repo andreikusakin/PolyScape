@@ -1,7 +1,7 @@
 import styles from "./Cube.module.css";
 import localFont from "next/font/local";
 
-const kodeMono = localFont({ src: "./../KodeMono-VariableFont_wght.ttf" });
+const kodeMono = localFont({ src: "./../../../lib/fonts/KodeMono.ttf" });
 
 export const Cube = () => {
   return (
