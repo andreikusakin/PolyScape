@@ -1,5 +1,6 @@
 import { BitCrusherImage } from "../BitCrusher/BitCrusherImage/BitCrusherImage";
 import { ChorusImage } from "../Chorus/ChorusImage/ChorusImage";
+import { DelayImage } from "../Delay/DelayImage/DelayImage";
 import { DistortionIcon } from "../Distortion/DistortionIcon/DistortionIcon";
 import { Rackets } from "../PingPongDelay/Rackets/Rackets";
 import { Cube } from "../Reverb/Cube/Cube";
@@ -30,7 +31,11 @@ const effectTypes = [
   {
     name: "bitcrusher",
     component: <BitCrusherImage />,
-  }
+  },
+  {
+    name: "delay",
+    component: <DelayImage />,
+  },
 ];
 
 export const AddEffect = ({
