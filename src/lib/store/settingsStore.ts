@@ -119,8 +119,4 @@ export const useSynthSettingsStore = create((set, get) => ({
   },
 }));
 
-export const useWaveformColor = () =>
-  useSynthSettingsStore((state) => {
-    const key = `${state.osc1.type}-${state.osc2.type}`;
-    return colorMap[key];
-  });
+
