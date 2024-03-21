@@ -15,7 +15,8 @@ import { Modal } from "../Modal/Modal";
 import { SavePreset } from "../SavePreset/SavePreset";
 import { useShallow } from "zustand/react/shallow";
 import { IconSettings } from "@tabler/icons-react";
-import { IconAdjustments } from '@tabler/icons-react';
+import { IconAdjustments } from "@tabler/icons-react";
+import { GlobalSettings } from "../GlobalSettings/GlobalSettings";
 
 export const Header = () => {
   const { engine } = useSynthEngineStore((state) => ({
@@ -27,15 +28,14 @@ export const Header = () => {
   );
   const [isMidiSupported, setIsMidiSupported] = useState<boolean>(false);
   const [isSelectingMidi, setIsSelectingMidi] = useState<boolean>(false);
-
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isPresetLibraryOpen, setIsPresetLibraryOpen] = useState<boolean>(false);
+  const [isSavePresetOpen, setIsSavePresetOpen] = useState<boolean>(false);
   const {
     isKeyboardOpen,
     isFxOpen,
     isUiVisible,
-    isSavePresetOpen,
-    isPresetLibraryOpen,
-    togglePresetLibraryOpen,
-    toggleSavePresetOpen,
+ 
     toggleKeyboardOpen,
     toggleFxOpen,
     toggleUiVisible,
@@ -45,8 +45,6 @@ export const Header = () => {
       isFxOpen: state.isFxOpen,
       isUiVisible: state.isUiVisible,
       isSavePresetOpen: state.isSavePresetOpen,
-      isPresetLibraryOpen: state.isPresetLibraryOpen,
-      togglePresetLibraryOpen: state.togglePresetLibraryOpen,
       toggleSavePresetOpen: state.toggleSavePresetOpen,
       toggleKeyboardOpen: state.toggleKeyboardOpen,
       toggleFxOpen: state.toggleFxOpen,
@@ -136,14 +134,25 @@ export const Header = () => {
               </div>
               <div className={styles.preset}>
                 <span>preset</span>
-                <div onClick={togglePresetLibraryOpen}>Preset Name</div>
-                <div onClick={toggleSavePresetOpen}>
-                  <IconDownload stroke={1} />
+                <div
+                  onClick={() => setIsPresetLibraryOpen(!isPresetLibraryOpen)}
+                  className={styles.preset_name}
+                >
+                  <span>Preset Name</span>
                 </div>
+                <div
+                  onClick={() => setIsSavePresetOpen(!isSavePresetOpen)}
+                  className={styles.settings_button}
+                >
+                  <IconDownload stroke={1} size={24} />
+                </div>
+
                 {isPresetLibraryOpen && <PresetLibrary />}
               </div>
-              <div className={styles.bpm}>bpm</div>
-              <div className={styles.master_volume}>
+              {/* <div className={styles.bpm}>
+                <span>bpm</span>
+              </div> */}
+              {/* <div className={styles.master_volume}>
                 <Knob
                   radius={10}
                   minValue={-70}
@@ -151,7 +160,7 @@ export const Header = () => {
                   currentValue={0}
                   interactive
                 />
-              </div>
+              </div> */}
 
               <div className={styles.buttons}>
                 <button
@@ -170,8 +179,14 @@ export const Header = () => {
                 >
                   fx
                 </button>
-                <div className={styles.settings_button}>
-                  <IconAdjustments stroke={1} size={24} />
+                <div>
+                  <div
+                    className={styles.settings_button}
+                    onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                  >
+                    <IconAdjustments stroke={1} size={24} />
+                  </div>
+                  {isSettingsOpen && <GlobalSettings />}
                 </div>
                 <button
                   className={styles.header_button}
@@ -199,7 +214,10 @@ export const Header = () => {
 
       {isSavePresetOpen && (
         <Modal>
-          <SavePreset />
+          <SavePreset 
+          isOpen={isSavePresetOpen}
+          setIsOpen={setIsSavePresetOpen}
+          />
         </Modal>
       )}
     </motion.div>
