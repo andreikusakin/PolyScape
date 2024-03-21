@@ -3,8 +3,8 @@
 import {
   useSynthEngineStore,
   useSynthSettingsStore,
-  useWaveformColor,
 } from "@/lib/store/settingsStore";
+import { useUiColorRGB } from "@/lib/store/uiStore";
 import Knob from "../Knob/Knob";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import styles from "./MiscParameters.module.css";
@@ -18,7 +18,7 @@ import { useShallow } from "zustand/react/shallow";
 export const MiscParameters = () => {
   console.log("RERENDER MISC PARAMETERS");
   const engine = useSynthEngineStore((state) => state.synthEngine);
-  const colorRGB = useWaveformColor();
+  const colorRGB = useUiColorRGB();
   const { panSpread, unison, updateUnison, setPanSpread, detune, setDetune, hold, updateHold } =
     useSynthSettingsStore(
       useShallow((state) => ({
