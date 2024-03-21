@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+}
+
+.container h3 {
+  letter-spacing: normal;
+  font-size: 24px;
+  animation: colorchange 2s infinite alternate;
+}
+
+@keyframes colorchange {
+  0% {
+    color: rgba(228, 138, 255, 1);
+    text-shadow: 0 0 10px rgba(var(--chorus-rgb), 0.5),
+      0 0 5px rgba(228, 138, 255, 1), 0px -3px 0 rgb(138, 255, 232);
+  }
+  100% {
+    color: rgb(138, 255, 232);
+    text-shadow: 0 0 10px rgba(var(--chorus-rgb), 0.5),
+      0 0 5px rgb(138, 237, 255), 0px 3px 0 rgba(228, 138, 255, 1);
+  }
+}
