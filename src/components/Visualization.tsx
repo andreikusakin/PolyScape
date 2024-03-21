@@ -1,6 +1,6 @@
 "use client";
 
-import { useWaveformColor } from "@/lib/store/settingsStore";
+import { useUiColorRGB } from "@/lib/store/uiStore";
 import { Effects, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
@@ -70,7 +70,7 @@ const Dust = ({ count, color }) => {
 };
 
 const Scene = () => {
-  const color = useWaveformColor();
+  const color = useUiColorRGB();
   return (
     <>
       <OrbitControls />
