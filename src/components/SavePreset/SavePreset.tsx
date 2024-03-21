@@ -1,11 +1,14 @@
-import { useWaveformColor } from "@/lib/store/settingsStore";
+import { useUiColorRGB } from "@/lib/store/uiStore";
 import styles from "./SavePreset.module.css";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useShallow } from "zustand/react/shallow";
 
-export const SavePreset = () => {
-  const colorRGB = useWaveformColor();
-  const toggleSavePresetOpen = useUiStore(useShallow((state) => state.toggleSavePresetOpen));
+export const SavePreset = ({
+  setIsOpen,
+}: {
+  setIsOpen: (value: boolean) => void;
+}) => {
+  const colorRGB = useUiColorRGB();
   return (
     <div
       className={styles.container}
@@ -68,7 +71,11 @@ export const SavePreset = () => {
           />
         </div>
         <div className={styles.buttons}>
-          <button type="reset" className={styles.cancel_button} onClick={toggleSavePresetOpen}>
+          <button
+            type="reset"
+            className={styles.cancel_button}
+            onClick={() => setIsOpen(false)}
+          >
             Cancel
           </button>
           <button type="submit" className={styles.save_button}>
