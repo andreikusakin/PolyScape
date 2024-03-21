@@ -3,8 +3,8 @@ import { IconSearch } from "@tabler/icons-react";
 import styles from "./PresetLibrary.module.css";
 import {
   useSynthSettingsStore,
-  useWaveformColor,
 } from "@/lib/store/settingsStore";
+import { useUiColorRGB } from "@/lib/store/uiStore";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -14,11 +14,11 @@ export const PresetLibrary = () => {
   const [input, setInput] = useState("");
   const [type, setType] = useState("All");
   const presets = usePresetLibraryStore(useShallow((state) => state.presetLibrary));
-  const colorRGB = useWaveformColor();
+  const colorRGB = useUiColorRGB();
   const currentPresetName = useSynthSettingsStore(useShallow((state) => state.presetName));
   console.log("RERENDER PRESET LIBRARY");
   return (
-    <div className="fixed mt-4 flex justify-center left-0 w-full pointer-events-none">
+    <div className="fixed mt-4 flex justify-center left-0 top-10 w-full pointer-events-none">
       <div
         className={styles.wrapper}
         style={{ "--waveform-color": colorRGB } as React.CSSProperties}
