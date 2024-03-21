@@ -5,15 +5,24 @@ import * as Tone from "tone/build/esm/index";
 import { useMemo } from "react";
 import styles from "./Keys.module.css";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
+import { useShallow } from "zustand/react/shallow";
 // @ts-ignore
 import AudioKeys from "audiokeys";
-import { useSynthEngineStore, useWaveformColor } from "@/lib/store/settingsStore";
+import { useSynthEngineStore } from "@/lib/store/settingsStore";
+import { useUiColorRGB } from "@/lib/store/uiStore";
+import { useUiStore } from "@/lib/store/uiStore";
 
 export const Keys = () => {
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const [notesPressed, setNotesPressed] = useState<number[]>([]);
   // const [colorRGB, setColorRGB] = useState<string>("255, 0, 0");
-  const colorRGB = useWaveformColor();
+  const { isCustomColor, customColor } = useUiStore(
+    useShallow((state) => ({
+      isCustomColor: state.isCustomColor,
+      customColor: state.customColor,
+    }))
+  );
+  const colorRGB = useUiColorRGB();
   engine.keyboard.down((key: any) => {
     setNotesPressed([...notesPressed, key.note]);
   });
@@ -59,7 +68,11 @@ export const Keys = () => {
   return (
     <div
       className={styles.wrapper}
-      style={{ "--color-rgb": colorRGB } as React.CSSProperties}
+      style={
+        {
+          "--color-rgb": isCustomColor ? customColor : colorRGB,
+        } as React.CSSProperties
+      }
     >
       <div className={styles.container}>
         <ul className={styles.keys}>
