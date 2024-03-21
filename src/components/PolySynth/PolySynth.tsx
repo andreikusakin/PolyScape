@@ -46,13 +46,9 @@ const PolySynth = ({ preset }: PolySynthProps) => {
     setEffects: state.setEffectsEngine,
   }));
 
-
   // misc
   const [panSpread, setPanSpread] = useState<number>(0);
   const [unison, setUnison] = useState<boolean>(false);
-
-
-  
 
   // initialize synth
   useEffect(() => {
@@ -79,7 +75,7 @@ const PolySynth = ({ preset }: PolySynthProps) => {
           <Header />
           <AnimatePresence>
             {isUiVisible && (
-              <>
+              <div className={styles.container}>
                 <div className={styles.left_right}>
                   <motion.div
                     className={styles.left}
@@ -100,11 +96,16 @@ const PolySynth = ({ preset }: PolySynthProps) => {
                     transition={{ duration: 0.5 }}
                     exit={{ opacity: 0, x: 100 }}
                   >
-                    <Filter />
-                    <EnvelopeAmplitude />
-                    <LFO lfoNumber={1} />
-                    <LFO lfoNumber={2} />
+                    <div className={styles.filter_amp}>
+                      <Filter />
+                      <EnvelopeAmplitude />
+                    </div>
+                    <div className={styles.LFOs}>
+                      <LFO lfoNumber={1} />
+                      <LFO lfoNumber={2} />
+                    </div>
                   </motion.div>
+                  
                 </div>
                 <motion.div
                   className={styles.bottom}
@@ -113,13 +114,10 @@ const PolySynth = ({ preset }: PolySynthProps) => {
                   transition={{ duration: 0.5 }}
                   exit={{ opacity: 0, y: 100 }}
                 >
-                  <div className={styles.LFOs}></div>
-                </motion.div>
-                {isFxOpen && <Effects />}
-                <div className={`${isKeyboardOpen ? "flex" : "hidden"}`}>
-                  <Keyboard />
-                </div>
-              </>
+                  {isFxOpen && <Effects />}
+                  {isKeyboardOpen && <Keyboard />}
+                </motion.div></div>
+              
             )}
           </AnimatePresence>
         </>
