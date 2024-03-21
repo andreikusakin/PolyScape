@@ -33,7 +33,7 @@ export const FxWrapper = ({
       <div
         className={isMuted ? styles.container_bypass : styles.container}
         style={{
-          boxShadow: `var(--${effectName}-border), inset 0 0 20px 3px rgb(0 0 0 / 50%), inset 0 0 5px 0 rgba(var(--${effectName}-rgb), 0.4`,
+          boxShadow: `var(--${effectName}-border), inset 0 0 20px 3px rgb(0 0 0 / 50%), inset 0 0 5px 0 rgba(var(--${effectName}-rgb), 0.4)`,
           background: `radial-gradient(
         150.32% 141.42% at 0% 0%,
         rgba(var(--${effectName}-rgb), 0.1) 0%,
@@ -44,7 +44,7 @@ export const FxWrapper = ({
         <div className={styles.drag}>
           <div
             className={styles.dot}
-            style={{ background: `rgba(var(--${effectName}-light), 0.8` }}
+            style={{ background: `rgba(var(--${effectName}-light), 0.8)` }}
           ></div>
         </div>
         {children}
