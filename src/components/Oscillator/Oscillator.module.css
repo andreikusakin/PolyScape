@@ -1,13 +1,19 @@
+.container {
+  
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 80px);
+  grid-template-columns: var(--section-grid-three-col);
   justify-items: center;
   align-items: center;
   row-gap: 20px;
   column-gap: 10px;
   color: rgba(255, 255, 255, 0.95);
-  padding: 20px;
+ 
   position: relative;
+  width: var(--section-width-medium);
+  padding: var(--section-padding);
 }
 
 .shapes {

@@ -22,7 +22,7 @@
     display: flex;
     gap: 20px;
     overflow-x: scroll;
-    padding: 20px;
+    padding: var(--section-padding);
 }
 
 .add_effect {
@@ -37,9 +37,9 @@
     letter-spacing: 1px;
     height: 200px;
     justify-content: center;
-    padding: 20px;
+    padding: var(--section-padding);
     color: #ffffffad;
-    margin: 20px 0;
+    margin: var(--section-padding) 0;
 }
 
 .add_effect:hover {

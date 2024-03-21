@@ -1,12 +1,13 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, 80px);
+  grid-template-columns: var(--section-grid-four-col);
   justify-items: center;
   align-items: center;
   row-gap: 20px;
   column-gap: 10px;
   color: rgba(255, 255, 255, 0.95);
-  padding: 20px;
+  padding: var(--section-padding);
+  width: var(--section-width-large);
 }
 
 .typescontainer {

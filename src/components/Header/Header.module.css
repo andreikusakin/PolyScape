@@ -46,6 +46,35 @@
 
 .preset {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.preset_name {
+  background: rgb(26, 26, 26);
+  color: #ffffff92;
+  width: 180px;
+  height: 26px;
+  padding: 0 10px;
+  max-width: 220px;
+  border-radius: 6px;
+  border: 1px solid #acacac47;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.preset_name span {
+  padding-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preset_name:hover {
+  color: #fffffff8;
+  background: #ffffff28;
 }
 
 /* .midi_selector::after {
@@ -134,6 +163,7 @@
   border: 1px solid #acacac47;
   padding: 0 5px;
   height: 26px;
+  cursor: pointer;
 }
 
 .settings_button:hover {

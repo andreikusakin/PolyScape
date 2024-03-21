@@ -6,7 +6,7 @@
   letter-spacing: calc(var(--main-synth-ui-font-size) * 0.2);
   height: fit-content;
   text-transform: uppercase;
-  width: fit-content;
+  width: 100%;
   user-select: none;
 }
 
@@ -16,12 +16,12 @@
 
 .container {
   display: flex;
-  width: 390px;
+  width: var(--section-width-large);
   height: 198.55px;
   row-gap: 20px;
   justify-content: space-between;
   color: rgba(255, 255, 255, 0.95);
-  padding: 20px;
+  padding: var(--section-padding);
   border-radius: 8px;
 
   background: radial-gradient(

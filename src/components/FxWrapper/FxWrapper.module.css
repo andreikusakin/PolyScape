@@ -1,13 +1,15 @@
 .container {
-  padding: 20px;
+  padding: 20px 15px 10px 15px;
   border-radius: 8px;
   backdrop-filter: blur(22px);
   box-shadow: inset 0 0 5px 0px rgb(0 0 0 / 80%);
   height: 200px;
+
+  
 }
 
 .container_bypass {
-  width: fit-content;
+  height: 200px;
   padding: 20px;
   border-radius: 8px;
   backdrop-filter: blur(22px);

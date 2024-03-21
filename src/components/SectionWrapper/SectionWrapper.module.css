@@ -6,11 +6,11 @@
 
 .name {
   color: rgba(255, 255, 255, 0.7);
-  padding-top: 10px;
+  padding-bottom: var(--section-name-padding-bottom);
 }
 
 .container {
-  margin-top: 10px;
+  
   border-radius: 8px;
   background: radial-gradient(
     107.32% 141.42% at 0% 0%,
@@ -36,3 +36,4 @@
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
 }
+

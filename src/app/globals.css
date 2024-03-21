@@ -2,12 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 0, 0, 0;
   --background-end-rgb: 0, 0, 0;
   --main-synth-ui-font-size: 11px;
+
+  --section-padding: 20px;
+  --section-width-large: 390px;
+  --section-width-medium: 300px;
+  --section-name-padding-bottom: 10px;
+  --section-grid-three-col: repeat(3, 80px);
+  --section-grid-four-col: repeat(4, 80px);
+
 
   --reverb-rgb: 0, 255, 140;
   --reverb-secondary-rgb: 0, 255, 140;
@@ -69,5 +76,21 @@ canvas {
 
 button {
   text-transform: uppercase;
-  letter-spacing: calc(var(--main-synth-ui-font-size)* 0.2);
+  letter-spacing: calc(var(--main-synth-ui-font-size) * 0.2);
 }
+
+@media screen and (max-width: 1040px) {
+  :root {
+    --section-grid-three-col: repeat(3, 1fr);
+    --section-grid-four-col: repeat(4, 1fr);
+    --section-width-large: 100%;
+    --section-width-medium: 100%;
+  }
+}
+
+/* @media screen and (max-width: 980px) {
+  :root {
+    --section-width-large: 100%;
+    --section-width-medium: 100%;
+  }
+} */
