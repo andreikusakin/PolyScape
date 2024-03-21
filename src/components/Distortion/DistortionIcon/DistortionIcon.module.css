@@ -11,8 +11,4 @@
   letter-spacing: 1px;
   color: rgb(255, 119, 78);
   text-shadow: 0 0 2px rgb(255, 38, 0), 0 0 10px rgba(var(--distortion-rgb), 1);
-  
-  /* -webkit-text-stroke: 2px red;
-  -webkit-text-fill-color: rgb(255, 187, 78); */
- 
 }

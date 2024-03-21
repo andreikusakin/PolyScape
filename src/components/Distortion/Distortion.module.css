@@ -1,13 +1,8 @@
 .container {
-
-    display: grid;
+  display: grid;
   grid-template-columns: repeat(2, 80px);
   column-gap: 10px;
   row-gap: 20px;
   align-items: center;
   justify-items: center;
-}
-
-.row {
-    
 }
