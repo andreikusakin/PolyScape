@@ -1,10 +1,6 @@
 import { Preset } from "../types/types";
 
 export const initPreset: Preset = {
-    presetName: "init",
-    author: "Andrew Kusakin",
-    type: "template",
-    description: "Initial preset",
     osc1: {
       type: "sawtooth",
       detune: 0,
@@ -49,7 +45,7 @@ export const initPreset: Preset = {
       rate: "8n",
       sync: true,
       destinations: [
-        // { target: "osc1 fine", amount: 0.1 }
+
       ],
     },
     LFO2: {
@@ -57,11 +53,10 @@ export const initPreset: Preset = {
       rate: "8n",
       sync: true,
       destinations: [
-        // { target: "osc2 fine", amount: 0.1 }
+
       ],
     },
     effects: 
       [{type: "reverb", settings: { decay: 5, preDelay: 0.01, wet: 50 }},
-      // {type: "pingPongDelay", settings: { feedback: 0.2, wet: 50, delayTime: 1 }}
       ]
   };

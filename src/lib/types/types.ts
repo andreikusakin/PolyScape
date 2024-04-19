@@ -54,10 +54,6 @@ export type ColorMap = {
 };
 
 export type Preset = {
-  presetName: string;
-  author: string;
-  type: "template" | "pluck" | "pad" | "bass" | "fx" | "lead" | "keys";
-  description?: string;
   osc1: {
     type: "sawtooth" | "sine" | "pulse" | "triangle";
     detune: number;

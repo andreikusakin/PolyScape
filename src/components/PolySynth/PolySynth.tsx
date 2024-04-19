@@ -19,8 +19,10 @@ import { useUiStore } from "@/lib/store/uiStore";
 import {
   useEffectsEngineStore,
   useSynthEngineStore,
+  useSynthSettingsStore,
 } from "@/lib/store/settingsStore";
 import { MiscParameters } from "../MiscParameters/MiscParameters";
+import { usePresetLibraryStore } from "@/lib/store/presetLibraryStore";
 
 type PolySynthProps = {
   preset: Preset;
@@ -28,8 +30,6 @@ type PolySynthProps = {
 
 const PolySynth = ({ preset }: PolySynthProps) => {
   const [enginesReady, setEnginesReady] = useState<boolean>(false);
-
-  // const polySynthRef = useRef<CustomPolySynth>();
   const effectsRef = useRef<CustomEffects>();
   const { isKeyboardOpen, isFxOpen, isUiVisible } = useUiStore((state) => ({
     isKeyboardOpen: state.isKeyboardOpen,
@@ -46,18 +46,30 @@ const PolySynth = ({ preset }: PolySynthProps) => {
     setEffects: state.setEffectsEngine,
   }));
 
+  const { setPresetLibrary } = usePresetLibraryStore((state) => ({
+    setPresetLibrary: state.setPresetLibrary,
+  }));
   // misc
   const [panSpread, setPanSpread] = useState<number>(0);
   const [unison, setUnison] = useState<boolean>(false);
 
+  // fetch presets
+  async function fetchPresets() {
+    const response = await fetch("/api/presets");
+    const data = await response.json();
+    console.log(data);
+    setPresetLibrary(data);
+  }
+
   // initialize synth
   useEffect(() => {
+    fetchPresets();
     const polySynthRef = new CustomPolySynth(preset);
     effectsRef.current = new CustomEffects(
       polySynthRef.outputNode,
       preset.effects
     );
-    // loadPreset(preset);
+    
     const masterNode = new Tone.Gain().chain(
       effectsRef.current.outputNode,
       Tone.Destination

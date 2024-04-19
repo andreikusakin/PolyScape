@@ -10,13 +10,13 @@ import { useShallow } from "zustand/react/shallow";
 
 const types = ["All", "Bass", "Lead", "Pad", "FX", "Keys", "Drums"];
 
-export const PresetLibrary = () => {
+export const PresetLibrary = async () => {
   const [input, setInput] = useState("");
   const [type, setType] = useState("All");
   const presets = usePresetLibraryStore(useShallow((state) => state.presetLibrary));
   const colorRGB = useUiColorRGB();
   const currentPresetName = useSynthSettingsStore(useShallow((state) => state.presetName));
-  console.log("RERENDER PRESET LIBRARY");
+
   return (
     <div className="fixed mt-4 flex justify-center left-0 top-10 w-full pointer-events-none">
       <div
