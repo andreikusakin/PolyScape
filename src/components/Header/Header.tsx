@@ -17,6 +17,7 @@ import { useShallow } from "zustand/react/shallow";
 import { IconSettings } from "@tabler/icons-react";
 import { IconAdjustments } from "@tabler/icons-react";
 import { GlobalSettings } from "../GlobalSettings/GlobalSettings";
+import { usePresetLibraryStore } from "@/lib/store/presetLibraryStore";
 
 export const Header = () => {
   const { engine } = useSynthEngineStore((state) => ({
@@ -31,11 +32,15 @@ export const Header = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isPresetLibraryOpen, setIsPresetLibraryOpen] = useState<boolean>(false);
   const [isSavePresetOpen, setIsSavePresetOpen] = useState<boolean>(false);
+
+  const presets = usePresetLibraryStore(useShallow((state) => state.presetLibrary));
+  const selectedPreset = usePresetLibraryStore(useShallow((state) => state.selectedPreset));
+
+  
   const {
     isKeyboardOpen,
     isFxOpen,
     isUiVisible,
- 
     toggleKeyboardOpen,
     toggleFxOpen,
     toggleUiVisible,
@@ -84,7 +89,7 @@ export const Header = () => {
   };
 
   return (
-    <motion.div
+    <motion.header
       className={styles.wrapper}
       animate={hideUiAnimation}
       transition={{ duration: 0.5 }}
@@ -138,7 +143,7 @@ export const Header = () => {
                   onClick={() => setIsPresetLibraryOpen(!isPresetLibraryOpen)}
                   className={styles.preset_name}
                 >
-                  <span>Preset Name</span>
+                  <span>{presets && presets.find((p) => p.id === selectedPreset).name}</span>
                 </div>
                 <div
                   onClick={() => setIsSavePresetOpen(!isSavePresetOpen)}
@@ -220,6 +225,6 @@ export const Header = () => {
           />
         </Modal>
       )}
-    </motion.div>
+    </motion.header>
   );
 };
