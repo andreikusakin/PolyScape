@@ -8,14 +8,19 @@ import { useUiColorRGB } from "@/lib/store/uiStore";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-const types = ["All", "Bass", "Lead", "Pad", "FX", "Keys", "Drums"];
+const types = ["all", "bass", "lead", "pad", "fx", "keys", "drums", "misc"];
 
-export const PresetLibrary = async () => {
+export const PresetLibrary = () => {
   const [input, setInput] = useState("");
-  const [type, setType] = useState("All");
+  const [type, setType] = useState("all");
   const presets = usePresetLibraryStore(useShallow((state) => state.presetLibrary));
+  const selectedPreset = usePresetLibraryStore(useShallow((state) => state.selectedPreset));
   const colorRGB = useUiColorRGB();
-  const currentPresetName = useSynthSettingsStore(useShallow((state) => state.presetName));
+
+  const filteredPresets = presets?.filter((p) => {
+    return (type === "all" || p.type.toLowerCase() === type.toLowerCase()) && p.name.toLowerCase().includes(input.toLowerCase());
+  });
+
 
   return (
     <div className="fixed mt-4 flex justify-center left-0 top-10 w-full pointer-events-none">
@@ -34,6 +39,7 @@ export const PresetLibrary = async () => {
               placeholder="Search Presets"
               className={styles.search_input}
               onChange={(e) => setInput(e.target.value)}
+              onFocus={() => setType("all")}
               value={input}
             />
             {input && <div 
@@ -64,14 +70,18 @@ export const PresetLibrary = async () => {
               </tr>
             </thead>
             <tbody>
-              {presets.map((p, i) => (
+              {filteredPresets.map((p) => (
                 <tr
-                  key={i}
+                  key={p.id}
                   className={
-                    currentPresetName === p.presetName ? styles.selected : ""
-                  }
+                    selectedPreset === p.id ? styles.selected : ""
+                  } 
+                  onClick={() => {
+                    useSynthSettingsStore.getState().setAllParamsFromPreset(p.settings);
+                    usePresetLibraryStore.getState().setSelectedPreset(p.id);
+                  }}
                 >
-                  <td>{p.presetName}</td>
+                  <td>{p.name}</td>
                   <td>{p.type}</td>
                   <td>{p.author}</td>
                 </tr>
