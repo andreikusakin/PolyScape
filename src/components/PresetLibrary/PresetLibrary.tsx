@@ -1,6 +1,5 @@
 import { usePresetLibraryStore } from "@/lib/store/presetLibraryStore";
-import { IconSearch } from "@tabler/icons-react";
-import { IconTrashX } from "@tabler/icons-react";
+import { IconSearch, IconTrashX, IconShare3 } from "@tabler/icons-react";
 import styles from "./PresetLibrary.module.css";
 import { useSynthSettingsStore } from "@/lib/store/settingsStore";
 import { useUiColorRGB } from "@/lib/store/uiStore";
@@ -91,7 +90,9 @@ export const PresetLibrary = () => {
                       .getState()
                       .setAllParamsFromPreset(p.settings);
                     usePresetLibraryStore.getState().setSelectedPreset(p.id);
-                    usePresetLibraryStore.getState().setCurrentPreset(p.settings);
+                    usePresetLibraryStore
+                      .getState()
+                      .setCurrentPreset(p.settings);
                   }}
                 >
                   <td>{p.name}</td>
@@ -113,9 +114,13 @@ export const PresetLibrary = () => {
             </div>
             <div>
               <hr />
+              <button>
+                <IconShare3 stroke={2} size={18} />
+              </button>
               <button onClick={() => setIsDeleting(!isDeleting)}>
                 <IconTrashX stroke={2} size={18} />
               </button>
+              
             </div>
           </div>
         </div>
