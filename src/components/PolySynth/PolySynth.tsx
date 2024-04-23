@@ -23,14 +23,20 @@ import {
 } from "@/lib/store/settingsStore";
 import { MiscParameters } from "../MiscParameters/MiscParameters";
 import { usePresetLibraryStore } from "@/lib/store/presetLibraryStore";
+import { initPreset } from "@/lib/presets/init";
 
 type PolySynthProps = {
-  preset: Preset;
+  currentPreset: Preset;
 };
 
-const PolySynth = ({ preset }: PolySynthProps) => {
+const PolySynth = () => {
   const [enginesReady, setEnginesReady] = useState<boolean>(false);
+  const { currentPreset, setCurrentPreset } = usePresetLibraryStore((state) => ({
+    currentPreset: state.currentPreset,
+    setCurrentPreset: state.setCurrentPreset,
+  }));
   const effectsRef = useRef<CustomEffects>();
+  const polySynthRef = useRef<CustomPolySynth>();
   const { isKeyboardOpen, isFxOpen, isUiVisible } = useUiStore((state) => ({
     isKeyboardOpen: state.isKeyboardOpen,
     isFxOpen: state.isFxOpen,
@@ -46,8 +52,17 @@ const PolySynth = ({ preset }: PolySynthProps) => {
     setEffects: state.setEffectsEngine,
   }));
 
-  const { setPresetLibrary } = usePresetLibraryStore((state) => ({
-    setPresetLibrary: state.setPresetLibrary,
+  const { presetLibrary, setPresetLibrary, selectedPreset, setSelectedPreset } = usePresetLibraryStore(
+    (state) => ({
+      selectedPreset: state.selectedPreset,
+      presetLibrary: state.presetLibrary,
+      setPresetLibrary: state.setPresetLibrary,
+      setSelectedPreset: state.setSelectedPreset,
+    })
+  );
+
+  const { setAllParamsFromPreset } = useSynthSettingsStore((state) => ({
+    setAllParamsFromPreset: state.setAllParamsFromPreset,
   }));
   // misc
   const [panSpread, setPanSpread] = useState<number>(0);
@@ -55,30 +70,55 @@ const PolySynth = ({ preset }: PolySynthProps) => {
 
   // fetch presets
   async function fetchPresets() {
-    const response = await fetch("/api/presets");
+    const response = await fetch("/api/presets", { method: "GET" });
     const data = await response.json();
     console.log(data);
     setPresetLibrary(data);
+    console.log(presetLibrary);
   }
+
+  useEffect(() => {
+    fetchPresets();
+  }, []);
+
+  useEffect(() => {
+    console.log("Updated presetLibrary:", presetLibrary);
+    if (presetLibrary && presetLibrary.length > 0) {
+      setCurrentPreset(presetLibrary.find((p) => p.default === true).settings);
+      setAllParamsFromPreset(presetLibrary.find((p) => p.default === true).settings);
+      setSelectedPreset(presetLibrary.find((p) => p.default === true).id);
+    }
+  }, [presetLibrary]);
 
   // initialize synth
   useEffect(() => {
-    fetchPresets();
-    const polySynthRef = new CustomPolySynth(preset);
-    effectsRef.current = new CustomEffects(
-      polySynthRef.outputNode,
-      preset.effects
-    );
-    
-    const masterNode = new Tone.Gain().chain(
-      effectsRef.current.outputNode,
-      Tone.Destination
-    );
-    console.log(polySynthRef, effectsRef.current);
-    setPolySynth(polySynthRef);
-    setEffects(effectsRef.current);
-    setEnginesReady(true);
-  }, []);
+    if (currentPreset) {
+      
+      if(polySynth || effects) {
+        polySynthRef?.current.dispose();
+        setPolySynth(undefined)
+        effectsRef.current.dispose();
+        setEffects(undefined)
+      };
+      
+
+      console.log(currentPreset);
+      polySynthRef.current = new CustomPolySynth(currentPreset);
+      effectsRef.current = new CustomEffects(
+        polySynthRef.current.outputNode,
+        currentPreset.effects
+      );
+
+      const masterNode = new Tone.Gain().chain(
+        effectsRef.current.outputNode,
+        Tone.Destination
+      );
+      console.log(polySynthRef.current, effectsRef.current);
+      setPolySynth(polySynthRef.current);
+      setEffects(effectsRef.current);
+      setEnginesReady(true);
+    }
+  }, [currentPreset]);
 
   return (
     <div className={styles.wrapper}>
@@ -117,7 +157,6 @@ const PolySynth = ({ preset }: PolySynthProps) => {
                       <LFO lfoNumber={2} />
                     </div>
                   </motion.div>
-                  
                 </div>
                 <motion.div
                   className={styles.bottom}
@@ -128,8 +167,8 @@ const PolySynth = ({ preset }: PolySynthProps) => {
                 >
                   {isFxOpen && <Effects />}
                   {isKeyboardOpen && <Keyboard />}
-                </motion.div></div>
-              
+                </motion.div>
+              </div>
             )}
           </AnimatePresence>
         </>
