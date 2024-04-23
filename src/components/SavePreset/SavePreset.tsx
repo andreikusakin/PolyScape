@@ -2,6 +2,8 @@ import { useUiColorRGB } from "@/lib/store/uiStore";
 import styles from "./SavePreset.module.css";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useShallow } from "zustand/react/shallow";
+import { useState } from "react";
+import { useSynthSettingsStore } from "@/lib/store/settingsStore";
 
 export const SavePreset = ({
   setIsOpen,
@@ -9,13 +11,49 @@ export const SavePreset = ({
   setIsOpen: (value: boolean) => void;
 }) => {
   const colorRGB = useUiColorRGB();
+  const [author, setAuthor] = useState("");
+  const [email, setEmail] = useState("");
+  const [description, setDescription] = useState("");
+  const [presetName, setPresetName] = useState("");
+  const [presetType, setPresetType] = useState("lead");
+  const { aggregateSettings } = useSynthSettingsStore((state) => ({
+    aggregateSettings: state.aggregateSettings,
+  }));
+
+  async function savePreset(e: React.FormEvent) {
+    e.preventDefault();
+    const data = {
+      author,
+      email,
+      description,
+      name: presetName,
+      type: presetType,
+      settings: aggregateSettings(),
+    };
+    console.log(data);
+    const response = await fetch("/api/presets", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.ok) {
+      const newPreset = await response.json();
+      console.log(newPreset);
+      setIsOpen(false);
+    } else {
+      console.error("Error saving preset");
+    }
+  }
+
   return (
     <div
       className={styles.container}
       style={{ "--custom-color": colorRGB } as React.CSSProperties}
     >
       <h1>Save Preset</h1>
-      <form>
+      <form onSubmit={savePreset}>
         <div className={styles.input_container}>
           <label htmlFor="presetName">Preset Name</label>
           <input
@@ -24,12 +62,18 @@ export const SavePreset = ({
             name="presetName"
             placeholder="Enter Preset Name"
             required
+            onChange={(e) => setPresetName(e.target.value)}
           />
         </div>
 
         <div className={styles.input_container}>
           <label htmlFor="presetType">Preset Type</label>
-          <select id="presetType" name="presetType" required>
+          <select
+            id="presetType"
+            name="presetType"
+            required
+            onChange={(e) => setPresetType(e.target.value)}
+          >
             <option value="lead">Lead</option>
             <option value="bass">Bass</option>
             <option value="pad">Pad</option>
@@ -48,6 +92,7 @@ export const SavePreset = ({
             name="author"
             placeholder="Enter Your Name"
             required
+            onChange={(e) => setAuthor(e.target.value)}
           />
         </div>
 
@@ -59,6 +104,7 @@ export const SavePreset = ({
             name="email"
             placeholder="Enter Your Email"
             required
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className={styles.input_container}>
@@ -66,8 +112,8 @@ export const SavePreset = ({
           <textarea
             id="description"
             name="description"
-            required
             placeholder="Enter Description"
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
         <div className={styles.buttons}>
