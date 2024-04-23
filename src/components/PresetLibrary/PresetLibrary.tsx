@@ -1,9 +1,8 @@
 import { usePresetLibraryStore } from "@/lib/store/presetLibraryStore";
 import { IconSearch } from "@tabler/icons-react";
+import { IconTrashX } from "@tabler/icons-react";
 import styles from "./PresetLibrary.module.css";
-import {
-  useSynthSettingsStore,
-} from "@/lib/store/settingsStore";
+import { useSynthSettingsStore } from "@/lib/store/settingsStore";
 import { useUiColorRGB } from "@/lib/store/uiStore";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -13,14 +12,21 @@ const types = ["all", "bass", "lead", "pad", "fx", "keys", "drums", "misc"];
 export const PresetLibrary = () => {
   const [input, setInput] = useState("");
   const [type, setType] = useState("all");
-  const presets = usePresetLibraryStore(useShallow((state) => state.presetLibrary));
-  const selectedPreset = usePresetLibraryStore(useShallow((state) => state.selectedPreset));
+  const [isDeleting, setIsDeleting] = useState(false);
+  const presets = usePresetLibraryStore(
+    useShallow((state) => state.presetLibrary)
+  );
+  const selectedPreset = usePresetLibraryStore(
+    useShallow((state) => state.selectedPreset)
+  );
   const colorRGB = useUiColorRGB();
 
   const filteredPresets = presets?.filter((p) => {
-    return (type === "all" || p.type.toLowerCase() === type.toLowerCase()) && p.name.toLowerCase().includes(input.toLowerCase());
+    return (
+      (type === "all" || p.type.toLowerCase() === type.toLowerCase()) &&
+      p.name.toLowerCase().includes(input.toLowerCase())
+    );
   });
-
 
   return (
     <div className="fixed mt-4 flex justify-center left-0 top-10 w-full pointer-events-none">
@@ -42,22 +48,28 @@ export const PresetLibrary = () => {
               onFocus={() => setType("all")}
               value={input}
             />
-            {input && <div 
-              style={{
-                cursor: "pointer",
-                paddingTop: "2px",
-              }}
-             onClick={() => setInput("")}
-            >Clear All</div>}
-            
+            {input && (
+              <div
+                style={{
+                  cursor: "pointer",
+                  paddingTop: "2px",
+                }}
+                onClick={() => setInput("")}
+              >
+                Clear All
+              </div>
+            )}
           </div>
         </div>
         <div className={styles.types}>
           {types.map((t) => (
-            <button key={t}
-            className={type === t ? styles.selected_type : styles.type}
-            onClick={() => setType(t)}
-            >{t}</button>
+            <button
+              key={t}
+              className={type === t ? styles.selected_type : styles.type}
+              onClick={() => setType(t)}
+            >
+              {t}
+            </button>
           ))}
         </div>
         <div className={styles.container}>
@@ -73,12 +85,13 @@ export const PresetLibrary = () => {
               {filteredPresets.map((p) => (
                 <tr
                   key={p.id}
-                  className={
-                    selectedPreset === p.id ? styles.selected : ""
-                  } 
+                  className={selectedPreset === p.id ? styles.selected : ""}
                   onClick={() => {
-                    useSynthSettingsStore.getState().setAllParamsFromPreset(p.settings);
+                    useSynthSettingsStore
+                      .getState()
+                      .setAllParamsFromPreset(p.settings);
                     usePresetLibraryStore.getState().setSelectedPreset(p.id);
+                    usePresetLibraryStore.getState().setCurrentPreset(p.settings);
                   }}
                 >
                   <td>{p.name}</td>
@@ -89,16 +102,28 @@ export const PresetLibrary = () => {
             </tbody>
           </table>
           <div className={styles.description}>
-            <h6>Description</h6>
-            <p>
-              Lorem Ipsum random textLorem Ipsum random textLorem Ipsum random
-              textLorem Ipsum random Lorem Ipsum random textLorem Ipsum random
-              textLorem Ipsum random textLorem Ipsum random textLorem Ipsum
-              random textLorem Ipsum random texttextLorem Ipsum random textLorem
-              Ipsum random textLorem Ipsum random text
-            </p>  
+            <div>
+              <h6>Description</h6>
+              <div>
+                {
+                  filteredPresets.find((p) => p.id === selectedPreset)
+                    ?.description
+                }
+              </div>
+            </div>
+            <div>
+              <hr />
+              <button onClick={() => setIsDeleting(!isDeleting)}>
+                <IconTrashX stroke={2} size={18} />
+              </button>
+            </div>
           </div>
         </div>
+        {isDeleting && (
+          <div>
+            <div>Enter an email you used creating this preset</div>
+          </div>
+        )}
       </div>
     </div>
   );
