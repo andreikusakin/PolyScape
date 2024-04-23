@@ -12,8 +12,10 @@ model Preset {
     id          String   @id @default(cuid())
     author      String
     email       String
-    presetName  String
-    discription String?
+    name        String
+    type        String
+    description String?
     createdAt   DateTime @default(now())
-    presetData  Json
+    settings    Json
+    default     Boolean  @default(false)
 }

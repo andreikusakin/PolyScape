@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { initPreset } from "./../src/lib/presets/init";
 
-const prisma = new PrismaClient();
 async function main() {
   const init = await prisma.preset.upsert({
     where: { id: "init" },
@@ -9,9 +8,10 @@ async function main() {
     create: {
       email: "donotdelete@polysynth.com",
       author: "Andrew Kusakin",
-      presetData: initPreset,
-      presetName: "init",
-      discription: "Initial preset",
+      settings: initPreset,
+      name: "init",
+      type: "misc",
+      description: "Initial preset",
     },
   });
 }
