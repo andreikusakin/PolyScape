@@ -24,6 +24,7 @@ type SynthSettingsStore = {
   masterVolume: Preset["masterVolume"];
   hold: Preset["hold"];
   aggregateSettings: () => Preset;
+  setAllParamsFromPreset: (preset: Preset) => void;
 };
 
 export const useSynthEngineStore = create((set) => ({
