@@ -517,4 +517,25 @@ export default class CustomPolySynth {
       this.currentDetuneOsc2[i] = coefficientOsc2 * randomValue;
     });
   }
+
+  dispose() {
+    this.voices.forEach((v) => {
+      v.dispose();
+    });
+    this.outputNode.dispose();
+    this.keyboard = null;
+    this.LFO1.forEach((lfo) => {
+      lfo.LFO.dispose();
+      lfo.gain?.dispose();
+    });
+    this.LFO2.forEach((lfo) => {
+      lfo.LFO.dispose();
+      lfo.gain?.dispose();
+    });
+    if (this.isMidiSupported) {
+      this.midiInput.removeListener("noteon");
+      this.midiInput.removeListener("noteoff");
+      this.midiInput.removeListener("controlchange");
+    }
+  }
 }

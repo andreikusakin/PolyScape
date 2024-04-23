@@ -176,4 +176,15 @@ export default class CustomEffects {
   }
 
   muteEffect(index: number) {}
+
+  dispose() {
+    this.inputNode.disconnect();
+    this.currentChain.forEach((effect) => {
+      effect.disconnect();
+      effect.dispose();
+    });
+    this.outputNode.disconnect();
+    this.inputNode.dispose();
+    this.outputNode.dispose();
+  }
 }
