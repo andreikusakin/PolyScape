@@ -4,6 +4,7 @@ import { useUiStore } from "@/lib/store/uiStore";
 import { useShallow } from "zustand/react/shallow";
 import { useState } from "react";
 import { useSynthSettingsStore } from "@/lib/store/settingsStore";
+import { usePresetLibraryStore } from "@/lib/store/presetLibraryStore";
 
 export const SavePreset = ({
   setIsOpen,
@@ -16,11 +17,20 @@ export const SavePreset = ({
   const [description, setDescription] = useState("");
   const [presetName, setPresetName] = useState("");
   const [presetType, setPresetType] = useState("lead");
+  const [message, setMessage] = useState("");
   const { aggregateSettings } = useSynthSettingsStore((state) => ({
     aggregateSettings: state.aggregateSettings,
   }));
 
+  const {  setSelectedPreset, presetLibrary, setCurrentPreset } = usePresetLibraryStore((state) => ({
+  
+    setSelectedPreset: state.setSelectedPreset,
+    presetLibrary: state.presetLibrary,
+    setCurrentPreset: state.setCurrentPreset,
+  }));
+
   async function savePreset(e: React.FormEvent) {
+    console.log("called")
     e.preventDefault();
     const data = {
       author,
@@ -30,20 +40,24 @@ export const SavePreset = ({
       type: presetType,
       settings: aggregateSettings(),
     };
-    console.log(data);
     const response = await fetch("/api/presets", {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    })
     if (response.ok) {
-      const newPreset = await response.json();
-      console.log(newPreset);
+      const data = await response.json();
+      
+     
+      presetLibrary.unshift(data.preset);
+      console.log(data.preset)
+      console.log(presetLibrary);
+      setSelectedPreset(data.preset.id);
       setIsOpen(false);
     } else {
-      console.error("Error saving preset");
+      setMessage("Error saving preset. Please try again.");
     }
   }
 
