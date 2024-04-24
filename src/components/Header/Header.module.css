@@ -23,7 +23,7 @@
 }
 
 .midi_selector {
-  background: rgb(26, 26, 26);
+  background: #ffffff0e;
   color: #ffffff92;
   /* width: 180px; */
   height: 26px;
@@ -52,7 +52,7 @@
 }
 
 .preset_name {
-  background: rgb(26, 26, 26);
+  background: #ffffff0e;
   color: #ffffff92;
   width: 180px;
   height: 26px;
