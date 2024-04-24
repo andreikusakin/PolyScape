@@ -1,6 +1,5 @@
 .wrapper {
   padding: 10px;
-  padding-top: 0;
   font-size: var(--main-synth-ui-font-size);
   letter-spacing: calc(var(--main-synth-ui-font-size) * 0.2);
   text-transform: uppercase;
