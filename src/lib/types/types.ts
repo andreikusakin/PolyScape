@@ -53,6 +53,13 @@ export type ColorMap = {
   [key: string]: number[];
 };
 
+export type LFO = {
+  type?: "sine" | "triangle" | "sawtooth" | "square";
+  rate?: Tone.Unit.Frequency;
+  sync?: boolean;
+  destinations: { target: LFOTarget; amount: number }[];
+};
+
 export type Preset = {
   osc1: {
     type: "sawtooth" | "sine" | "pulse" | "triangle";
@@ -98,18 +105,8 @@ export type Preset = {
   masterVolume: number;
   detune: number;
   hold: boolean;
-  LFO1?: {
-    type: "sine" | "triangle" | "sawtooth" | "square";
-    rate: Tone.Unit.Frequency;
-    sync: boolean;
-    destinations: { target: LFOTarget; amount: number }[];
-  };
-  LFO2?: {
-    type: "sine" | "triangle" | "sawtooth" | "square";
-    rate: Tone.Unit.Frequency;
-    sync: boolean;
-    destinations: { target: LFOTarget; amount: number }[];
-  };
+  LFO1: LFO;
+  LFO2: LFO;
   effects: Effect[];
 };
 

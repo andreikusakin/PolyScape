@@ -1,10 +1,8 @@
 import { initPreset } from "../presets/init";
 import { create } from "zustand";
-import { Preset } from "../types/types";
-import { colorMap } from "../utils/colorMap";
+import { LFO, LFOTarget, Preset } from "../types/types";
 import CustomPolySynth from "../engines/CustomPolySynth";
 import CustomEffects from "../engines/CustomEffects";
-import * as Tone from "tone/build/esm/index";
 
 type SynthSettingsStore = {
   preset: Preset;
@@ -27,16 +25,26 @@ type SynthSettingsStore = {
   setAllParamsFromPreset: (preset: Preset) => void;
 };
 
-export const useSynthEngineStore = create((set) => ({
-  synthEngine: undefined as CustomPolySynth | undefined,
-  setSynthEngine: (engine: CustomPolySynth) => {
+type SynthEngineStore = {
+  synthEngine: CustomPolySynth | undefined;
+  setSynthEngine: (engine: CustomPolySynth) => void;
+};
+
+type EffectsEngineStore = {
+  effectsEngine: CustomEffects | undefined;
+  setEffectsEngine: (engine: CustomEffects) => void;
+};
+
+export const useSynthEngineStore = create<SynthEngineStore>((set) => ({
+  synthEngine: undefined,
+  setSynthEngine: (engine) => {
     set({ synthEngine: engine });
   },
 }));
 
-export const useEffectsEngineStore = create((set) => ({
+export const useEffectsEngineStore = create<EffectsEngineStore>((set) => ({
   effectsEngine: undefined,
-  setEffectsEngine: (engine: CustomEffects) => {
+  setEffectsEngine: (engine) => {
     set({ effectsEngine: engine });
   },
 }));
@@ -74,8 +82,7 @@ export const useSynthSettingsStore = create<SynthSettingsStore>((set, get) => ({
       hold: get().hold,
       LFO1: get().lfo1,
       LFO2: get().lfo2,
-      effects: get().fxSettings,
-      
+      effects: get().fxSettings,   
     };
   },
 
@@ -135,32 +142,34 @@ export const useSynthSettingsStore = create<SynthSettingsStore>((set, get) => ({
   setPanSpread: (param: Preset["panSpread"]) => {
     set((state) => ({ panSpread: param }));
   },
-  setLFO1Params: (param: Preset["LFO1"]) => {
+  setLFO1Params: (param: LFO) => {
     set((state) => ({ lfo1: { ...state.lfo1, ...param } }));
   },
-  setLFO2Params: (param) => {
+  setLFO2Params: (param: LFO) => {
     set((state) => ({ lfo2: { ...state.lfo2, ...param } }));
   },
-  assignLFOToTarget: (target: string, currentValue?: number) => {
+  assignLFOToTarget: (target: LFOTarget, currentValue?: number) => {
     const lfoNumber = get().isSelectingLFO;
     const synthEngine = useSynthEngineStore.getState().synthEngine;
     const currentRate = lfoNumber === 1 ? get().lfo1.rate : get().lfo2.rate;
-    synthEngine.setLFO(target, lfoNumber, currentValue, currentRate);
+    if (lfoNumber) {
+      synthEngine?.setLFO(target, lfoNumber, currentValue, currentRate);
+    }
     lfoNumber === 1
       ? set((state) => ({
           lfo1: {
-            ...state.lfo1,
+            ...state.lfo1!,
             destinations: [
-              ...state.lfo1.destinations,
+              ...(state.lfo1?.destinations ?? []),
               { target: target, amount: 0.5 },
             ],
           },
         }))
       : set((state) => ({
           lfo2: {
-            ...state.lfo2,
+            ...state.lfo2!,
             destinations: [
-              ...state.lfo2.destinations,
+              ...(state.lfo2?.destinations ?? []),
               { target: target, amount: 0.5 },
             ],
           },
