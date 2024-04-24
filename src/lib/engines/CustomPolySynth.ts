@@ -21,8 +21,8 @@ export default class CustomPolySynth {
   notesPressed: number[] = [];
   // isMidiSupported: boolean = false;
   // midiInputIndex = 0;
-  midiInputs;
-  midiInput;
+  // midiInputs;
+  // midiInput;
   osc1Fine: number;
   osc1Coarse: number;
   osc2Fine: number;
@@ -74,7 +74,6 @@ export default class CustomPolySynth {
 
   private loadOsccillatorPreset(preset: Preset, voice: CustomVoice) {
     // Load Oscillator 1 from preset
-
     voice.oscillator.type = preset.osc1.type;
     voice.oscillator.detune.value =
       preset.osc1.detune + preset.osc1.transpose * 100;
@@ -83,7 +82,6 @@ export default class CustomPolySynth {
     }
     voice.oscillator.volume.value = preset.osc1.volume;
     // Load Oscillator 2 from preset
-
     voice.oscillator2.type = preset.osc2.type;
     voice.oscillator2.detune.value =
       preset.osc2.detune + preset.osc2.transpose * 100;
@@ -182,23 +180,23 @@ export default class CustomPolySynth {
     });
   }
 
-  private setupMidi() {
-    WebMidi.enable((err) => {
-      if (err) {
-        console.error("WebMidi could not be enabled.", err);
-      } else {
-        console.log(WebMidi.inputs);
-        this.isMidiSupported = true;
-        if (WebMidi.inputs.length < 1) {
-          console.log("No MIDI devices detected");
-          return;
-        }
-        this.midiInputs = WebMidi.inputs;
-        this.midiInput = WebMidi.inputs[this.midiInputIndex];
-        this.midiListener(this.midiInput);
-      }
-    });
-  }
+  // private setupMidi() {
+  //   WebMidi.enable((err) => {
+  //     if (err) {
+  //       console.error("WebMidi could not be enabled.", err);
+  //     } else {
+  //       console.log(WebMidi.inputs);
+  //       this.isMidiSupported = true;
+  //       if (WebMidi.inputs.length < 1) {
+  //         console.log("No MIDI devices detected");
+  //         return;
+  //       }
+  //       this.midiInputs = WebMidi.inputs;
+  //       this.midiInput = WebMidi.inputs[this.midiInputIndex];
+  //       this.midiListener(this.midiInput);
+  //     }
+  //   });
+  // }
 
   muteKeyboard() {
     this.keyboard.down(() => {});
@@ -216,26 +214,26 @@ export default class CustomPolySynth {
     });
   }
 
-  setMidiInputByIndex(index: number) {
-    this.midiInputIndex = index;
-    this.midiInput.destroy();
-    this.midiInput = WebMidi.inputs[index];
-    this.midiListener(this.midiInput);
-  }
+  // setMidiInputByIndex(index: number) {
+  //   this.midiInputIndex = index;
+  //   this.midiInput.destroy();
+  //   this.midiInput = WebMidi.inputs[index];
+  //   this.midiListener(this.midiInput);
+  // }
 
-  midiListener(input) {
-    input.addListener("noteon", "all", (e) => {
-      console.log(e);
-      this.triggerAttack(e.note.number, Tone.now(), e.velocity);
-    });
-    input.addListener("noteoff", "all", (e) => {
-      this.triggerRelease(e.note.number);
-    });
-  }
+  // midiListener(input) {
+  //   input.addListener("noteon", "all", (e) => {
+  //     console.log(e);
+  //     this.triggerAttack(e.note.number, Tone.now(), e.velocity);
+  //   });
+  //   input.addListener("noteoff", "all", (e) => {
+  //     this.triggerRelease(e.note.number);
+  //   });
+  // }
 
-  getMidiInputs() {
-    return WebMidi.inputs;
-  }
+  // getMidiInputs() {
+  //   return WebMidi.inputs;
+  // }
 
   triggerAttack(note: number, time: Tone.Unit.Time, velocity: number) {
     this.notesPressed.push(note);
