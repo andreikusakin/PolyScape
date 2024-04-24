@@ -252,7 +252,7 @@ export default class CustomPolySynth {
         this.lastVoiceUsedIndex = 0;
       }
 
-      while (this.activeVoices.has(voice.frequency.value)) {
+      while (this.activeVoices.has(voice.frequency.value as number)) {
         this.lastVoiceUsedIndex =
           (this.lastVoiceUsedIndex + 1) % this.voices.length;
         voice = this.voices[this.lastVoiceUsedIndex];
@@ -546,10 +546,10 @@ export default class CustomPolySynth {
       lfo.LFO.dispose();
       lfo.gain?.dispose();
     });
-    if (this.isMidiSupported) {
-      this.midiInput.removeListener("noteon");
-      this.midiInput.removeListener("noteoff");
-      this.midiInput.removeListener("controlchange");
-    }
+    // if (this.isMidiSupported) {
+    //   this.midiInput.removeListener("noteon");
+    //   this.midiInput.removeListener("noteoff");
+    //   this.midiInput.removeListener("controlchange");
+    // }
   }
 }
