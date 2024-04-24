@@ -35,7 +35,7 @@ export async function POST(request) {
           settings: data.settings,
         },
       });
-      return new NextResponse(JSON.stringify({ message: "Successfully saved preset!"}), {
+      return new NextResponse(JSON.stringify({ preset: newPreset }), {
         headers: { 'Content-Type': 'application/json' },
         status: 201,
       });
@@ -53,7 +53,6 @@ export async function POST(request) {
       const preset = await prisma.preset.findUnique({
         where: {
           id: data.id,
-          name: data.name,
         },
         select: {
           email: true 
@@ -80,7 +79,7 @@ export async function POST(request) {
         },
       });
   
-      return new NextResponse(JSON.stringify({ message: "Successfully deleted preset!" }), {
+      return new NextResponse(JSON.stringify({ message: "Successfully deleted preset." }), {
         headers: { 'Content-Type': 'application/json' },
         status: 200,
       });
