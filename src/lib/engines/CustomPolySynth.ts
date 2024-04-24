@@ -200,6 +200,22 @@ export default class CustomPolySynth {
     });
   }
 
+  muteKeyboard() {
+    this.keyboard.down(() => {});
+    this.keyboard.up(() => {});
+  }
+
+  unMuteKeyboard() {
+    this.keyboard.down((key: any) => {
+      const velocity = key.velocity / 127;
+      this.triggerAttack(key.note, Tone.now(), velocity);
+    });
+
+    this.keyboard.up((key: any) => {
+      this.triggerRelease(key.note);
+    });
+  }
+
   setMidiInputByIndex(index: number) {
     this.midiInputIndex = index;
     this.midiInput.destroy();
