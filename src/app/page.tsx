@@ -1,7 +1,5 @@
 import PolySynth from "@/components/PolySynth/PolySynth";
 import { Visualization } from "@/components/Visualization";
-import { initPreset } from "@/lib/presets/init";
-import prisma from "@/lib/prisma";
 import { Suspense } from "react";
 
 // async function getPresets() {
@@ -16,7 +14,7 @@ export default async function Home() {
     <main>
       {/* <div>{presets.map((p) => p.presetName)}</div> */}
       <Suspense fallback={<div>Loading...</div>}>
-        {/* <Visualization /> */}
+        <Visualization />
         <PolySynth />
         {/* {names.map((name) => {
           return <div key={name.id}>{name.name}</div>
