@@ -159,6 +159,7 @@ export type LibraryPreset = {
   description: string;
   author: string;
   settings: Preset;
+  default: boolean;
 };
 
 export type PresetLibraryStore = {
