@@ -2,7 +2,7 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    padding: 30px;
+    padding: 10px;
     width: 100%;
     display: flex;
     min-height: 200px;
@@ -11,7 +11,6 @@
 .container {
     display: flex;
     justify-content: space-between;
-    
     height: 100%;
     position: relative;
     align-items: center;
@@ -26,7 +25,6 @@
 }
 
 .add_effect {
-    
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -40,6 +38,7 @@
     padding: var(--section-padding);
     color: #ffffffad;
     margin: var(--section-padding) 0;
+    width: 120px;
 }
 
 .add_effect:hover {

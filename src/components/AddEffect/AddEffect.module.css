@@ -1,6 +1,6 @@
 .container {
-  padding: var(--section-padding);
-  overflow-x: scroll;
+  display: flex;
+  justify-content: space-between;
 }
 
 .effect_container {
@@ -9,6 +9,8 @@
   gap: 10px;
   min-height: 200px;
   align-items: center;
+  overflow-x: scroll;
+  padding: var(--section-padding);
 }
 
 .effect {
@@ -33,4 +35,27 @@
 
 .effect:hover {
   background-color: #ffffff39;
+}
+
+.close {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-left: 1px solid #bebebe37;
+  cursor: pointer;
+  letter-spacing: 1px;
+  height: 200px;
+  justify-content: center;
+  padding: var(--section-padding);
+  color: #ffffffad;
+  margin: var(--section-padding) 0;
+  width: 120px;
+}
+
+.close:hover {
+  color: #ffffffdd;
+  text-shadow: 0 0 10px #ffffffbc;
+  border-left: 1px solid #bebebe6f;
 }

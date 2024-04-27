@@ -1,7 +1,7 @@
 import { FxWrapper } from "../FxWrapper/FxWrapper";
 import Knob from "../Knob/Knob";
 import styles from "./Reverb.module.css";
-import { fxProps } from "@/lib/types/types";
+import { fxProps, ReverbSettings } from "@/lib/types/types";
 import * as Tone from "tone/build/esm/index";
 import { Cube } from "./Cube/Cube";
 
@@ -18,7 +18,7 @@ export const Reverb = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.Reverb).set({ wet: value / 100 });
   };
   const updateDecay = (value: number) => {
@@ -28,7 +28,7 @@ export const Reverb = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.Reverb).set({ decay: value });
   };
   const updatePreDelay = (value: number) => {
@@ -38,7 +38,7 @@ export const Reverb = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.Reverb).set({ preDelay: value });
   };
 
@@ -55,7 +55,7 @@ export const Reverb = ({
     <FxWrapper
       effectName="reverb"
       deleteFunction={handleDelete}
-      effect={engine.currentChain[index]}
+      effect={engine?.currentChain[index]}
       currentWet={settings[index].settings.wet}
     >
       <div className={styles.grid}>
@@ -81,7 +81,7 @@ export const Reverb = ({
           maxValue={10}
           step={0.001}
           unit="s"
-          currentValue={settings[index].settings.decay || 2}
+          currentValue={(settings[index].settings as ReverbSettings).decay || 2}
           label="decay"
           radius={24}
           interactive
@@ -92,7 +92,7 @@ export const Reverb = ({
           maxValue={1}
           step={0.001}
           unit="s"
-          currentValue={settings[index].settings.preDelay || 0.01}
+          currentValue={(settings[index].settings as ReverbSettings).preDelay || 0.01}
           label="predelay"
           radius={24}
           interactive

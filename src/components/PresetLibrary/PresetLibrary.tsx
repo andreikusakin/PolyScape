@@ -68,11 +68,13 @@ export const PresetLibrary = () => {
       },
     });
     if (response.status === 200) {
-      setCurrentPreset(presetLibrary.find((p) => p.default === true).settings);
-      setAllParamsFromPreset(
-        presetLibrary.find((p) => p.default === true).settings
-      );
-      setSelectedPreset(presetLibrary.find((p) => p.default === true).id);
+      const preset = presetLibrary.find((p) => p.default === true);
+      if (preset) {
+        setCurrentPreset(preset.settings);
+        setAllParamsFromPreset(preset.settings);
+        setSelectedPreset(preset.id);
+      }
+
       deletePresetFromLibrary(selectedPreset);
       setMessage("Preset deleted successfully");
       setInterval(() => setIsDeleting(false), 2000);

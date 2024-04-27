@@ -31,7 +31,7 @@ export const FxWrapper = ({
     } else {
       audioEffect.set({ wet: currentWet / 100 });
     }
-  }, [isMuted]);
+  }, [currentWet, effect, isMuted]);
   return (
     <div className="relative">
       <div

@@ -5,6 +5,7 @@ import { DistortionIcon } from "../Distortion/DistortionIcon/DistortionIcon";
 import { Rackets } from "../PingPongDelay/Rackets/Rackets";
 import { Cube } from "../Reverb/Cube/Cube";
 import styles from "./AddEffect.module.css";
+import { IconX } from "@tabler/icons-react";
 
 type AddEffectProps = {
   addNewEffect: (type: string) => void;
@@ -58,6 +59,14 @@ export const AddEffect = ({
             <div className={styles.effect_name}>{effect.name}</div>
           </div>
         ))}
+        
+      </div>
+      <div
+        onClick={() => setIsAddEffectOpen(false)}
+        className={styles.close}
+      >
+        <IconX stroke={1} size={40} />
+        <span>close</span>
       </div>
     </div>
   );
