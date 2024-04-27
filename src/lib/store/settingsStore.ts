@@ -39,7 +39,6 @@ type SynthSettingsStore = {
   setMasterVolume: (value: number) => void;
   updateHold: () => void;
   updateUnison: () => void;
-  
 };
 
 type SynthEngineStore = {
@@ -99,7 +98,7 @@ export const useSynthSettingsStore = create<SynthSettingsStore>((set, get) => ({
       hold: get().hold,
       LFO1: get().lfo1,
       LFO2: get().lfo2,
-      effects: get().fxSettings,   
+      effects: get().fxSettings,
     };
   },
 
@@ -165,7 +164,7 @@ export const useSynthSettingsStore = create<SynthSettingsStore>((set, get) => ({
   setLFO2Params: (param: LFO) => {
     set((state) => ({ lfo2: { ...state.lfo2, ...param } }));
   },
-  assignLFOToTarget: (target: LFOTarget, currentValue?: number ) => {
+  assignLFOToTarget: (target: LFOTarget, currentValue?: number) => {
     const lfoNumber = get().isSelectingLFO;
     const synthEngine = useSynthEngineStore.getState().synthEngine;
     const currentRate = lfoNumber === 1 ? get().lfo1.rate : get().lfo2.rate;
