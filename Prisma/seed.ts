@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { initPreset } from "./../src/lib/presets/init";
+import { initPreset } from "../src/lib/presets/init";
 
 async function main() {
   const init = await prisma.preset.upsert({
