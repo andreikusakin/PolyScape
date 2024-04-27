@@ -14,7 +14,6 @@ type OscillatorProps = {
 };
 
 const Oscillator = ({ oscNumber }: OscillatorProps) => {
-  console.log("RERENDER OSCILLATOR");
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const { settings, updateSettings } = useSynthSettingsStore(
     useShallow((state) => ({

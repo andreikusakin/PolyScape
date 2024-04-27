@@ -9,13 +9,13 @@ import {
 import { useShallow } from "zustand/react/shallow";
 
 export default function Noise() {
-  console.log("RERENDER NOISE")
   const engine = useSynthEngineStore((state) => state.synthEngine);
-  const { settings, updateSettings } = useSynthSettingsStore(useShallow((state) => ({
-    settings: state.noise,
-    updateSettings: state.setNoiseParams,
-  })));
-  console.log(settings)
+  const { settings, updateSettings } = useSynthSettingsStore(
+    useShallow((state) => ({
+      settings: state.noise,
+      updateSettings: state.setNoiseParams,
+    }))
+  );
   const colorValue =
     settings.type === "white"
       ? "#FFFFFF"
@@ -24,14 +24,14 @@ export default function Noise() {
       : "#FF543D";
 
   const updateType = (type: "white" | "pink" | "brown") => {
-    updateSettings({...settings, type: type });
+    updateSettings({ ...settings, type: type });
     engine?.voices.forEach((voice) => {
       voice.noise.type = type;
     });
   };
 
   const updateVolume = (value: number) => {
-    updateSettings({...settings, volume: value });
+    updateSettings({ ...settings, volume: value });
     engine?.LFO1.find((lfo) => lfo.target === "noise volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
@@ -83,7 +83,6 @@ export default function Noise() {
           radius={24}
           startingPoint={"middle"}
           interactive={true}
-       
         />
       </div>
     </SectionWrapper>

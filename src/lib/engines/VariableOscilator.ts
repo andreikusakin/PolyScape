@@ -5,11 +5,11 @@ interface WaveTable {
   imag: Float32Array;
 }
 
-export interface VariableOscilatorOptions extends Tone.ToneOscillatorNodeOptions { 
+export interface VariableOscilatorOptions
+  extends Tone.ToneOscillatorNodeOptions {
   morph: number;
   dutyCycle: number;
 }
-
 
 export class VariableOscillator extends Tone.ToneOscillatorNode {
   private periodicWaveSize: number = this.context.sampleRate / 4;
@@ -21,7 +21,7 @@ export class VariableOscillator extends Tone.ToneOscillatorNode {
 
   morph: number = 0;
 
-  constructor(options?: Partial<VariableOscilatorOptions>)
+  constructor(options?: Partial<VariableOscilatorOptions>);
   constructor() {
     super();
     this.morph = 0;
@@ -92,7 +92,6 @@ export class VariableOscillator extends Tone.ToneOscillatorNode {
 
   setDutyCycle(value: number) {
     this.dutyCycle = value;
-    console.log("Duty Cycle: ", this.dutyCycle);
     this.pulseCoeffs = this.createPulse(this.dutyCycle);
     this.setWaveform(this.morph);
   }
@@ -123,22 +122,21 @@ export class VariableOscillator extends Tone.ToneOscillatorNode {
     this.setPeriodicWave(wave);
   }
 
-//   start(time?: Tone.Unit.Time) {
-//     const computedTime = this.toSeconds(time);
-//     this.log("start", computedTime);
-//     this._startGain(computedTime);
-//     this._oscillator.start(computedTime);
-//     return this;
-//   }
+  //   start(time?: Tone.Unit.Time) {
+  //     const computedTime = this.toSeconds(time);
+  //     this.log("start", computedTime);
+  //     this._startGain(computedTime);
+  //     this._oscillator.start(computedTime);
+  //     return this;
+  //   }
 
-//   stop(time?: Tone.Unit.Time) {
-//     const computedTime = this.toSeconds(time);
-//     if (this.state === 'started') {
-//         console.log('stop', computedTime);
-//         this._stopSource(computedTime);
-//     }
+  //   stop(time?: Tone.Unit.Time) {
+  //     const computedTime = this.toSeconds(time);
+  //     if (this.state === 'started') {
+  //         console.log('stop', computedTime);
+  //         this._stopSource(computedTime);
+  //     }
 
-//     return this;
-// }
-
+  //     return this;
+  // }
 }

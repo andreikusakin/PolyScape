@@ -160,19 +160,15 @@ export default class CustomEffects {
         break;
     }
     this.inputNode.disconnect();
-
     this.inputNode.chain(...this.currentChain, this.outputNode);
-    console.log(this.currentChain);
   }
 
   deleteEffect(index: number) {
-    console.log("called delete effect");
     this.currentChain[index].disconnect();
     this.currentChain[index].dispose();
     this.currentChain.splice(index, 1);
     this.inputNode.disconnect();
     this.inputNode.chain(...this.currentChain, this.outputNode);
-    console.log(this.currentChain);
   }
 
   muteEffect(index: number) {}

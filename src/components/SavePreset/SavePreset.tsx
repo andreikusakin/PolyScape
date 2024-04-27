@@ -20,15 +20,14 @@ export const SavePreset = ({
     aggregateSettings: state.aggregateSettings,
   }));
 
-  const {  setSelectedPreset, presetLibrary, setCurrentPreset } = usePresetLibraryStore((state) => ({
-  
-    setSelectedPreset: state.setSelectedPreset,
-    presetLibrary: state.presetLibrary,
-    setCurrentPreset: state.setCurrentPreset,
-  }));
+  const { setSelectedPreset, presetLibrary, setCurrentPreset } =
+    usePresetLibraryStore((state) => ({
+      setSelectedPreset: state.setSelectedPreset,
+      presetLibrary: state.presetLibrary,
+      setCurrentPreset: state.setCurrentPreset,
+    }));
 
   async function savePreset(e: React.FormEvent) {
-    console.log("called")
     e.preventDefault();
     const data = {
       author,
@@ -44,14 +43,12 @@ export const SavePreset = ({
       headers: {
         "Content-Type": "application/json",
       },
-    })
+    });
     if (response.ok) {
       const data = await response.json();
-      
-     
+
       presetLibrary.unshift(data.preset);
-      console.log(data.preset)
-      console.log(presetLibrary);
+
       setSelectedPreset(data.preset.id);
       setIsOpen(false);
     } else {

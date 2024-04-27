@@ -475,7 +475,7 @@ export default class CustomPolySynth {
   setPanSpread(value: number) {
     this.panSpread = value;
     this.voices.forEach((v, i) => {
-      v.pan.value = (value * (i % 2 === 0 ? -1 : 1)) * Math.random() / 100;
+      v.pan.value = (value * (i % 2 === 0 ? -1 : 1) * Math.random()) / 100;
     });
   }
 
@@ -493,8 +493,6 @@ export default class CustomPolySynth {
       });
       this.osc2Fine = value;
     }
-    console.log(this.currentDetuneOsc1);
-    console.log(this.voices[0].oscillator.detune.value);
   }
 
   setCoarse(value: number, osc: 1 | 2) {

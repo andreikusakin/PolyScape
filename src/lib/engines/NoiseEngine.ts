@@ -50,7 +50,6 @@ export default class NoiseEngine {
     this.noise.connect(this.envelope);
     this.envelope.connect(this.filter);
     this.filterEnvelope.connect(this.filter.frequency);
-    console.log(this.noise.get());
   }
 
   start() {

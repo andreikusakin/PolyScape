@@ -1,7 +1,10 @@
 import { usePresetLibraryStore } from "@/lib/store/presetLibraryStore";
 import { IconSearch, IconTrashX, IconShare3 } from "@tabler/icons-react";
 import styles from "./PresetLibrary.module.css";
-import { useSynthEngineStore, useSynthSettingsStore } from "@/lib/store/settingsStore";
+import {
+  useSynthEngineStore,
+  useSynthSettingsStore,
+} from "@/lib/store/settingsStore";
 import { useUiColorRGB } from "@/lib/store/uiStore";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -63,7 +66,7 @@ export const PresetLibrary = () => {
       headers: {
         "Content-Type": "application/json",
       },
-    })
+    });
     if (response.status === 200) {
       setCurrentPreset(presetLibrary.find((p) => p.default === true).settings);
       setAllParamsFromPreset(
@@ -96,7 +99,6 @@ export const PresetLibrary = () => {
     }
     const url = new URL("/", window.location.origin);
     url.searchParams.append("preset", selectedPreset);
-    console.log(url);
     setShareUrl(url.href);
     setIsSharing(!isSharing);
     setIsDeleting(false);
@@ -125,12 +127,12 @@ export const PresetLibrary = () => {
               placeholder="Search Presets"
               className={styles.search_input}
               onChange={(e) => setInput(e.target.value)}
-              onFocus={() => {setType("all")
-                polySynth?.muteKeyboard()
+              onFocus={() => {
+                setType("all");
+                polySynth?.muteKeyboard();
               }}
               onBlur={() => setInput("")}
               value={input}
-            
             />
             {input && (
               <div

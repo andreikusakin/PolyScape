@@ -70,9 +70,7 @@ const PolySynth = () => {
   async function fetchPresets() {
     const response = await fetch("/api/presets", { method: "GET" });
     const data = await response.json();
-    console.log(data);
     setPresetLibrary(data);
-    console.log(presetLibrary);
   }
 
   useEffect(() => {
@@ -80,13 +78,13 @@ const PolySynth = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Updated presetLibrary:", presetLibrary);
-    if (presetLibrary && presetLibrary.length > 0) {
-      setCurrentPreset(presetLibrary.find((p) => p.default === true).settings);
-      setAllParamsFromPreset(presetLibrary.find((p) => p.default === true).settings);
-      setSelectedPreset(presetLibrary.find((p) => p.default === true).id);
+    const defaultPreset = presetLibrary.find((p) => p.default === true);
+    if (defaultPreset) {
+      setCurrentPreset(defaultPreset.settings);
+      setAllParamsFromPreset(defaultPreset.settings);
+      setSelectedPreset(defaultPreset.id);
     }
-  }, [presetLibrary]);
+}, [presetLibrary]);
 
   // initialize synth
   useEffect(() => {
@@ -101,8 +99,6 @@ const PolySynth = () => {
         effectsRef.current.dispose();
       }
       // setEffects(undefined);
-
-      console.log(currentPreset);
       polySynthRef.current = new CustomPolySynth(currentPreset);
       effectsRef.current = new CustomEffects(
         polySynthRef.current.outputNode,
@@ -113,7 +109,6 @@ const PolySynth = () => {
         effectsRef.current.outputNode,
         Tone.Destination
       );
-      console.log(polySynthRef.current, effectsRef.current);
       setPolySynth(polySynthRef.current);
       setEffects(effectsRef.current);
       setEnginesReady(true);
