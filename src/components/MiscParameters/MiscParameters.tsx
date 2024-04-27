@@ -15,7 +15,6 @@ import { useShallow } from "zustand/react/shallow";
 // HOLD
 
 export const MiscParameters = () => {
-  console.log("RERENDER MISC PARAMETERS");
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const colorRGB = useUiColorRGB();
   const { panSpread, unison, updateUnison, setPanSpread, detune, setDetune, hold, updateHold } =

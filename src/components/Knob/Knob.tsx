@@ -83,7 +83,6 @@ const Knob: React.FC<KnobProps> = ({
   exponent,
   sync,
 }) => {
-  console.log("Knob Rerender");
   if (sync) {
     step = 1;
     minValue = 0;

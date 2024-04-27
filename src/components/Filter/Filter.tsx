@@ -10,7 +10,6 @@ import { useShallow } from "zustand/react/shallow";
 
 
 export const Filter = () => {
-  console.log("RERENDER FILTER")
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const { settings, updateSettings, envSettings, updateEnvSettings } = useSynthSettingsStore(useShallow((state) => ({
     settings: state.filter,

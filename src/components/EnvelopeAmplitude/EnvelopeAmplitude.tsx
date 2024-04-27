@@ -6,7 +6,6 @@ import { useShallow } from "zustand/react/shallow";
 
 
 export const EnvelopeAmplitude = () => {
-  console.log("RERENDER ENVELOPE AMPLITUDE")
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const { settings, updateSettings } = useSynthSettingsStore(useShallow((state) => ({
     settings: state.envelopeAmplitude,

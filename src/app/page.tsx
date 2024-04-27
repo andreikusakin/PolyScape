@@ -12,7 +12,6 @@ import { Suspense } from "react";
 
 export default async function Home() {
   // const presets = await getPresets();
-  // console.log(presets)
   return (
     <main>
       {/* <div>{presets.map((p) => p.presetName)}</div> */}

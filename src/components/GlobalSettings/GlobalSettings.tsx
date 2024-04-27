@@ -21,7 +21,6 @@ export const GlobalSettings = () => {
     setHsva({ ...hsva, ...hsvaColor });
     const rgba = hsvaToRgba(hsva);
     const rgb = rgbaToRgb(rgba);
-    console.log(rgb);
     setCustomColor([rgb.r, rgb.g, rgb.b]);
     setIsCustomColor(true);
   };

@@ -15,7 +15,6 @@ type LFOProps = {
 };
 
 export const LFO = ({ lfoNumber }: LFOProps) => {
-  console.log("RERENDER LFO");
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const { settings, updateSettings, setIsSelecting } = useSynthSettingsStore(
     useShallow(

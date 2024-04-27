@@ -33,7 +33,6 @@ export const Effects = () => {
     engine?.addEffect(type);
   };
   const [isAddEffectOpen, setIsAddEffectOpen] = useState(false);
-  console.log("RERENDER EFFECTS");
   return (
     <div className={styles.wrapper}>
       <SectionWrapper>

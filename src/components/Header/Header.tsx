@@ -78,7 +78,7 @@ export const Header = () => {
   //     if (WebMidi.inputs.length > 0) {
   //       setCurrentMidiDevice(WebMidi.inputs[engine?.midiInputIndex]?.name);
   //     }
-  //     console.log(WebMidi.enabled);
+
   //   }
   //   setIsMidiSupported(engine?.isMidiSupported);
   // }, []);
