@@ -1,8 +1,8 @@
-import { initPreset } from "../presets/init";
 import { create } from "zustand";
 import { LFO, LFOTarget, Preset } from "../types/types";
 import CustomPolySynth from "../engines/CustomPolySynth";
 import CustomEffects from "../engines/CustomEffects";
+import { initPreset } from "@/lib/presets/init";
 
 type SynthSettingsStore = {
   preset: Preset;
