@@ -13,9 +13,10 @@ export async function GET() {
       settings: true,
       default: true,
     },
-    orderBy: {
-      default: 'desc' 
-    }
+    orderBy: [
+      { default: 'desc' },
+      { name: 'asc' } 
+    ]
   });
   return new NextResponse(JSON.stringify(presets), {
     headers: { 'Content-Type': 'application/json' },
