@@ -22,7 +22,7 @@
     "@use-gesture/react": "^10.3.0",
     "audiokeys": "^0.1.1",
     "framer-motion": "^11.0.5",
-    "next": "^14.2.2",
+    "next": "^14.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "three": "^0.161.0",
