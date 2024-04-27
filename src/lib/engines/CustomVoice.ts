@@ -1,11 +1,6 @@
 import * as Tone from "tone/build/esm/index";
-import {
-  VariableOscillator,
-  VariableOscilatorOptions,
-} from "./VariableOscilator";
 import { Monophonic } from "tone/build/esm/instrument/Monophonic";
 import { RecursivePartial } from "tone/build/esm/core/util/Interface";
-import { on } from "events";
 
 export interface CustomVoiceOptions extends Tone.MonoSynthOptions {
   oscillator2: Tone.OmniOscillatorOptions;

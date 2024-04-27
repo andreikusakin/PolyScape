@@ -8,7 +8,6 @@ import { useUiColorRGB } from "@/lib/store/uiStore";
 import Knob from "../Knob/Knob";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import styles from "./MiscParameters.module.css";
-import shallow from "zustand/shallow";
 import { useShallow } from "zustand/react/shallow";
 
 // PanSpread
@@ -33,22 +32,22 @@ export const MiscParameters = () => {
       }))
     );
   const updatePanSpread = (value: number) => {
-    engine.setPanSpread(value);
+    engine?.setPanSpread(value);
     setPanSpread(value);
   };
 
   const handleUnison = () => {
     updateUnison();
-    engine.updatetUnison();
+    engine?.updatetUnison();
   };
 
   const handleHold = () => {
     updateHold();
-    engine.updateHold();
+    engine?.updateHold();
   }
 
   const updateDetune = (value: number) => {
-    engine.setDetune(value);
+    engine?.setDetune(value);
     setDetune(value);
   };
   return (

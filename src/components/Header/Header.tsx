@@ -1,20 +1,15 @@
-import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import styles from "./Header.module.css";
 import { WebMidi } from "webmidi";
-import { use, useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import { UiSettings } from "@/lib/types/types";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useSynthEngineStore } from "@/lib/store/settingsStore";
 import { PresetLibrary } from "../PresetLibrary/PresetLibrary";
-import Knob from "../Knob/Knob";
 import { IconDownload } from "@tabler/icons-react";
 import { Modal } from "../Modal/Modal";
 import { SavePreset } from "../SavePreset/SavePreset";
 import { useShallow } from "zustand/react/shallow";
-import { IconSettings } from "@tabler/icons-react";
 import { IconAdjustments } from "@tabler/icons-react";
 import { GlobalSettings } from "../GlobalSettings/GlobalSettings";
 import { usePresetLibraryStore } from "@/lib/store/presetLibraryStore";
@@ -30,13 +25,17 @@ export const Header = () => {
   const [isMidiSupported, setIsMidiSupported] = useState<boolean>(false);
   const [isSelectingMidi, setIsSelectingMidi] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
-  const [isPresetLibraryOpen, setIsPresetLibraryOpen] = useState<boolean>(false);
+  const [isPresetLibraryOpen, setIsPresetLibraryOpen] =
+    useState<boolean>(false);
   const [isSavePresetOpen, setIsSavePresetOpen] = useState<boolean>(false);
 
-  const presets = usePresetLibraryStore(useShallow((state) => state.presetLibrary));
-  const selectedPreset = usePresetLibraryStore(useShallow((state) => state.selectedPreset));
+  const presets = usePresetLibraryStore(
+    useShallow((state) => state.presetLibrary)
+  );
+  const selectedPreset = usePresetLibraryStore(
+    useShallow((state) => state.selectedPreset)
+  );
 
-  
   const {
     isKeyboardOpen,
     isFxOpen,
@@ -73,16 +72,16 @@ export const Header = () => {
   //   });
   // };
 
-  useEffect(() => {
-    if (WebMidi.enabled) {
-      setMidiInputs(WebMidi.inputs);
-      if (WebMidi.inputs.length > 0) {
-        setCurrentMidiDevice(WebMidi.inputs[engine?.midiInputIndex]?.name);
-      }
-      console.log(WebMidi.enabled);
-    }
-    setIsMidiSupported(engine?.isMidiSupported);
-  }, []);
+  // useEffect(() => {
+  //   if (WebMidi.enabled) {
+  //     setMidiInputs(WebMidi.inputs);
+  //     if (WebMidi.inputs.length > 0) {
+  //       setCurrentMidiDevice(WebMidi.inputs[engine?.midiInputIndex]?.name);
+  //     }
+  //     console.log(WebMidi.enabled);
+  //   }
+  //   setIsMidiSupported(engine?.isMidiSupported);
+  // }, []);
 
   const hideUiAnimation = {
     width: isUiVisible ? "100%" : "fit-content",
@@ -127,7 +126,7 @@ export const Header = () => {
                         {midiInputs.map((input, i) => (
                           <div
                             key={i}
-                            onClick={() => engine?.setMidiInputByIndex(i)}
+                            // onClick={() => engine?.setMidiInputByIndex(i)}
                           >
                             {input.name}
                           </div>
@@ -143,7 +142,10 @@ export const Header = () => {
                   onClick={() => setIsPresetLibraryOpen(!isPresetLibraryOpen)}
                   className={styles.preset_name}
                 >
-                  <span>{presets && presets.find((p) => p.id === selectedPreset).name}</span>
+                  <span>
+                    {presets &&
+                      presets.find((p) => p.id === selectedPreset)?.name}
+                  </span>
                 </div>
                 <div
                   onClick={() => setIsSavePresetOpen(!isSavePresetOpen)}
@@ -219,10 +221,7 @@ export const Header = () => {
 
       {isSavePresetOpen && (
         <Modal>
-          <SavePreset 
-          isOpen={isSavePresetOpen}
-          setIsOpen={setIsSavePresetOpen}
-          />
+          <SavePreset setIsOpen={setIsSavePresetOpen} />
         </Modal>
       )}
     </motion.header>

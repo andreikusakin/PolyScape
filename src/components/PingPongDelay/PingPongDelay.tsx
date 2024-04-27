@@ -3,7 +3,7 @@ import Knob from "../Knob/Knob";
 import styles from "./PingPongDelay.module.css";
 import localFont from "next/font/local";
 import { Rackets } from "./Rackets/Rackets";
-import { fxProps } from "@/lib/types/types";
+import { fxProps, PingPongDelaySettings } from "@/lib/types/types";
 import * as Tone from "tone/build/esm/index";
 
 const micro5 = localFont({ src: "./Micro5-Regular.ttf" });
@@ -29,7 +29,7 @@ export const PingPongDelay = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.PingPongDelay).set({
         wet: value / 100,
       });
@@ -41,7 +41,7 @@ export const PingPongDelay = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.PingPongDelay).set({
         delayTime: value,
       });
@@ -54,7 +54,7 @@ export const PingPongDelay = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.PingPongDelay).set({
         feedback: value,
       });
@@ -90,7 +90,7 @@ export const PingPongDelay = ({
           minValue={0}
           maxValue={200}
           step={0.01}
-          currentValue={settings[index].settings.delayTime || "8n"}
+          currentValue={(settings[index].settings as PingPongDelaySettings).delayTime || "8n"}
           onChange={updateRate}
         />
         <Knob
@@ -100,7 +100,7 @@ export const PingPongDelay = ({
           minValue={0}
           maxValue={1}
           step={0.01}
-          currentValue={settings[index].settings.feedback || 0.5}
+          currentValue={(settings[index].settings as PingPongDelaySettings).feedback || 0.5}
           onChange={updateFeedback}
         />
       </div>

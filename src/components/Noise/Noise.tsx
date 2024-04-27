@@ -1,8 +1,6 @@
 import Knob from "../Knob/Knob";
 import styles from "./Noise.module.css";
 import { NoiseShape } from "../Shapes";
-import CustomPolySynth from "@/lib/engines/CustomPolySynth";
-import { LFOTarget, Preset } from "@/lib/types/types";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import {
   useSynthEngineStore,
@@ -26,23 +24,23 @@ export default function Noise() {
       : "#FF543D";
 
   const updateType = (type: "white" | "pink" | "brown") => {
-    updateSettings({ type: type });
-    engine.voices.forEach((voice) => {
+    updateSettings({...settings, type: type });
+    engine?.voices.forEach((voice) => {
       voice.noise.type = type;
     });
   };
 
   const updateVolume = (value: number) => {
-    updateSettings({ volume: value });
-    engine.LFO1.find((lfo) => lfo.target === "noise volume")?.LFO.set({
+    updateSettings({...settings, volume: value });
+    engine?.LFO1.find((lfo) => lfo.target === "noise volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
-    engine.LFO2.find((lfo) => lfo.target === "noise volume")?.LFO.set({
+    engine?.LFO2.find((lfo) => lfo.target === "noise volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
-    engine.voices.forEach((v) => (v.noise.volume.value = value));
+    engine?.voices.forEach((v) => (v.noise.volume.value = value));
   };
   return (
     <SectionWrapper name={"noise"}>

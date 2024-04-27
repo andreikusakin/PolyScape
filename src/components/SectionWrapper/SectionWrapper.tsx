@@ -1,4 +1,3 @@
-import { type } from "os";
 import styles from "./SectionWrapper.module.css";
 
 type SectionWrapperProps = {

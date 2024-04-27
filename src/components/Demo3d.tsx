@@ -4,7 +4,6 @@ import React from "react";
 import { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
-import { Orbit } from "next/font/google";
 
 function Box(props: any) {
   const mesh = useRef<any>();

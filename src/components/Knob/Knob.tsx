@@ -43,7 +43,7 @@ const subdivisions = [
 
 type KnobProps = {
   radius: number;
-  label?: string;
+  label: string;
   label2?: string;
   unit?: string;
   isSelectingLFO?: false | 1 | 2;
@@ -53,9 +53,14 @@ type KnobProps = {
   interactive?: boolean;
   minValue: number;
   maxValue: number;
-  currentValue: string | number | Tone.Unit.Frequency | Tone.FrequencyClass;
+  currentValue:
+    | string
+    | number
+    | Tone.Unit.Frequency
+    | Tone.FrequencyClass
+    | Tone.Unit.Time;
   step: number;
-  onChange: (value: number) => void;
+  onChange: (value: any) => void;
   exponent?: number;
   assignLFO?: (target: LFOTarget, lfo: 1 | 2) => void;
   sync?: boolean;
@@ -76,8 +81,6 @@ const Knob: React.FC<KnobProps> = ({
   interactive,
   onChange,
   exponent,
-  // isSelectingLFO,
-  // assignLFO,
   sync,
 }) => {
   console.log("Knob Rerender");
@@ -196,8 +199,7 @@ const Knob: React.FC<KnobProps> = ({
     <div
       onClick={
         lfoParameter && isSelectingLFO
-          ? () =>
-              assignLFO && assignLFO(lfoParameter, isSelectingLFO, currentValue)
+          ? () => assignLFO && assignLFO(lfoParameter, Number(currentValue))
           : undefined
       }
       {...bind()}
@@ -208,12 +210,11 @@ const Knob: React.FC<KnobProps> = ({
       // onMouseEnter={() => setDialRadius(radius * 1.22)}
       // onMouseLeave={() => setDialRadius(radius)}
     >
-      {" "}
       <Dial
         radius={dialRadius}
         percent={percent}
         lfoAmount={lfoAmount}
-        startingPoint={startingPoint}
+        // startingPoint={startingPoint}
         isSelectingLFO={lfoParameter && isSelectingLFO}
       />
       {label && (

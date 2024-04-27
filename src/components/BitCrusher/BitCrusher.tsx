@@ -1,4 +1,4 @@
-import { fxProps } from "@/lib/types/types";
+import { BitCrusherSettings, fxProps } from "@/lib/types/types";
 import styles from "./BitCrusher.module.css";
 import { FxWrapper } from "../FxWrapper/FxWrapper";
 import { BitCrusherImage } from "./BitCrusherImage/BitCrusherImage";
@@ -26,7 +26,7 @@ export const BitCrusher = ({
             : effect
         );
         updateSettings(newSettings);
-        if (engine.currentChain[index])
+        if (engine?.currentChain[index])
           (engine.currentChain[index] as Tone.BitCrusher).set({
             wet: value / 100,
           });
@@ -38,7 +38,7 @@ export const BitCrusher = ({
             : effect
         );
         updateSettings(newSettings);
-        if (engine.currentChain[index])
+        if (engine?.currentChain[index])
           (engine.currentChain[index] as Tone.BitCrusher).set({
             bits: value,
           });
@@ -47,7 +47,7 @@ export const BitCrusher = ({
     <FxWrapper
       effectName="bitcrusher"
       deleteFunction={handleDelete}
-      effect={engine.currentChain[index]}
+      effect={engine?.currentChain[index]}
       currentWet={settings[index].settings.wet}
     >
       <div className={styles.container}>
@@ -60,7 +60,7 @@ export const BitCrusher = ({
             maxValue={16}
             step={0.1}
             unit={"bits"}
-            currentValue={settings[index].settings.bits ?? 8}
+            currentValue={(settings[index].settings as BitCrusherSettings).bits ?? 8}
             label="Bit Depth"
             radius={24}
             interactive

@@ -23,10 +23,27 @@ type SynthSettingsStore = {
   hold: Preset["hold"];
   aggregateSettings: () => Preset;
   setAllParamsFromPreset: (preset: Preset) => void;
+  assignLFOToTarget: (target: LFOTarget, currentValue?: number) => void;
+  setLFO1Params: (param: LFO) => void;
+  setLFO2Params: (param: LFO) => void;
+  setIsSelectingLFO: (lfo: 1 | 2 | false) => void;
+  setFxSettings: (settings: Preset["effects"]) => void;
+  setEnvAmplitudeParams: (param: Preset["envelopeAmplitude"]) => void;
+  setFilterEnvelopeParams: (param: Preset["filterEnvelope"]) => void;
+  setFilterParams: (param: Preset["filter"]) => void;
+  setNoiseParams: (param: Preset["noise"]) => void;
+  setOsc1Params: (param: Preset["osc1"]) => void;
+  setOsc2Params: (param: Preset["osc2"]) => void;
+  setPanSpread: (param: Preset["panSpread"]) => void;
+  setDetune: (value: number) => void;
+  setMasterVolume: (value: number) => void;
+  updateHold: () => void;
+  updateUnison: () => void;
+  
 };
 
 type SynthEngineStore = {
-  synthEngine: CustomPolySynth | undefined;
+  synthEngine?: CustomPolySynth;
   setSynthEngine: (engine: CustomPolySynth) => void;
 };
 
@@ -148,7 +165,7 @@ export const useSynthSettingsStore = create<SynthSettingsStore>((set, get) => ({
   setLFO2Params: (param: LFO) => {
     set((state) => ({ lfo2: { ...state.lfo2, ...param } }));
   },
-  assignLFOToTarget: (target: LFOTarget, currentValue?: number) => {
+  assignLFOToTarget: (target: LFOTarget, currentValue?: number ) => {
     const lfoNumber = get().isSelectingLFO;
     const synthEngine = useSynthEngineStore.getState().synthEngine;
     const currentRate = lfoNumber === 1 ? get().lfo1.rate : get().lfo2.rate;

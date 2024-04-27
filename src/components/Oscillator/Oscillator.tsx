@@ -1,9 +1,7 @@
-import React, { use } from "react";
+import React from "react";
 import Knob from "../Knob/Knob";
 import styles from "./Oscillator.module.css";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
-import CustomPolySynth from "@/lib/engines/CustomPolySynth";
-import { LFOTarget, Preset } from "@/lib/types/types";
 import { OscillatorWaveform } from "../OscillatorWaveform";
 import {
   useSynthEngineStore,
@@ -12,7 +10,7 @@ import {
 import { useShallow } from "zustand/react/shallow";
 
 type OscillatorProps = {
-  oscNumber: number;
+  oscNumber: 1 | 2;
 };
 
 const Oscillator = ({ oscNumber }: OscillatorProps) => {
@@ -28,63 +26,75 @@ const Oscillator = ({ oscNumber }: OscillatorProps) => {
   const updateWaveformType = (
     type: "sine" | "sawtooth" | "pulse" | "triangle"
   ) => {
-    updateSettings({ type: type });
+    updateSettings({ ...settings, type: type });
     if (oscNumber === 1) {
-      engine.voices.forEach((v) => (v.oscillator.type = type));
-      engine.disconnectLFO("osc1 pulse width", 1);
+      engine?.voices.forEach((v) => (v.oscillator.type = type));
+      engine?.disconnectLFO("osc1 pulse width", 1);
     } else {
-      engine.voices.forEach((v) => (v.oscillator2.type = type));
+      engine?.voices.forEach((v) => (v.oscillator2.type = type));
     }
 
     if (type === "pulse") {
       oscNumber === 1
-        ? engine.voices.forEach(
-            (v) => (v.oscillator.width.value = settings.pulseWidth)
-          )
-        : engine.voices.forEach(
-            (v) => (v.oscillator2.width.value = settings.pulseWidth)
-          );
+        ? engine?.voices.forEach((v) => {
+            if (v.oscillator.width) {
+              v.oscillator.width.value = settings.pulseWidth;
+            }
+          })
+        : engine?.voices.forEach((v) => {
+            if (v.oscillator2.width) {
+              v.oscillator2.width.value = settings.pulseWidth;
+            }
+          });
     }
   };
 
   const updatePulseWidth = (value: number) => {
-    updateSettings({ pulseWidth: value });
+    updateSettings({ ...settings, pulseWidth: value });
     oscNumber === 1
-      ? engine.voices.forEach((v) => (v.oscillator.width.value = value))
-      : engine.voices.forEach((v) => (v.oscillator2.width.value = value));
+      ? engine?.voices.forEach((v) => {
+          if (v.oscillator.width) {
+            v.oscillator.width.value = value;
+          }
+        })
+      : engine?.voices.forEach((v) => {
+          if (v.oscillator2.width) {
+            v.oscillator2.width.value = value;
+          }
+        });
   };
 
   const updateCoarse = (value: number) => {
-    updateSettings({ transpose: value });
-    engine.setCoarse(value, oscNumber);
+    updateSettings({ ...settings, transpose: value });
+    engine?.setCoarse(value, oscNumber);
   };
 
   const updateFine = (value: number) => {
-    updateSettings({ detune: value });
-    engine.setFine(value, oscNumber);
+    updateSettings({ ...settings, detune: value });
+    engine?.setFine(value, oscNumber);
   };
 
   const updateVolume = (value: number) => {
-    updateSettings({ volume: value });
-    engine.LFO1.find((lfo) => lfo.target === "osc1 volume")?.LFO.set({
+    updateSettings({ ...settings, volume: value });
+    engine?.LFO1.find((lfo) => lfo.target === "osc1 volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
-    engine.LFO2.find((lfo) => lfo.target === "osc1 volume")?.LFO.set({
+    engine?.LFO2.find((lfo) => lfo.target === "osc1 volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
-    engine.LFO1.find((lfo) => lfo.target === "osc2 volume")?.LFO.set({
+    engine?.LFO1.find((lfo) => lfo.target === "osc2 volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
-    engine.LFO2.find((lfo) => lfo.target === "osc2 volume")?.LFO.set({
+    engine?.LFO2.find((lfo) => lfo.target === "osc2 volume")?.LFO.set({
       min: -70 + value,
       max: 12 + value,
     });
     oscNumber === 1
-      ? engine.voices.forEach((v) => (v.oscillator.volume.value = value))
-      : engine.voices.forEach((v) => (v.oscillator2.volume.value = value));
+      ? engine?.voices.forEach((v) => (v.oscillator.volume.value = value))
+      : engine?.voices.forEach((v) => (v.oscillator2.volume.value = value));
   };
   return (
     <SectionWrapper name={`osc${oscNumber}`}>

@@ -1,9 +1,6 @@
 import styles from "./EnvelopeAmplitude.module.css";
 import Knob from "../Knob/Knob";
-import * as Tone from "tone/build/esm/index";
-import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
-import { Preset } from "@/lib/types/types";
 import { useSynthEngineStore, useSynthSettingsStore } from "@/lib/store/settingsStore";
 import { useShallow } from "zustand/react/shallow";
 
@@ -16,29 +13,29 @@ export const EnvelopeAmplitude = () => {
     updateSettings: state.setEnvAmplitudeParams,
   })));
   const updateAttack = (attack: number) => {
-    updateSettings({ attack: attack });
-    engine.voices.forEach((voice) => {
+    updateSettings({ ...settings, attack });
+    engine?.voices.forEach((voice) => {
       voice.envelope.attack = attack;
     });
   };
 
   const updateDecay = (decay: number) => {
-    updateSettings({ decay: decay });
-    engine.voices.forEach((voice) => {
+    updateSettings({ ...settings, decay });
+    engine?.voices.forEach((voice) => {
       voice.envelope.decay = decay;
     });
   };
 
   const updateSustain = (sustain: number) => {
-    updateSettings({ sustain: sustain });
-    engine.voices.forEach((voice) => {
+    updateSettings({ ...settings, sustain });
+    engine?.voices.forEach((voice) => {
       voice.envelope.sustain = sustain;
     });
   };
 
   const updateRelease = (release: number) => {
-    updateSettings({ release: release });
-    engine.voices.forEach((voice) => {
+    updateSettings({ ...settings, release });
+    engine?.voices.forEach((voice) => {
       voice.envelope.release = release;
     });
   };
@@ -56,8 +53,6 @@ export const EnvelopeAmplitude = () => {
           step={0.001}
           onChange={updateAttack}
           radius={24}
-          lfo={false}
-          startingPoint="beginning"
           interactive={true}
         />
         <Knob
@@ -70,8 +65,6 @@ export const EnvelopeAmplitude = () => {
           step={0.01}
           onChange={updateDecay}
           radius={24}
-          lfo={false}
-          startingPoint="beginning"
           interactive={true}
         />
         <Knob
@@ -83,8 +76,6 @@ export const EnvelopeAmplitude = () => {
           step={0.01}
           onChange={updateSustain}
           radius={24}
-          lfo={false}
-          startingPoint="beginning"
           interactive={true}
         />
         <Knob
@@ -97,8 +88,6 @@ export const EnvelopeAmplitude = () => {
           step={0.01}
           onChange={updateRelease}
           radius={24}
-          lfo={false}
-          startingPoint="beginning"
           interactive={true}
         />
       </div>

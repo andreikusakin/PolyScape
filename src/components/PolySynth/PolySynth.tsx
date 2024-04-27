@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import * as Tone from "tone/build/esm/index";
 import styles from "./PolySynth.module.css";
-import { Effect, LFOTarget, Preset } from "@/lib/types/types";
+import { Preset } from "@/lib/types/types";
 import Oscillator from "../Oscillator/Oscillator";
 import Noise from "../Noise/Noise";
 import { Filter } from "../Filter/Filter";
@@ -11,7 +11,6 @@ import { EnvelopeAmplitude } from "../EnvelopeAmplitude/EnvelopeAmplitude";
 import { LFO } from "../LFO/LFO";
 import CustomEffects from "@/lib/engines/CustomEffects";
 import { Header } from "../Header/Header";
-import { WebMidi } from "webmidi";
 import { motion, AnimatePresence } from "framer-motion";
 import { Effects } from "../Effects/Effects";
 import { Keyboard } from "../Keyboard/Keyboard";
@@ -23,7 +22,6 @@ import {
 } from "@/lib/store/settingsStore";
 import { MiscParameters } from "../MiscParameters/MiscParameters";
 import { usePresetLibraryStore } from "@/lib/store/presetLibraryStore";
-import { initPreset } from "@/lib/presets/init";
 
 type PolySynthProps = {
   currentPreset: Preset;
@@ -94,13 +92,15 @@ const PolySynth = () => {
   useEffect(() => {
     if (currentPreset) {
       
-      if(polySynth || effects) {
-        polySynthRef?.current.dispose();
-        setPolySynth(undefined)
+      if (polySynthRef.current) {
+        polySynthRef.current.dispose();
+      }
+      // setPolySynth(undefined);
+
+      if (effectsRef.current) {
         effectsRef.current.dispose();
-        setEffects(undefined)
-      };
-      
+      }
+      // setEffects(undefined);
 
       console.log(currentPreset);
       polySynthRef.current = new CustomPolySynth(currentPreset);

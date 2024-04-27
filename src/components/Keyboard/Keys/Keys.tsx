@@ -1,13 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import * as Tone from "tone/build/esm/index";
 import { useMemo } from "react";
 import styles from "./Keys.module.css";
-import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { useShallow } from "zustand/react/shallow";
-// @ts-ignore
-import AudioKeys from "audiokeys";
 import { useSynthEngineStore } from "@/lib/store/settingsStore";
 import { useUiColorRGB } from "@/lib/store/uiStore";
 import { useUiStore } from "@/lib/store/uiStore";
@@ -23,11 +20,11 @@ export const Keys = () => {
     }))
   );
   const colorRGB = useUiColorRGB();
-  engine.keyboard.down((key: any) => {
+  engine?.keyboard.down((key: any) => {
     setNotesPressed([...notesPressed, key.note]);
   });
 
-  engine.keyboard.up((key: any) => {
+  engine?.keyboard.up((key: any) => {
     setNotesPressed(notesPressed.filter((note) => note !== key.note));
   });
 
@@ -57,12 +54,12 @@ export const Keys = () => {
 
   const handleMouseDown = (note: number) => {
     setNotesPressed([...notesPressed, note]);
-    engine.triggerAttack(note, Tone.now(), 1);
+    engine?.triggerAttack(note, Tone.now(), 1);
   };
 
   const handleMouseUp = (note: number) => {
     setNotesPressed(notesPressed.filter((n) => n !== note));
-    engine.triggerRelease(note);
+    engine?.triggerRelease(note);
   };
 
   return (

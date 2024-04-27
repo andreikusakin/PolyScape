@@ -2,9 +2,9 @@ import * as Tone from "tone/build/esm/index";
 import CustomEffects from "../engines/CustomEffects";
 
 export type ReverbSettings = {
-  decay: number;
+  decay?: number;
   wet: Tone.Unit.NormalRange;
-  preDelay: number;
+  preDelay?: number;
 };
 
 export type PingPongDelaySettings = {
@@ -16,7 +16,7 @@ export type PingPongDelaySettings = {
 export type FeedbackDelaySettings = {
   feedback: number;
   wet: Tone.Unit.NormalRange;
-  delayTime: Tone.Unit.Time;
+  delayTime: Tone.Unit.Time | Tone.Unit.Frequency;
 };
 
 export type DistortionSettings = {
@@ -46,7 +46,6 @@ export type Effect = {
     | DistortionSettings
     | ChorusSettings
     | BitCrusherSettings;
-
 };
 
 export type ColorMap = {
@@ -141,7 +140,7 @@ export type LFODestination = {
 };
 
 export type fxProps = {
-  engine: CustomEffects;
+  engine?: CustomEffects;
   settings: Preset["effects"];
   updateSettings: (settings: Preset["effects"]) => void;
   index: number;
@@ -151,4 +150,24 @@ export type UiSettings = {
   isKeyboardOpen: boolean;
   isFxOpen: boolean;
   isUiVisible: boolean;
+};
+
+export type LibraryPreset = {
+  id: string;
+  name: string;
+  type: string;
+  description: string;
+  author: string;
+  settings: Preset;
+};
+
+export type PresetLibraryStore = {
+  currentPreset: Preset | null;
+  presetLibrary: LibraryPreset[];
+  selectedPreset: string;
+  setCurrentPreset: (preset: Preset) => void;
+  setSelectedPreset: (id: string) => void;
+  setPresetLibrary: (presets: LibraryPreset[]) => void;
+  addPreset: (preset: LibraryPreset) => void;
+  deletePresetFromLibrary: (id: string) => void;
 };

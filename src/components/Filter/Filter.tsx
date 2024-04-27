@@ -1,10 +1,7 @@
 import styles from "./Filter.module.css";
 import Knob from "../Knob/Knob";
 import * as Tone from "tone/build/esm/index";
-import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
-import { Preset } from "@/lib/types/types";
-import { env } from "process";
 import {
   useSynthEngineStore,
   useSynthSettingsStore,
@@ -22,64 +19,64 @@ export const Filter = () => {
     updateEnvSettings: state.setFilterEnvelopeParams,
   })));
   const updateType = (type: "lowpass" | "highpass" | "bandpass" | "notch") => {
-    updateSettings({type: type });
-    engine.voices.forEach((voice) => {
+    updateSettings({...settings, type: type });
+    engine?.voices.forEach((voice) => {
       voice.filter.type = type;
     });
   };
 
   const updateRolloff = (rolloff: Tone.FilterRollOff) => {
-    updateSettings({rolloff: rolloff });
-    engine.voices.forEach((voice) => {
+    updateSettings({...settings, rolloff: rolloff });
+    engine?.voices.forEach((voice) => {
       voice.filter.rolloff = rolloff;
     });
   };
 
-  const updateCutoff = (cutoff: number) => {
-    updateEnvSettings({baseFrequency: cutoff });
-    engine.voices.forEach((voice) => {
-      voice.filterEnvelope.baseFrequency = cutoff;
-    });
-  };
-
   const updateResonance = (resonance: number) => {
-    updateSettings({Q: resonance });
-    engine.voices.forEach((voice) => {
+    updateSettings({...settings, Q: resonance });
+    engine?.voices.forEach((voice) => {
       voice.filter.Q.value = resonance;
     });
   };
 
+  const updateCutoff = (cutoff: number) => {
+    updateEnvSettings({...envSettings, baseFrequency: cutoff });
+    engine?.voices.forEach((voice) => {
+      voice.filterEnvelope.baseFrequency = cutoff;
+    });
+  };
+
   const updateEnvelopeAmount = (amount: number) => {
-    updateEnvSettings({ octaves: amount });
-    engine.voices.forEach((voice) => {
+    updateEnvSettings({...envSettings, octaves: amount });
+    engine?.voices.forEach((voice) => {
       voice.filterEnvelope.octaves = amount;
     });
   };
 
   const updateAttack = (attack: number) => {
-    updateEnvSettings({ attack: attack });
-    engine.voices.forEach((voice) => {
+    updateEnvSettings({...envSettings, attack: attack });
+    engine?.voices.forEach((voice) => {
       voice.filterEnvelope.attack = attack;
     });
   };
 
   const updateDecay = (decay: number) => {
-    updateEnvSettings({ decay: decay });
-    engine.voices.forEach((voice) => {
+    updateEnvSettings({...envSettings, decay: decay });
+    engine?.voices.forEach((voice) => {
       voice.filterEnvelope.decay = decay;
     });
   };
 
   const updateSustain = (sustain: number) => {
-    updateEnvSettings({  sustain: sustain });
-    engine.voices.forEach((voice) => {
+    updateEnvSettings({...envSettings,  sustain: sustain });
+    engine?.voices.forEach((voice) => {
       voice.filterEnvelope.sustain = sustain;
     });
   };
 
   const updateRelease = (release: number) => {
-    updateEnvSettings({ release: release });
-    engine.voices.forEach((voice) => {
+    updateEnvSettings({...envSettings, release: release });
+    engine?.voices.forEach((voice) => {
       voice.filterEnvelope.release = release;
     });
   };
@@ -147,8 +144,6 @@ export const Filter = () => {
           unit={"hz"}
           onChange={updateCutoff}
           radius={24}
-          lfo={false}
-          startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
@@ -161,8 +156,6 @@ export const Filter = () => {
           step={0.01}
           onChange={updateResonance}
           radius={24}
-          lfo={false}
-          startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
@@ -175,8 +168,6 @@ export const Filter = () => {
           step={0.01}
           onChange={updateEnvelopeAmount}
           radius={24}
-          lfo={false}
-          startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
@@ -189,8 +180,6 @@ export const Filter = () => {
           step={0.001}
           onChange={updateAttack}
           radius={24}
-          lfo={false}
-          startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
@@ -203,8 +192,6 @@ export const Filter = () => {
           step={0.001}
           onChange={updateDecay}
           radius={24}
-          lfo={false}
-          startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
@@ -216,8 +203,6 @@ export const Filter = () => {
           step={0.01}
           onChange={updateSustain}
           radius={24}
-          lfo={false}
-          startingPoint={"beginning"}
           interactive={true}
         />
         <Knob
@@ -230,8 +215,6 @@ export const Filter = () => {
           step={0.01}
           onChange={updateRelease}
           radius={24}
-          lfo={false}
-          startingPoint={"beginning"}
           interactive={true}
         />
       </div>

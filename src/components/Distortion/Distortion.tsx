@@ -1,4 +1,4 @@
-import { fxProps } from "@/lib/types/types";
+import { DistortionSettings, fxProps } from "@/lib/types/types";
 import styles from "./Distortion.module.css";
 import { FxWrapper } from "../FxWrapper/FxWrapper";
 import { DistortionIcon } from "./DistortionIcon/DistortionIcon";
@@ -25,7 +25,7 @@ export const Distortion = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.Distortion).set({
         wet: value / 100,
       });
@@ -38,7 +38,7 @@ export const Distortion = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.Distortion).set({
         distortion: value,
       });
@@ -47,7 +47,7 @@ export const Distortion = ({
     <FxWrapper
       effectName="distortion"
       deleteFunction={handleDelete}
-      effect={engine.currentChain[index]}
+      effect={engine?.currentChain[index]}
       currentWet={settings[index].settings.wet}
     >
       <div className={styles.container}>
@@ -60,7 +60,7 @@ export const Distortion = ({
             maxValue={1}
             step={0.01}
             unit={""}
-            currentValue={settings[index].settings.distortion ?? 0.5}
+            currentValue={(settings[index].settings as DistortionSettings).distortion ?? 0.5}
             label="drive"
             radius={24}
             interactive

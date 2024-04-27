@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function GET() {
   const presets = await prisma.preset.findMany({
@@ -21,8 +22,7 @@ export async function GET() {
     status: 200,
   });
 }
-
-export async function POST(request) {
+export async function POST(request: NextRequest) {
     try {
       const data = await request.json();
       const newPreset = await prisma.preset.create({
@@ -39,7 +39,7 @@ export async function POST(request) {
         headers: { 'Content-Type': 'application/json' },
         status: 201,
       });
-    } catch (error) {
+    } catch (error: any) {
       return new NextResponse(JSON.stringify({ error: error.message }), {
         headers: { 'Content-Type': 'application/json' },
         status: 500,
@@ -47,7 +47,7 @@ export async function POST(request) {
     }
   }
 
-  export async function DELETE(request) {
+  export async function DELETE(request: NextRequest) {
     try {
       const data = await request.json();
       const preset = await prisma.preset.findUnique({
@@ -83,7 +83,7 @@ export async function POST(request) {
         headers: { 'Content-Type': 'application/json' },
         status: 200,
       });
-    } catch (error) {
+    } catch (error: any) {
       return new NextResponse(JSON.stringify({ error: error.message }), {
         headers: { 'Content-Type': 'application/json' },
         status: 500,

@@ -1,7 +1,5 @@
 import { useUiColorRGB } from "@/lib/store/uiStore";
 import styles from "./SavePreset.module.css";
-import { useUiStore } from "@/lib/store/uiStore";
-import { useShallow } from "zustand/react/shallow";
 import { useState } from "react";
 import { useSynthSettingsStore } from "@/lib/store/settingsStore";
 import { usePresetLibraryStore } from "@/lib/store/presetLibraryStore";

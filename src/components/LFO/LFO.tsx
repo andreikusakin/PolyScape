@@ -1,15 +1,13 @@
-import { LFODestination, LFOTarget } from "@/lib/types/types";
+import { LFOTarget } from "@/lib/types/types";
 import * as Tone from "tone/build/esm/index";
 import styles from "./LFO.module.css";
 import Knob from "../Knob/Knob";
 import { OscillatorWaveform } from "../OscillatorWaveform";
-import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { Slider } from "../Slider/Slider";
 import {
   useSynthEngineStore,
   useSynthSettingsStore,
 } from "@/lib/store/settingsStore";
-import { update } from "three/examples/jsm/libs/tween.module.js";
 import { useShallow } from "zustand/react/shallow";
 
 type LFOProps = {
@@ -29,7 +27,7 @@ export const LFO = ({ lfoNumber }: LFOProps) => {
     }))
   );
 
-  const selectedLFO = lfoNumber === 1 ? engine.LFO1 : engine.LFO2;
+  const selectedLFO = lfoNumber === 1 ? engine?.LFO1 : engine?.LFO2;
 
   const handleAssignClick = () => {
     setIsSelecting(lfoNumber);
@@ -48,27 +46,19 @@ export const LFO = ({ lfoNumber }: LFOProps) => {
   };
 
   const handleDoubleClick = (target: LFOTarget) => {
-    // setDestinations([
-    //   ...destinations.filter((d: LFODestination) => d.target !== target),
-    // ]);
     updateSettings({
       ...settings,
       destinations: settings.destinations.filter(
-        (d: LFODestination) => d.target !== target
+        (d) => d.target !== target
       ),
     });
     engine?.disconnectLFO(target, lfoNumber);
   };
 
   const updateLFOAmount = (target: LFOTarget, amount: number) => {
-    // setDestinations([
-    //   ...destinations.map((d: LFODestination) =>
-    //     d.target === target ? { ...d, amount: amount } : d
-    //   ),
-    // ]);
     updateSettings({
       ...settings,
-      destinations: settings.destinations.map((d: LFODestination) =>
+      destinations: settings.destinations.map((d) =>
         d.target === target ? { ...d, amount: amount } : d
       ),
     });
@@ -135,7 +125,7 @@ export const LFO = ({ lfoNumber }: LFOProps) => {
         <div>
           <div className={styles.waveform}>
             <div className={styles.waveformAnimation}>
-              <OscillatorWaveform oscType={settings.type} />
+              <OscillatorWaveform oscType={settings.type || "sine"} />
             </div>
           </div>
           <div

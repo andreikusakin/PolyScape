@@ -2,8 +2,7 @@ import * as Tone from "tone/build/esm/index";
 import { WebMidi } from "webmidi";
 // @ts-ignore
 import AudioKeys from "audiokeys";
-import { Preset, LFOTarget, LFODestination } from "../types/types";
-import NoiseEngine from "./NoiseEngine";
+import { Preset, LFOTarget } from "../types/types";
 import { CustomVoice } from "./CustomVoice";
 
 //TODO

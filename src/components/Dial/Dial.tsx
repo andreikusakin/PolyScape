@@ -5,7 +5,7 @@ type DialProps = {
   percent: number;
   lfo?: 1 | 2;
   lfoAmount?: number;
-  startingPoint: "beginning" | "middle";
+  // startingPoint: "beginning" | "middle";
   isSelectingLFO?: false | 1 | 2;
 };
 
@@ -14,7 +14,7 @@ const Dial: React.FC<DialProps> = ({
   percent,
   lfo,
   lfoAmount,
-  startingPoint,
+  // startingPoint,
   isSelectingLFO,
 }) => {
   

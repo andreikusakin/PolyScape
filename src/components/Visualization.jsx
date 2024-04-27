@@ -1,17 +1,17 @@
 "use client";
 
 import { useUiColorRGB } from "@/lib/store/uiStore";
-import { Effects, OrbitControls } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import { DepthOfField, EffectComposer } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { Bloom } from "@react-three/postprocessing";
-import { BlurPass, Resizer, KernelSize, Resolution } from "postprocessing";
+import { KernelSize, Resolution } from "postprocessing";
 
 //halo effect
 
-const Dust = ({ count, color }) => {
+const Dust = (count, color ) => {
   const mesh = useRef();
   const particles = useMemo(() => {
     const temp = [];
@@ -30,6 +30,7 @@ const Dust = ({ count, color }) => {
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   useFrame((state) => {
+    if (!mesh.current) return; 
     particles.forEach((particle, i) => {
       let { t, factor, speed, xFactor, yFactor, zFactor } = particle;
       t = particle.t += speed / 8;
@@ -55,7 +56,7 @@ const Dust = ({ count, color }) => {
       dummy.scale.setScalar(s);
       dummy.rotation.set(s * 5, s * 5, s * 5);
       dummy.updateMatrix();
-      mesh.current.setMatrixAt(i, dummy.matrix);
+      mesh.current?.setMatrixAt(i, dummy.matrix);
     });
     mesh.current.instanceMatrix.needsUpdate = true;
   });
@@ -95,19 +96,17 @@ export const Visualization = () => {
         <Scene />
         <EffectComposer>
           <DepthOfField focusDistance={0} focalLength={0.1} bokehScale={4} />
-
           <Bloom
-            intensity={20} // The bloom intensity.
-            blurPass={undefined} // A blur pass.
-            kernelSize={KernelSize.LARGE} // blur kernel size
-            luminanceThreshold={0.01} // luminance threshold. Raise this value to mask out darker elements in the scene.
-            luminanceSmoothing={0.5} // smoothness of the luminance threshold. Range is [0, 1]
-            mipmapBlur={true} // Enables or disables mipmap blur.
-            resolutionX={Resolution.AUTO_SIZE} // The horizontal resolution.
-            resolutionY={Resolution.AUTO_SIZE} // The vertical resolution.
+            intensity={20}
+            blurPass={undefined}
+            kernelSize={KernelSize.LARGE}
+            luminanceThreshold={0.01}
+            luminanceSmoothing={0.5}
+            mipmapBlur={true}
+            resolutionX={Resolution.AUTO_SIZE}
+            resolutionY={Resolution.AUTO_SIZE}
           />
         </EffectComposer>
-        
       </Canvas>
     </div>
   );

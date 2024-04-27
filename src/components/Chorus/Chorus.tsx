@@ -2,7 +2,7 @@ import { FxWrapper } from "../FxWrapper/FxWrapper";
 import Knob from "../Knob/Knob";
 import styles from "./Chorus.module.css";
 import { ChorusImage } from "./ChorusImage/ChorusImage";
-import { fxProps } from "@/lib/types/types";
+import { ChorusSettings, fxProps } from "@/lib/types/types";
 import * as Tone from "tone/build/esm/index";
 
 // frequency (rate), delay (0.5 - 20ms), depth, feedback, wet
@@ -28,7 +28,7 @@ export const Chorus = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.Chorus).set({
         wet: value / 100,
       });
@@ -41,7 +41,7 @@ export const Chorus = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.Chorus).set({
         frequency: value,
       });
@@ -54,7 +54,7 @@ export const Chorus = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.Chorus).set({
         delayTime: value,
       });
@@ -67,20 +67,20 @@ export const Chorus = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.Chorus).set({
         feedback: value,
       });
   };
 
-  const updateDepth = (value: number) => {
+  const updateDepth = (value: Tone.Unit.NormalRange) => {
     const newSettings = settings.map((effect, i) =>
       i === index
         ? { ...effect, settings: { ...effect.settings, depth: value } }
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.Chorus).set({
         depth: value,
       });
@@ -100,7 +100,7 @@ export const Chorus = ({
           maxValue={20}
           step={0.01}
           unit={"hz"}
-          currentValue={settings[index].settings.frequency ?? 4}
+          currentValue={(settings[index].settings as ChorusSettings).frequency ?? 4}
           label="rate"
           radius={24}
           interactive
@@ -123,7 +123,7 @@ export const Chorus = ({
           maxValue={20}
           step={0.01}
           unit={"ms"}
-          currentValue={settings[index].settings.delayTime ?? 3.5}
+          currentValue={(settings[index].settings as ChorusSettings).delayTime ?? 3.5}
           label="delay"
           radius={24}
           interactive
@@ -134,7 +134,7 @@ export const Chorus = ({
           maxValue={1}
           step={0.01}
           unit={""}
-          currentValue={settings[index].settings.feedback ?? 0.2}
+          currentValue={(settings[index].settings as ChorusSettings).feedback ?? 0.2}
           label="feedback"
           radius={24}
           interactive
@@ -145,7 +145,7 @@ export const Chorus = ({
           maxValue={1}
           step={0.01}
           unit={""}
-          currentValue={settings[index].settings.depth ?? 0.7}
+          currentValue={(settings[index].settings as ChorusSettings).depth ?? 0.7}
           label="depth"
           radius={24}
           interactive

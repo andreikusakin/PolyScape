@@ -1,4 +1,4 @@
-import { Preset } from "@/lib/types/types";
+import { Effect } from "@/lib/types/types";
 import { PingPongDelay } from "../PingPongDelay/PingPongDelay";
 import { Reverb } from "../Reverb/Reverb";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
@@ -16,8 +16,6 @@ import { Chorus } from "../Chorus/Chorus";
 import { BitCrusher } from "../BitCrusher/BitCrusher";
 import { Delay } from "../Delay/Delay";
 
-type EffectsProps = {};
-
 export const Effects = () => {
   const engine = useEffectsEngineStore((state) => state.effectsEngine);
   const { settings, updateSettings } = useSynthSettingsStore(
@@ -27,12 +25,12 @@ export const Effects = () => {
     }))
   );
   const addNewEffect = (type: string) => {
-    const newEffect = {
+    const newEffect: Effect = {
       type: type,
       settings: { wet: 50 },
     };
     updateSettings([...settings, newEffect]);
-    engine.addEffect(type);
+    engine?.addEffect(type);
   };
   const [isAddEffectOpen, setIsAddEffectOpen] = useState(false);
   console.log("RERENDER EFFECTS");

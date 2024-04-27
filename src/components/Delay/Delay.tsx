@@ -1,7 +1,7 @@
 import { FxWrapper } from "../FxWrapper/FxWrapper";
 import Knob from "../Knob/Knob";
 import styles from "./Delay.module.css";
-import { fxProps } from "@/lib/types/types";
+import { FeedbackDelaySettings, fxProps } from "@/lib/types/types";
 import * as Tone from "tone/build/esm/index";
 import { DelayImage } from "./DelayImage/DelayImage";
 
@@ -26,7 +26,7 @@ export const Delay = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.FeedbackDelay).set({
         wet: value / 100,
       });
@@ -38,7 +38,7 @@ export const Delay = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.FeedbackDelay).set({
         delayTime: value,
       });
@@ -51,7 +51,7 @@ export const Delay = ({
         : effect
     );
     updateSettings(newSettings);
-    if (engine.currentChain[index])
+    if (engine?.currentChain[index])
       (engine.currentChain[index] as Tone.FeedbackDelay).set({
         feedback: value,
       });
@@ -87,7 +87,7 @@ export const Delay = ({
           minValue={0}
           maxValue={200}
           step={0.01}
-          currentValue={settings[index].settings.delayTime || "8n"}
+          currentValue={(settings[index].settings as FeedbackDelaySettings).delayTime || "8n"}
           onChange={updateRate}
         />
         <Knob
@@ -97,7 +97,7 @@ export const Delay = ({
           minValue={0}
           maxValue={1}
           step={0.01}
-          currentValue={settings[index].settings.feedback || 0.5}
+          currentValue={(settings[index].settings as FeedbackDelaySettings).feedback || 0.5}
           onChange={updateFeedback}
         />
       </div>

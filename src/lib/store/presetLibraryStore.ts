@@ -1,33 +1,5 @@
 import { create } from "zustand";
-import { Preset } from "../types/types";
-import { presetsList } from "../presets/presetsList";
-
-type LibraryPreset = {
-  id: string;
-  name: string;
-  type: string;
-  description: string;
-  author: string;
-  settings: Preset;
-};
-
-type PresetLibraryStore = {
-  currentPreset: Preset | null;
-  presetLibrary: LibraryPreset[];
-  selectedPreset: string;
-  setCurrentPreset: (preset: Preset) => void;
-  setSelectedPreset: (id: String) => void;
-  setPresetLibrary: (presets: {
-    id: string;
-    name: string;
-    type: string;
-    description: string;
-    author: string;
-    settings: Preset;
-  }) => void;
-  addPreset: (preset: LibraryPreset) => void;
-  deletePresetFromLibrary: (id: string) => void;
-};
+import { PresetLibraryStore } from "../types/types";
 
 export const usePresetLibraryStore = create<PresetLibraryStore>((set) => ({
   currentPreset: null,

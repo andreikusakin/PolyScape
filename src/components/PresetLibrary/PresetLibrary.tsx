@@ -5,6 +5,7 @@ import { useSynthEngineStore, useSynthSettingsStore } from "@/lib/store/settings
 import { useUiColorRGB } from "@/lib/store/uiStore";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { LibraryPreset } from "@/lib/types/types";
 
 const types = ["all", "bass", "lead", "pad", "fx", "keys", "drums", "misc"];
 
@@ -16,7 +17,9 @@ export const PresetLibrary = () => {
   const [isSharing, setIsSharing] = useState(false);
   const [message, setMessage] = useState("");
   const [shareUrl, setShareUrl] = useState("");
-  const {polySynth} = useSynthEngineStore((state) => state.synthEngine);
+  const { polySynth } = useSynthEngineStore((state) => ({
+    polySynth: state.synthEngine,
+  }));
   const presets = usePresetLibraryStore(
     useShallow((state) => state.presetLibrary)
   );
@@ -60,7 +63,7 @@ export const PresetLibrary = () => {
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    })
     if (response.status === 200) {
       setCurrentPreset(presetLibrary.find((p) => p.default === true).settings);
       setAllParamsFromPreset(
@@ -76,7 +79,7 @@ export const PresetLibrary = () => {
     }
   };
 
-  const handlePresetChange = (preset) => {
+  const handlePresetChange = (preset: LibraryPreset) => {
     useSynthSettingsStore.getState().setAllParamsFromPreset(preset.settings);
     usePresetLibraryStore.getState().setSelectedPreset(preset.id);
     usePresetLibraryStore.getState().setCurrentPreset(preset.settings);

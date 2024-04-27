@@ -18,7 +18,7 @@ export default async function Home() {
       {/* <div>{presets.map((p) => p.presetName)}</div> */}
       <Suspense fallback={<div>Loading...</div>}>
         {/* <Visualization /> */}
-        <PolySynth preset={initPreset} />
+        <PolySynth />
         {/* {names.map((name) => {
           return <div key={name.id}>{name.name}</div>
         })} */}

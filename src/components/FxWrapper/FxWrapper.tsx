@@ -1,6 +1,5 @@
 import styles from "./FxWrapper.module.css";
 import { useState, useEffect } from "react";
-import { Effect } from "@/lib/types/types";
 import * as Tone from "tone/build/esm/index";
 
 type FxWrapperProps = {
@@ -16,17 +15,22 @@ export const FxWrapper = ({
   children,
   effect,
   currentWet,
-  deleteFunction
+  deleteFunction,
 }: FxWrapperProps) => {
   const [isMuted, setIsMuted] = useState<boolean>(false);
   useEffect(() => {
-    
-      if (isMuted) {
-        effect?.set({ wet: 0 });
-      } else {
-        effect?.set({ wet: currentWet / 100 });
-      }
-    
+    const audioEffect = effect as
+      | Tone.Reverb
+      | Tone.PingPongDelay
+      | Tone.FeedbackDelay
+      | Tone.Distortion
+      | Tone.Chorus
+      | Tone.BitCrusher;
+    if (isMuted) {
+      audioEffect.set({ wet: 0 });
+    } else {
+      audioEffect.set({ wet: currentWet / 100 });
+    }
   }, [isMuted]);
   return (
     <div className="relative">
