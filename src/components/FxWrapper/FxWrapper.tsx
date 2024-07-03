@@ -18,7 +18,12 @@ export const FxWrapper = ({
   deleteFunction,
 }: FxWrapperProps) => {
   const [isMuted, setIsMuted] = useState<boolean>(false);
+
   useEffect(() => {
+    if (!effect) {
+      return;
+    }
+
     const audioEffect = effect as
       | Tone.Reverb
       | Tone.PingPongDelay
@@ -26,12 +31,14 @@ export const FxWrapper = ({
       | Tone.Distortion
       | Tone.Chorus
       | Tone.BitCrusher;
+
     if (isMuted) {
       audioEffect.set({ wet: 0 });
     } else {
       audioEffect.set({ wet: currentWet / 100 });
     }
   }, [currentWet, effect, isMuted]);
+
   return (
     <div className="relative">
       <div
@@ -39,10 +46,10 @@ export const FxWrapper = ({
         style={{
           boxShadow: `var(--${effectName}-border), inset 0 0 20px 3px rgb(0 0 0 / 50%), inset 0 0 5px 0 rgba(var(--${effectName}-rgb), 0.4)`,
           background: `radial-gradient(
-        150.32% 141.42% at 0% 0%,
-        rgba(var(--${effectName}-rgb), 0.1) 0%,
-        rgba(var(--${effectName}-secondary-rgb), 0.05) 100%
-      )`,
+            150.32% 141.42% at 0% 0%,
+            rgba(var(--${effectName}-rgb), 0.1) 0%,
+            rgba(var(--${effectName}-secondary-rgb), 0.05) 100%
+          )`,
         }}
       >
         <div className={styles.drag}>
