@@ -29,12 +29,14 @@ type PolySynthProps = {
 
 const PolySynth = () => {
   const [enginesReady, setEnginesReady] = useState<boolean>(false);
+  
   const { currentPreset, setCurrentPreset } = usePresetLibraryStore((state) => ({
     currentPreset: state.currentPreset,
     setCurrentPreset: state.setCurrentPreset,
   }));
   const effectsRef = useRef<CustomEffects>();
   const polySynthRef = useRef<CustomPolySynth>();
+  const waveformRef = useRef<Tone.Waveform>();
   const { isKeyboardOpen, isFxOpen, isUiVisible } = useUiStore((state) => ({
     isKeyboardOpen: state.isKeyboardOpen,
     isFxOpen: state.isFxOpen,
@@ -89,31 +91,36 @@ const PolySynth = () => {
   // initialize synth
   useEffect(() => {
     if (currentPreset) {
-      
       if (polySynthRef.current) {
         polySynthRef.current.dispose();
       }
-      // setPolySynth(undefined);
+
 
       if (effectsRef.current) {
         effectsRef.current.dispose();
       }
-      // setEffects(undefined);
+
       polySynthRef.current = new CustomPolySynth(currentPreset);
       effectsRef.current = new CustomEffects(
         polySynthRef.current.outputNode,
         currentPreset.effects
       );
-
       const masterNode = new Tone.Gain().chain(
         effectsRef.current.outputNode,
         Tone.Destination
       );
+
+      waveformRef.current = new Tone.Waveform(32);
+      waveformRef.current.connect(masterNode);
+
       setPolySynth(polySynthRef.current);
       setEffects(effectsRef.current);
       setEnginesReady(true);
+    
     }
-  }, [currentPreset]);
+  }, [currentPreset, setPolySynth, setEffects]);
+
+  
 
   return (
     <div className={styles.wrapper}>
