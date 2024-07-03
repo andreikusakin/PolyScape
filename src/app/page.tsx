@@ -1,24 +1,22 @@
-import PolySynth from "@/components/PolySynth/PolySynth";
-import { Visualization } from "@/components/Visualization";
+import { useEffectsEngineStore } from "@/lib/store/settingsStore";
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
-// async function getPresets() {
-//   const presets = await prisma.preset.findMany();
-  
-//   return presets;
-// }
+const Visualization = dynamic(() => import("@/components/Visualization"), {
+  ssr: false,
+});
+
+const PolySynth = dynamic(() => import("@/components/PolySynth/PolySynth"), {
+  ssr: false,
+});
 
 export default async function Home() {
-  // const presets = await getPresets();
+
   return (
     <main>
-      {/* <div>{presets.map((p) => p.presetName)}</div> */}
       <Suspense fallback={<div>Loading...</div>}>
         <Visualization />
         <PolySynth />
-        {/* {names.map((name) => {
-          return <div key={name.id}>{name.name}</div>
-        })} */}
       </Suspense>
     </main>
   );
