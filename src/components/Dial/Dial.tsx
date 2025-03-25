@@ -35,10 +35,15 @@ const Dial: React.FC<DialProps> = ({
     lfoOffset = arc - (lfoPercentNormalized / 100) * arc;
   }
   const offset = arc - (percentNormalized / 100) * arc;
+  
+  // Calculate viewBox dimensions based on radius
+  const viewBoxSize = radius * 2.44;
+  const viewBox = `0 0 ${viewBoxSize} ${viewBoxSize}`;
+  
   return (
     <div className={styles.dial}>
       {isSelectingLFO && <div className={`${styles.targetSelecting} ${isSelectingLFO === 1 ? styles.lfo1 : isSelectingLFO === 2 ? styles.lfo2 : null }`}></div>}
-      <svg height={radius * 2.44} width={radius * 2.44}>
+      <svg viewBox={viewBox} className={styles.responsiveSvg}>
         <circle
           cx={radius}
           cy={radius / 1.44}

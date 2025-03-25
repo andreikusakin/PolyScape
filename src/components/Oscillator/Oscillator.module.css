@@ -7,8 +7,8 @@
   grid-template-columns: var(--section-grid-three-col);
   justify-items: center;
   align-items: center;
-  row-gap: 20px;
-  column-gap: 10px;
+  row-gap: var(--grid-row-gap);
+  column-gap: var(--grid-column-gap);
   color: rgba(255, 255, 255, 0.95);
  
   position: relative;

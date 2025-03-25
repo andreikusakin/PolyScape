@@ -13,7 +13,7 @@ type OscillatorProps = {
   oscNumber: 1 | 2;
 };
 
-const Oscillator = ({ oscNumber }: OscillatorProps) => {
+export const Oscillator = React.memo(({ oscNumber }: OscillatorProps) => {
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const { settings, updateSettings } = useSynthSettingsStore(
     useShallow((state) => ({
@@ -194,6 +194,4 @@ const Oscillator = ({ oscNumber }: OscillatorProps) => {
       </div>
     </SectionWrapper>
   );
-};
-
-export default Oscillator;
+});

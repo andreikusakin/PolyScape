@@ -15,7 +15,7 @@ export default async function Home() {
   return (
     <main>
       <Suspense fallback={<div>Loading...</div>}>
-        <Visualization />
+        {/* <Visualization /> */}
         <PolySynth />
       </Suspense>
     </main>

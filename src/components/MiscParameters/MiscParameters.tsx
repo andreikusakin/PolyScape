@@ -9,27 +9,36 @@ import Knob from "../Knob/Knob";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import styles from "./MiscParameters.module.css";
 import { useShallow } from "zustand/react/shallow";
+import React from "react";
 
 // PanSpread
 // Unison
 // HOLD
 
-export const MiscParameters = () => {
+export const MiscParameters = React.memo(() => {
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const colorRGB = useUiColorRGB();
-  const { panSpread, unison, updateUnison, setPanSpread, detune, setDetune, hold, updateHold } =
-    useSynthSettingsStore(
-      useShallow((state) => ({
-        panSpread: state.panSpread,
-        unison: state.unison,
-        setPanSpread: state.setPanSpread,
-        updateUnison: state.updateUnison,
-        detune: state.detune,
-        setDetune: state.setDetune,
-        hold: state.hold,
-        updateHold: state.updateHold,
-      }))
-    );
+  const {
+    panSpread,
+    unison,
+    updateUnison,
+    setPanSpread,
+    detune,
+    setDetune,
+    hold,
+    updateHold,
+  } = useSynthSettingsStore(
+    useShallow((state) => ({
+      panSpread: state.panSpread,
+      unison: state.unison,
+      setPanSpread: state.setPanSpread,
+      updateUnison: state.updateUnison,
+      detune: state.detune,
+      setDetune: state.setDetune,
+      hold: state.hold,
+      updateHold: state.updateHold,
+    }))
+  );
   const updatePanSpread = (value: number) => {
     engine?.setPanSpread(value);
     setPanSpread(value);
@@ -43,7 +52,7 @@ export const MiscParameters = () => {
   const handleHold = () => {
     updateHold();
     engine?.updateHold();
-  }
+  };
 
   const updateDetune = (value: number) => {
     engine?.setDetune(value);
@@ -80,18 +89,20 @@ export const MiscParameters = () => {
           onChange={updateDetune}
         />
         <div className={styles.right}>
-          <div
+          <button
             className={`${styles.button} ${unison ? styles.button_active : ""}`}
             onClick={handleUnison}
           >
             unison
-          </div>
-          <div
+          </button>
+          <button
             className={`${styles.button} ${hold ? styles.button_active : ""}`}
             onClick={handleHold}
-           >hold</div>
+          >
+            hold
+          </button>
         </div>
       </div>
     </SectionWrapper>
   );
-};
+});

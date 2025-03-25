@@ -1,7 +1,7 @@
 .wrapper {
-  padding: 10px;
-  font-size: var(--main-synth-ui-font-size);
-  letter-spacing: calc(var(--main-synth-ui-font-size) * 0.2);
+  padding: 1em;
+  /* font-size: var(--main-synth-ui-font-size); */
+  letter-spacing: calc(var(--main-synth-ui-font-size) * 0.1);
   text-transform: uppercase;
   display: flex;
   flex-direction: column;

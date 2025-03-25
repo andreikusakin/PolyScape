@@ -3,9 +3,10 @@ import Knob from "../Knob/Knob";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import { useSynthEngineStore, useSynthSettingsStore } from "@/lib/store/settingsStore";
 import { useShallow } from "zustand/react/shallow";
+import React from "react";
 
 
-export const EnvelopeAmplitude = () => {
+export const EnvelopeAmplitude = React.memo(() => {
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const { settings, updateSettings } = useSynthSettingsStore(useShallow((state) => ({
     settings: state.envelopeAmplitude,
@@ -92,4 +93,4 @@ export const EnvelopeAmplitude = () => {
       </div>
     </SectionWrapper>
   );
-};
+});

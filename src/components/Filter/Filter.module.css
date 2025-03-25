@@ -3,8 +3,8 @@
   grid-template-columns: var(--section-grid-four-col);
   justify-items: center;
   align-items: center;
-  row-gap: 20px;
-  column-gap: 10px;
+  row-gap: var(--grid-row-gap);
+  column-gap: var(--grid-column-gap);
   color: rgba(255, 255, 255, 0.95);
   padding: var(--section-padding);
   width: var(--section-width-large);
@@ -19,7 +19,7 @@
 .types {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.6em;
   color: rgba(255, 255, 255, 0.5);
   width: fit-content;
 }

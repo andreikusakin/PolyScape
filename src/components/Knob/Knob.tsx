@@ -66,7 +66,7 @@ type KnobProps = {
   sync?: boolean;
 };
 
-const Knob: React.FC<KnobProps> = ({
+const Knob: React.FC<KnobProps> = React.memo(({
   radius,
   minValue,
   maxValue,
@@ -224,5 +224,5 @@ const Knob: React.FC<KnobProps> = ({
       )}
     </div>
   );
-};
+});
 export default Knob;

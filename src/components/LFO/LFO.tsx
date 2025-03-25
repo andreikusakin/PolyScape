@@ -9,12 +9,13 @@ import {
   useSynthSettingsStore,
 } from "@/lib/store/settingsStore";
 import { useShallow } from "zustand/react/shallow";
+import React from "react";
 
 type LFOProps = {
   lfoNumber: 1 | 2;
 };
 
-export const LFO = ({ lfoNumber }: LFOProps) => {
+export const LFO = React.memo(({ lfoNumber }: LFOProps) => {
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const { settings, updateSettings, setIsSelecting } = useSynthSettingsStore(
     useShallow(
@@ -184,4 +185,4 @@ export const LFO = ({ lfoNumber }: LFOProps) => {
       </div>
     </div>
   );
-};
+});

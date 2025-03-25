@@ -7,8 +7,9 @@ import {
   useSynthSettingsStore,
 } from "@/lib/store/settingsStore";
 import { useShallow } from "zustand/react/shallow";
+import React from "react";
 
-export default function Noise() {
+export const Noise = React.memo(() => {
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const { settings, updateSettings } = useSynthSettingsStore(
     useShallow((state) => ({
@@ -87,4 +88,4 @@ export default function Noise() {
       </div>
     </SectionWrapper>
   );
-}
+})

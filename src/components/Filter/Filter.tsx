@@ -7,9 +7,10 @@ import {
   useSynthSettingsStore,
 } from "@/lib/store/settingsStore";
 import { useShallow } from "zustand/react/shallow";
+import React from "react";
 
 
-export const Filter = () => {
+export const Filter = React.memo(() => {
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const { settings, updateSettings, envSettings, updateEnvSettings } = useSynthSettingsStore(useShallow((state) => ({
     settings: state.filter,
@@ -219,4 +220,4 @@ export const Filter = () => {
       </div>
     </SectionWrapper>
   );
-};
+});

@@ -13,12 +13,14 @@ export const Keys = () => {
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const [notesPressed, setNotesPressed] = useState<number[]>([]);
   // const [colorRGB, setColorRGB] = useState<string>("255, 0, 0");
-  const { isCustomColor, customColor } = useUiStore(
+  const { isCustomColor, customColor, keyboardSize } = useUiStore(
     useShallow((state) => ({
       isCustomColor: state.isCustomColor,
       customColor: state.customColor,
+      keyboardSize: state.keyboardSize,
     }))
   );
+  
   const colorRGB = useUiColorRGB();
   engine?.keyboard.down((key: any) => {
     setNotesPressed([...notesPressed, key.note]);
@@ -68,6 +70,7 @@ export const Keys = () => {
       style={
         {
           "--color-rgb": isCustomColor ? customColor : colorRGB,
+          fontSize: `${keyboardSize}em`,
         } as React.CSSProperties
       }
     >

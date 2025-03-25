@@ -11,7 +11,7 @@
 
 .container {
   
-  border-radius: 8px;
+  border-radius: 0.5em;
   background: radial-gradient(
     107.32% 141.42% at 0% 0%,
     rgba(58, 58, 58, 0.5) 0%,
@@ -19,15 +19,15 @@
   );
   position: relative;
   z-index: 3;
-  line-height: calc(var(--main-synth-ui-font-size) - 1px);
-  box-shadow: 0 0px 20px 2px rgba(255, 255, 255, 0.025), 
-  0 0 0 2px rgba(255, 255, 255, 0.25);
+  line-height: calc(var(--main-synth-ui-font-size) - 0.1em);
+  box-shadow: 0 0px 1.2em 0.15em rgba(255, 255, 255, 0.025),
+    0 0 0 0.15em rgba(255, 255, 255, 0.25);
 }
 
 .container::before {
   content: "";
   position: absolute;
-  border-radius: 8px;
+  border-radius: 0.5em;
   top: 0;
   left: 0;
   width: 100%;

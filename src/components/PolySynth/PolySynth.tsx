@@ -3,8 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import * as Tone from "tone/build/esm/index";
 import styles from "./PolySynth.module.css";
 import { Preset } from "@/lib/types/types";
-import Oscillator from "../Oscillator/Oscillator";
-import Noise from "../Noise/Noise";
+import { Oscillator } from "../Oscillator/Oscillator";
+import { Noise } from "../Noise/Noise";
 import { Filter } from "../Filter/Filter";
 import CustomPolySynth from "@/lib/engines/CustomPolySynth";
 import { EnvelopeAmplitude } from "../EnvelopeAmplitude/EnvelopeAmplitude";
@@ -29,10 +29,16 @@ type PolySynthProps = {
 
 const PolySynth = () => {
   const [enginesReady, setEnginesReady] = useState<boolean>(false);
-  
-  const { currentPreset, setCurrentPreset } = usePresetLibraryStore((state) => ({
-    currentPreset: state.currentPreset,
-    setCurrentPreset: state.setCurrentPreset,
+
+  const { currentPreset, setCurrentPreset } = usePresetLibraryStore(
+    (state) => ({
+      currentPreset: state.currentPreset,
+      setCurrentPreset: state.setCurrentPreset,
+    })
+  );
+
+  const { uiSize } = useUiStore((state) => ({
+    uiSize: state.uiSize,
   }));
   const effectsRef = useRef<CustomEffects>();
   const polySynthRef = useRef<CustomPolySynth>();
@@ -52,14 +58,13 @@ const PolySynth = () => {
     setEffects: state.setEffectsEngine,
   }));
 
-  const { presetLibrary, setPresetLibrary, selectedPreset, setSelectedPreset } = usePresetLibraryStore(
-    (state) => ({
+  const { presetLibrary, setPresetLibrary, selectedPreset, setSelectedPreset } =
+    usePresetLibraryStore((state) => ({
       selectedPreset: state.selectedPreset,
       presetLibrary: state.presetLibrary,
       setPresetLibrary: state.setPresetLibrary,
       setSelectedPreset: state.setSelectedPreset,
-    })
-  );
+    }));
 
   const { setAllParamsFromPreset } = useSynthSettingsStore((state) => ({
     setAllParamsFromPreset: state.setAllParamsFromPreset,
@@ -86,7 +91,7 @@ const PolySynth = () => {
       setAllParamsFromPreset(defaultPreset.settings);
       setSelectedPreset(defaultPreset.id);
     }
-}, [presetLibrary]);
+  }, [presetLibrary]);
 
   // initialize synth
   useEffect(() => {
@@ -94,7 +99,6 @@ const PolySynth = () => {
       if (polySynthRef.current) {
         polySynthRef.current.dispose();
       }
-
 
       if (effectsRef.current) {
         effectsRef.current.dispose();
@@ -116,14 +120,14 @@ const PolySynth = () => {
       setPolySynth(polySynthRef.current);
       setEffects(effectsRef.current);
       setEnginesReady(true);
-    
     }
   }, [currentPreset, setPolySynth, setEffects]);
 
-  
-
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper}
+    style={{
+      fontSize: `${uiSize}em`,
+    }}>
       {enginesReady && (
         <>
           <Header />
