@@ -20,7 +20,7 @@
   position: relative;
   z-index: 3;
   line-height: calc(var(--main-synth-ui-font-size) - 0.1em);
-  box-shadow: 0 0px 1.2em 0.15em rgba(255, 255, 255, 0.025),
+  box-shadow: 0 0 1.2em 0.15em rgba(255, 255, 255, 0.025),
     0 0 0 0.15em rgba(255, 255, 255, 0.25);
 }
 

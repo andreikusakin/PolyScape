@@ -7,7 +7,7 @@
     rgba(3, 3, 3, 0.5) 100%
   );
   line-height: calc(var(--main-synth-ui-font-size) - 1px);
-  box-shadow: 0 0px 20px 2px rgba(255, 255, 255, 0.025),
+  box-shadow: 0 0 20px 2px rgba(255, 255, 255, 0.025),
     0 0 0 2px rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);

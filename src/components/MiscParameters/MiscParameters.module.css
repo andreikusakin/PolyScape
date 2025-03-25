@@ -32,5 +32,5 @@
     rgba(var(--color-rgb), 1) 50%,
     rgba(255, 255, 255, 1) 50%
   );
-  text-shadow: 0px 0px 0.4em rgba(var(--color-rgb), 1);
+  text-shadow: 0 0 0.4em rgba(var(--color-rgb), 1);
 }

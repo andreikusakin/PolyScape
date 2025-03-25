@@ -83,7 +83,7 @@ button {
   background: #ffffff0e;
   border: 0.1em solid #acacac47;
   color: #ffffff92;
-  box-shadow: inset 0px 0px 0.5em 0px rgba(0, 0, 0, 0.859);
+  box-shadow: inset 0 0 0.5em 0 rgba(0, 0, 0, 0.859);
   padding-left: 0.5em;
   padding-top: 0.5em;
   padding-right: 0.42em;
@@ -104,7 +104,7 @@ select {
   background: #ffffff0e;
   border: 0.1em solid #acacac47;
   color: #ffffff92;
-  box-shadow: inset 0px 0px 0.5em 0px rgba(0, 0, 0, 0.859);
+  box-shadow: inset 0 0 0.5em 0 rgba(0, 0, 0, 0.859);
   padding-left: 0.3em;
   padding-top: 0.18em;
   /* padding-right: 0.42em; */
@@ -204,7 +204,7 @@ select {
 @media screen and (max-width: 479px) {
   :root {
     --size-container-ideal: 440; /* screen-size in design - no px */
-    --size-container-min: 0px;
+    --size-container-min: 0;
     --size-container-max: 479px;
   }
 }
