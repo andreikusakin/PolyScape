@@ -9,6 +9,10 @@ type UiStore = {
   isSavePresetOpen: boolean;
   isCustomColor: boolean;
   customColor: number[];
+  uiSize: number;
+  keyboardSize: number;
+  setKeyboardSize: (size: number) => void;
+  setUiSize: (size: number) => void;
   setIsCustomColor: (value: boolean) => void;
   setCustomColor: (color: number[]) => void;
   toggleSavePresetOpen: () => void;
@@ -24,6 +28,14 @@ export const useUiStore = create<UiStore>()((set) => ({
   isSavePresetOpen: false,
   isCustomColor: false,
   customColor: [255, 255, 255],
+  keyboardSize: 1,
+  uiSize: 1,
+  setUiSize: (size: number) => {
+    set(() => ({ uiSize: size }));
+  },
+  setKeyboardSize: (size: number) => {
+    set(() => ({ keyboardSize: size }));
+  },
   setIsCustomColor: (value: boolean) => {
     set(() => ({ isCustomColor: value }));
   },
@@ -52,6 +64,7 @@ export const useUiStore = create<UiStore>()((set) => ({
     set((state) => ({
       isUiVisible: !state.isUiVisible,
     })),
+
 }));
 
 export const useUiColorRGB = () => {
