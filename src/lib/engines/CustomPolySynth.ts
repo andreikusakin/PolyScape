@@ -18,10 +18,10 @@ type LFO = {
 export default class CustomPolySynth {
   lastVoiceUsedIndex: number = -1;
   notesPressed: number[] = [];
-  // isMidiSupported: boolean = false;
-  // midiInputIndex = 0;
-  // midiInputs;
-  // midiInput;
+  isMidiSupported: boolean = false;
+  midiInputIndex = 0;
+  midiInputs;
+  midiInput;
   osc1Fine: number;
   osc1Coarse: number;
   osc2Fine: number;
@@ -48,9 +48,7 @@ export default class CustomPolySynth {
     this.loadMiscParamsFromPreset(preset);
     this.loadLFOs(preset);
     this.setupKeyboard();
-    // if (navigator.userAgent.includes("Chrome")) {
-    //   this.setupMidi();
-    // }
+    this.setupMidi();
     this.osc1Fine = preset.osc1.detune;
     this.osc1Coarse = preset.osc1.transpose;
     this.osc2Fine = preset.osc2.detune;
@@ -179,23 +177,55 @@ export default class CustomPolySynth {
     });
   }
 
-  // private setupMidi() {
-  //   WebMidi.enable((err) => {
-  //     if (err) {
-  //       console.error("WebMidi could not be enabled.", err);
-  //     } else {
-  //       console.log(WebMidi.inputs);
-  //       this.isMidiSupported = true;
-  //       if (WebMidi.inputs.length < 1) {
-  //         console.log("No MIDI devices detected");
-  //         return;
-  //       }
-  //       this.midiInputs = WebMidi.inputs;
-  //       this.midiInput = WebMidi.inputs[this.midiInputIndex];
-  //       this.midiListener(this.midiInput);
-  //     }
-  //   });
-  // }
+  private setupMidi() {
+    if (navigator.requestMIDIAccess) {
+      // Check permission status using the Permissions API (if supported)
+      if (navigator.permissions) {
+        navigator.permissions
+          .query({ name: "midi", sysex: false })
+          .then((result) => {
+            if (result.state === "granted") {
+              console.log("MIDI permission granted");
+              this.isMidiSupported = true;
+            } else if (result.state === "prompt") {
+              console.log("MIDI permission prompt (not yet granted)");
+            } else {
+              console.log("MIDI permission denied");
+            }
+          })
+          .catch((err) => {
+            console.error("Permissions query error", err);
+          });
+      } else {
+
+        navigator.requestMIDIAccess({ sysex: false })
+          .then((midiAccess) => {
+            console.log("MIDI access granted", midiAccess);
+            this.isMidiSupported = true;
+          })
+          .catch((error) => {
+            console.error("MIDI access denied", error);
+          });
+      }
+    } else {
+      console.error("Web MIDI API is not supported in this browser.");
+    }
+    WebMidi.enable((err) => {
+      if (err) {
+        console.error("WebMidi could not be enabled.", err);
+      } else {
+        console.log(WebMidi.inputs);
+        
+        if (WebMidi.inputs.length < 1) {
+          console.log("No MIDI devices detected");
+          return;
+        }
+        this.midiInputs = WebMidi.inputs;
+        this.midiInput = WebMidi.inputs[this.midiInputIndex];
+        this.midiListener(this.midiInput);
+      }
+    });
+  }
 
   muteKeyboard() {
     this.keyboard.down(() => {});
@@ -213,26 +243,27 @@ export default class CustomPolySynth {
     });
   }
 
-  // setMidiInputByIndex(index: number) {
-  //   this.midiInputIndex = index;
-  //   this.midiInput.destroy();
-  //   this.midiInput = WebMidi.inputs[index];
-  //   this.midiListener(this.midiInput);
-  // }
+  setMidiInputByIndex(index: number) {
+    this.midiInputIndex = index;
+    // this.midiInput.destroy();
+    this.midiInput = WebMidi.inputs[index];
+    this.midiListener(this.midiInput);
+    
+  }
 
-  // midiListener(input) {
-  //   input.addListener("noteon", "all", (e) => {
-  //     console.log(e);
-  //     this.triggerAttack(e.note.number, Tone.now(), e.velocity);
-  //   });
-  //   input.addListener("noteoff", "all", (e) => {
-  //     this.triggerRelease(e.note.number);
-  //   });
-  // }
+  midiListener(input) {
+    input.addListener("noteon", "all", (e) => {
+      console.log(e);
+      this.triggerAttack(e.note.number, Tone.now(), e.velocity);
+    });
+    input.addListener("noteoff", "all", (e) => {
+      this.triggerRelease(e.note.number);
+    });
+  }
 
-  // getMidiInputs() {
-  //   return WebMidi.inputs;
-  // }
+  getMidiInputs() {
+    return WebMidi.inputs;
+  }
 
   triggerAttack(note: number, time: Tone.Unit.Time, velocity: number) {
     this.notesPressed.push(note);
@@ -242,25 +273,27 @@ export default class CustomPolySynth {
         v.triggerAttack(frequency, time, velocity);
       });
     } else {
-      this.lastVoiceUsedIndex =
-        (this.lastVoiceUsedIndex + 1) % this.voices.length;
-
-      let voice = this.voices[this.lastVoiceUsedIndex];
-      if (!voice) {
-        voice = this.voices[0];
-        this.lastVoiceUsedIndex = 0;
+      let availableVoice = null;
+      for (let i = 0; i < this.voices.length; i++) {
+        // Adjust the index calculation to always be non-negative
+        const index = (this.lastVoiceUsedIndex + i + this.voices.length) % this.voices.length;
+        const candidate = this.voices[index];
+        if (!this.activeVoices.has(candidate.frequency.value)) {
+          availableVoice = candidate;
+          this.lastVoiceUsedIndex = index;
+          break;
+        }
       }
-
-      while (this.activeVoices.has(voice.frequency.value as number)) {
-        this.lastVoiceUsedIndex =
-          (this.lastVoiceUsedIndex + 1) % this.voices.length;
-        voice = this.voices[this.lastVoiceUsedIndex];
+      if (!availableVoice) {
+        // Voice stealing: release the note on the current voice to free it
+        availableVoice = this.voices[this.lastVoiceUsedIndex];
+        availableVoice.triggerRelease();
       }
-
-      this.activeVoices.set(frequency, voice);
-      voice.triggerAttack(frequency, time, velocity);
+      this.activeVoices.set(frequency, availableVoice);
+      availableVoice.triggerAttack(frequency, time, velocity);
     }
   }
+  
 
   triggerRelease(note: number) {
     if (this.hold) return;
@@ -543,10 +576,10 @@ export default class CustomPolySynth {
       lfo.LFO.dispose();
       lfo.gain?.dispose();
     });
-    // if (this.isMidiSupported) {
-    //   this.midiInput.removeListener("noteon");
-    //   this.midiInput.removeListener("noteoff");
-    //   this.midiInput.removeListener("controlchange");
-    // }
+    if (this.isMidiSupported) {
+      this.midiInput.removeListener("noteon");
+      this.midiInput.removeListener("noteoff");
+      this.midiInput.removeListener("controlchange");
+    }
   }
 }
