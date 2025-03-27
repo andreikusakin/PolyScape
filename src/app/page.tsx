@@ -2,6 +2,7 @@
 import { Welcome } from "@/components/Welcome/Welcome";
 import { useAudioContextStore } from "@/lib/store/audioContextStore";
 import { useEffectsEngineStore } from "@/lib/store/settingsStore";
+import { Leva } from "leva";
 import dynamic from "next/dynamic";
 import { Suspense, useState } from "react";
 
@@ -25,9 +26,10 @@ export default function Home() {
 
   return (
     <main>
-      <Suspense fallback={<div>Loading...</div>}>
+      
+      <Leva hidden/>
         <Welcome />
-        {/* <Visualization /> */}
+        <Visualization /><Suspense fallback={<div>Loading...</div>}>
         {contextStarted && <PolySynth />}
         
       </Suspense>
