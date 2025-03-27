@@ -9,9 +9,9 @@
   --main-synth-ui-font-size: 1em;
 
   --section-padding: 1.5em;
-  /* --section-width-large: 30em;
-  --section-width-medium: 300px; */
-  --section-name-padding-bottom: 0.4em;
+  --section-width-large: 31.5em;
+  /* --section-width-medium: 300px; */
+  --section-name-padding-bottom: 0.5em;
   --section-grid-two-col: repeat(2, 6em);
   --section-grid-three-col: repeat(3, 6em);
   --section-grid-four-col: repeat(4, 6em);
@@ -49,6 +49,8 @@
   --bitcrusher-secondary-rgb: 0, 255, 0;
   --bitcrusher-border: 0 0 0 2px rgba(0, 255, 0, 0.5);
   --bitcrusher-light: 100, 255, 100;
+
+  --box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.3);
 }
 
 body {
@@ -83,7 +85,7 @@ button {
   background: #ffffff0e;
   border: 0.1em solid #acacac47;
   color: #ffffff92;
-  box-shadow: inset 0 0 0.5em 0 rgba(0, 0, 0, 0.859);
+  box-shadow: inset var(--box-shadow);
   padding-left: 0.5em;
   padding-top: 0.5em;
   padding-right: 0.42em;
@@ -113,38 +115,8 @@ select {
 
 }
 
-/* @media screen and (max-width: 1040px) {
-  :root {
-    --section-grid-three-col: repeat(3, 1fr);
-    --section-grid-four-col: repeat(4, 1fr);
-    --section-width-large: 100%;
-    --section-width-medium: 100%;
-  }
-} */
 
-/* @media screen and (max-width: 980px) {
-  :root {
-    --section-width-large: 100%;
-    --section-width-medium: 100%;
-  }
-} */
-
-/* ------------------------- Osmo [https://osmo.supply/] ------------------------- */
-/* ------------------------- Variables ------------------------------------------- */
 :root {
-  --color-light: var(--color-neutral-200);
-  --color-dark: var(--color-neutral-800);
-  --color-primary: #ae9584;
-  --color-neutral-100: #ffffff;
-  --color-neutral-200: #efeeec;
-  --color-neutral-300: #e3e1de;
-  --color-neutral-400: #cbc8c5;
-  --color-neutral-500: #818180;
-  --color-neutral-600: #2c2c2c;
-  --color-neutral-700: #1f1f1f;
-  --color-neutral-800: #131313;
-  --color-neutral-900: #000000;
-  --color-mocha: #A47864;
   --color-white: var(--color-neutral-100);
   --color-black: var(--color-neutral-900);
   --color-error: var(--color-primary);
@@ -158,54 +130,28 @@ select {
   --header-height: calc(3.50em + (var(--gap) * 2));
   --footer-height: calc(2.785em + (var(--gap) * 2));
 }
-/* Tablet */
-@media screen and (max-width: 991px) {
-  :root {
-    --container-padding: 1.5em;
-  }
-}
-/* Mobile Landscape */
-@media screen and (max-width: 767px) {
-  :root {
-    --container-padding: 1em;
-    --section-padding: calc(var(--gap) * 2);
-  }
-}
-/* Mobile Portrait */
-@media screen and (max-width: 479px) {
-  :root {}
-}
-/* ------------------------- Scaling System by Osmo [https://osmo.supply/] -------------------------  */
+
+
 /* Desktop */
 :root {
-  --size-unit: 16; /* body font-size in design - no px */
-  --size-container-ideal: 1920; /* screen-size in design - no px */
-  --size-container-min: 992px;
-  --size-container-max: 1920px;
-  --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
-  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));}
+  --size-font: 12px;
+}
 /* Tablet */
 @media screen and (max-width: 991px) {
   :root {
-    --size-container-ideal: 834; /* screen-size in design - no px */
-    --size-container-min: 768px;
-    --size-container-max: 991px;
+
   }
 }
 /* Mobile Landscape */
 @media screen and (max-width: 767px) {
   :root {
-    --size-container-ideal: 390; /* screen-size in design - no px */
-    --size-container-min: 480px;
-    --size-container-max: 767px;
+
   }
 }
 /* Mobile Portrait */
 @media screen and (max-width: 479px) {
   :root {
-    --size-container-ideal: 440; /* screen-size in design - no px */
-    --size-container-min: 0;
-    --size-container-max: 479px;
+
   }
 }
 
@@ -227,6 +173,7 @@ html {
 html,
 body {
   -webkit-font-smoothing: antialiased;
+  line-height: 1;
 }
 
 svg {
