@@ -1,7 +1,7 @@
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
 import styles from "./Header.module.css";
 import { WebMidi } from "webmidi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useSynthEngineStore } from "@/lib/store/settingsStore";
@@ -13,12 +13,14 @@ import { useShallow } from "zustand/react/shallow";
 import { IconAdjustments } from "@tabler/icons-react";
 import { GlobalSettings } from "../GlobalSettings/GlobalSettings";
 import { usePresetLibraryStore } from "@/lib/store/presetLibraryStore";
+import React from "react";
 
-export const Header = () => {
+export const Header = React.memo(() => {
   const { engine } = useSynthEngineStore((state) => ({
     engine: state.synthEngine,
   }));
   const [midiInputs, setMidiInputs] = useState<typeof WebMidi.inputs>([]);
+  console.log(midiInputs);
   const [currentMidiDevice, setCurrentMidiDevice] = useState(
     "no midi devices detected"
   );
@@ -56,32 +58,39 @@ export const Header = () => {
     }))
   );
 
-  // const handleKeyboardOpen = () => {
-  //   setUiSettings({
-  //     ...uiSettings,
-  //     isKeyboardOpen: !isKeyboardOpen,
-  //     isFxOpen: isKeyboardOpen ? isFxOpen : false,
-  //   });
-  // };
-
-  // const handleFxOpen = () => {
-  //   setUiSettings({
-  //     ...uiSettings,
-  //     isFxOpen: !isFxOpen,
-  //     isKeyboardOpen: isFxOpen ? isKeyboardOpen : false,
-  //   });
-  // };
-
   // useEffect(() => {
   //   if (WebMidi.enabled) {
   //     setMidiInputs(WebMidi.inputs);
   //     if (WebMidi.inputs.length > 0) {
   //       setCurrentMidiDevice(WebMidi.inputs[engine?.midiInputIndex]?.name);
   //     }
-
   //   }
   //   setIsMidiSupported(engine?.isMidiSupported);
   // }, []);
+
+  useEffect(() => {
+    const checkMidi = () => {
+      if (WebMidi.enabled) {
+        setMidiInputs(WebMidi.inputs);
+        if (WebMidi.inputs.length > 0 && engine?.midiInputIndex !== undefined) {
+          setCurrentMidiDevice(WebMidi.inputs[engine.midiInputIndex]?.name);
+        }
+        setIsMidiSupported(true);
+        return true;
+      }
+      setIsMidiSupported(false);
+      return false;
+    };
+
+    if (!checkMidi()) {
+      const intervalId = setInterval(() => {
+        if (checkMidi()) {
+          clearInterval(intervalId);
+        }
+      }, 100);
+      return () => clearInterval(intervalId);
+    }
+  }, [engine?.midiInputIndex]);
 
   const hideUiAnimation = {
     width: isUiVisible ? "100%" : "fit-content",
@@ -105,54 +114,57 @@ export const Header = () => {
             >
               <div className={styles.midi}>
                 <span>Midi</span>
-                {!isMidiSupported && !midiInputs && (
-                  <div
+                {!engine?.isMidiSupported && (
+                  <button disabled
                     className={[
                       styles.midi_selector,
                       styles.no_midi_support,
                     ].join(" ")}
                   >
-                    No Midi Support in Your Browser
-                  </div>
+                    Midi is not supported
+                  </button>
                 )}
-                {midiInputs && (
-                  <div
+                {engine?.isMidiSupported && midiInputs && (
+                  <button
                     className={styles.midi_selector}
                     onClick={() => setIsSelectingMidi(!isSelectingMidi)}
                   >
                     <label>{currentMidiDevice}</label>
                     {isSelectingMidi && midiInputs.length !== 0 && (
                       <div className={styles.selecting_midi}>
-                        {midiInputs.map((input, i) => (
-                          <div
-                            key={i}
-                            // onClick={() => engine?.setMidiInputByIndex(i)}
-                          >
-                            {input.name}
-                          </div>
-                        ))}
+                        {midiInputs.map((input, i) => {
+                          if (!input) return null;
+                          return (
+                            <div
+                              key={i}
+                              onClick={() => engine?.setMidiInputByIndex(i)}
+                            >
+                              {input.name}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
-                  </div>
+                  </button>
                 )}
               </div>
               <div className={styles.preset}>
                 <span>preset</span>
-                <div
+                <button
                   onClick={() => setIsPresetLibraryOpen(!isPresetLibraryOpen)}
-                  className={styles.preset_name}
+                  className={`${styles.preset_name} ${styles.header_button}`}
                 >
                   <span>
                     {presets &&
                       presets.find((p) => p.id === selectedPreset)?.name}
                   </span>
-                </div>
-                <div
+                </button>
+                <button
                   onClick={() => setIsSavePresetOpen(!isSavePresetOpen)}
-                  className={styles.settings_button}
+                  className={`${styles.header_button} ${styles.icon_button}`}
                 >
                   <IconDownload stroke={1} size={24} />
-                </div>
+                </button>
 
                 {isPresetLibraryOpen && <PresetLibrary />}
               </div>
@@ -171,9 +183,9 @@ export const Header = () => {
 
               <div className={styles.buttons}>
                 <button
-                  className={`${styles.keyboard_button} ${
+                  className={`${styles.header_button} ${
                     isKeyboardOpen && styles.selected
-                  }`}
+                  } ${styles.icon_button}`}
                   onClick={toggleKeyboardOpen}
                 >
                   <img src="/piano_keyboard.svg" alt="keyboard icon" />
@@ -187,17 +199,19 @@ export const Header = () => {
                   fx
                 </button>
                 <div>
-                  <div
-                    className={styles.settings_button}
+                  <button
+                    className={`${styles.header_button} ${styles.icon_button} ${
+                      isSettingsOpen && styles.selected
+                    }`}
                     onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                   >
                     <IconAdjustments stroke={1} size={24} />
-                  </div>
+                  </button>
                   {isSettingsOpen && <GlobalSettings />}
                 </div>
                 <button
-                  className={styles.header_button}
                   onClick={toggleUiVisible}
+                  className={styles.header_button}
                 >
                   hide ui
                 </button>
@@ -205,16 +219,28 @@ export const Header = () => {
             </motion.div>
           )}
           {!isUiVisible && (
-            <motion.button
+            <motion.div
+              className={`${styles.container} ${styles.hide_ui_container}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
               exit={{ opacity: 0 }}
-              className={[styles.header_button, styles.show_ui].join(" ")}
-              onClick={toggleUiVisible}
             >
-              show ui
-            </motion.button>
+              <button
+                className={`${styles.header_button} ${
+                  isKeyboardOpen && styles.selected
+                } ${styles.icon_button}`}
+                onClick={toggleKeyboardOpen}
+              >
+                <img src="/piano_keyboard.svg" alt="keyboard icon" />
+              </button>
+              <motion.button
+                className={styles.header_button}
+                onClick={toggleUiVisible}
+              >
+                show ui
+              </motion.button>
+            </motion.div>
           )}
         </AnimatePresence>
       </SectionWrapper>
@@ -226,4 +252,4 @@ export const Header = () => {
       )}
     </motion.header>
   );
-};
+});
