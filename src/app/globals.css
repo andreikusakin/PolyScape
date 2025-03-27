@@ -115,6 +115,43 @@ select {
 
 }
 
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 0.3em;
+  background: #ffffff0e;
+  border: 0.1em solid #acacac47;
+  box-shadow: inset var(--box-shadow);
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+}
+
+input[type="checkbox"]:checked {
+  background: #ffffff2d;
+}
+
+/* input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  color: #ffffffc6;
+  font-size: 0.9em;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} */
+
+input[type="checkbox"]:hover {
+  background: #ffffff2d;
+}
+
+input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 
 :root {
   --color-white: var(--color-neutral-100);
