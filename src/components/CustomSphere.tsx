@@ -139,24 +139,18 @@ export const CustomSphere = () => {
     geometryRef.current = mergedGeometry;
   }, [materialProps, uniforms]);
 
-  console.log(filterEnvelope);
-
   useFrame((state, delta) => {
-    if (synthEngine) {
       let totalEnvelopeValue = 0.5;
-
+      if (synthEngine) {
       synthEngine.voices.forEach((voice) => {
         totalEnvelopeValue += voice.envelope.value / 4;
-      });
-
+      });}
       uniforms.uStrength.value = (totalEnvelopeValue * filterEnvelope.baseFrequency / 10000 + 0.2) * 0.5;
       uniforms.uTime.value += delta / 2 + totalEnvelopeValue / 100;
       uniforms.uPositionFrequency.value = totalEnvelopeValue;
-      console.log(totalEnvelopeValue);
-    }
+    
   });
 
-  console.log("customColor", customColor);
   return (
     <group>
       <mesh>
