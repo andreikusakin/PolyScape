@@ -11,6 +11,8 @@ type UiStore = {
   customColor: number[];
   uiSize: number;
   keyboardSize: number;
+  orbitControlsEnabled: boolean;
+  toggleOrbitControlsEnabled: (value: boolean) => void;
   setKeyboardSize: (size: number) => void;
   setUiSize: (size: number) => void;
   setIsCustomColor: (value: boolean) => void;
@@ -30,6 +32,10 @@ export const useUiStore = create<UiStore>()((set) => ({
   customColor: [255, 255, 255],
   keyboardSize: 1,
   uiSize: 1,
+  orbitControlsEnabled: false,
+  toggleOrbitControlsEnabled: () => {
+    set((state) => ({ orbitControlsEnabled: !state.orbitControlsEnabled }));
+  },
   setUiSize: (size: number) => {
     set(() => ({ uiSize: size }));
   },

@@ -1,4 +1,4 @@
-import { useUiStore } from "@/lib/store/uiStore";
+import { useUiColorRGB, useUiStore } from "@/lib/store/uiStore";
 import { useShallow } from "zustand/react/shallow";
 import styles from "./GlobalSettings.module.css";
 import Wheel from "@uiw/react-color-wheel";
@@ -7,6 +7,7 @@ import { useState } from "react";
 import { HsvaColor } from "@uiw/color-convert";
 
 export const GlobalSettings = () => {
+  const color = useUiColorRGB();
   const {
     isCustomColor,
     customColor,
@@ -16,6 +17,8 @@ export const GlobalSettings = () => {
     setKeyboardSize,
     uiSize,
     setUiSize,
+    orbitControlsEnabled,
+    toggleOrbitControlsEnabled,
   } = useUiStore(
     useShallow((state) => ({
       isCustomColor: state.isCustomColor,
@@ -26,6 +29,8 @@ export const GlobalSettings = () => {
       setKeyboardSize: state.setKeyboardSize,
       uiSize: state.uiSize,
       setUiSize: state.setUiSize,
+      orbitControlsEnabled: state.orbitControlsEnabled,
+      toggleOrbitControlsEnabled: state.toggleOrbitControlsEnabled,
     }))
   );
   const [hsva, setHsva] = useState({ h: 0, s: 0, v: 100, a: 1 });
@@ -38,7 +43,10 @@ export const GlobalSettings = () => {
     setIsCustomColor(true);
   };
   return (
-    <div className={styles.container}>
+    <div
+      className={styles.container}
+      style={{ "--color-rgb": color } as React.CSSProperties}
+    >
       <h5>Preferences</h5>
       <div className={styles.section}>
         <span>Appearance</span>
@@ -47,27 +55,30 @@ export const GlobalSettings = () => {
           <div className={styles.flexGap}>
             <button
               className={styles.color_box}
-              style={{ "--color-rgb": customColor } as React.CSSProperties}
               onClick={() => {
                 setIsCustomColor(true);
                 setToggleColorWheel(!toggleColorWheel);
               }}
             ></button>
-            <button onClick={() => {setIsCustomColor(false)
-            setToggleColorWheel(false);
-           setCustomColor([255,255,255])   
-            }}>reset</button>
+            <button
+              onClick={() => {
+                setIsCustomColor(false);
+                setToggleColorWheel(false);
+                setCustomColor([255, 255, 255]);
+              }}
+            >
+              reset
+            </button>
           </div>
-         
         </div>
-        {toggleColorWheel && 
+        {toggleColorWheel && (
           <Wheel
             color={hsva}
             onChange={(color) => updateCustomColor(color.hsva)}
             width={150 * uiSize}
             height={150 * uiSize}
-          
-          />}
+          />
+        )}
         <div className={styles.keyboard_size}>
           <label>Keyboard Size</label>
           <div className={styles.flexGap}>
@@ -88,7 +99,6 @@ export const GlobalSettings = () => {
                 +
               </button>
             </div>
-
           </div>
         </div>
         <div className={styles.ui_size}>
@@ -104,6 +114,20 @@ export const GlobalSettings = () => {
                 </option>
               ))}
             </select>
+          </div>
+        </div>
+      </div>
+      <div className={styles.section}>
+        <span>3D Visualization</span>
+        <div className={styles.visualization}>
+          <div className={styles.setting}>
+            <label>Orbit Controls</label>
+
+            <input
+              type="checkbox"
+              checked={orbitControlsEnabled}
+              onChange={() => toggleOrbitControlsEnabled()}
+            />
           </div>
         </div>
       </div>

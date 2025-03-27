@@ -1,6 +1,6 @@
 "use client";
 
-import { useUiColorRGB } from "@/lib/store/uiStore";
+import { useUiColorRGB, useUiStore } from "@/lib/store/uiStore";
 import {
   Environment,
   OrbitControls,
@@ -24,6 +24,13 @@ import { useHelper } from '@react-three/drei'
 import { DirectionalLightHelper } from "three";
 
 export const Scene = () => {
+  const {
+    orbitControlsEnabled,
+  } = useUiStore(
+    useShallow((state) => ({
+      orbitControlsEnabled: state.orbitControlsEnabled,
+    }))
+  );
   const color = useUiColorRGB();
   const meterRef = useRef<Tone.Meter>();
   const light1Ref = useRef<THREE.DirectionalLight>(null);
@@ -39,8 +46,6 @@ export const Scene = () => {
       osc2: state.osc2.type,
     }))
   );
-  console.log(osc1);
-  console.log(osc2);
   const osc1Color =
     osc1 === "sine"
       ? "rgb(255, 0, 0)"
@@ -90,8 +95,8 @@ export const Scene = () => {
 
   return (
     <>
-      <OrbitControls />
-      <PerspectiveCamera fov={10} position={[0, 0, 20]} makeDefault />
+      <OrbitControls enabled={orbitControlsEnabled}/>
+      <PerspectiveCamera fov={80} position={[0, 0, 3]} makeDefault />
 
       <Environment
         background
@@ -112,7 +117,7 @@ export const Scene = () => {
       /> */}
       <directionalLight
         ref={light1Ref}
-        color={osc1Color}
+        color={osc2Color}
         intensity={1}
         castShadow
         shadow-mapSize-width={1024}
@@ -124,7 +129,7 @@ export const Scene = () => {
       />
       <directionalLight
         ref={light2Ref}
-        color={osc2Color}
+        color={osc1Color}
         intensity={1}
         castShadow
         shadow-mapSize-width={1024}
