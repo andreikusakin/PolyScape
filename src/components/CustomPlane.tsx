@@ -142,7 +142,7 @@ export const CustomPlane = () => {
       uniforms: uniforms,
     });
 
-    const geometry = new THREE.PlaneGeometry(1, 1, 200, 200);
+    const geometry = new THREE.PlaneGeometry(2, 1.5, 300, 300);
     geometry.scale(10, 10, 10);
     geometry.rotateX(-Math.PI / 6);
     const mergedGeometry = mergeVertices(geometry);
