@@ -1,8 +1,8 @@
 .container {
-  --width-height: 40px;
+  --width-height: 3.5em;
   width: var(--width-height);
   height: var(--width-height);
-  perspective: 70px;
+  perspective: 12em;
 }
 
 .cube {
@@ -16,26 +16,25 @@
 .face {
   width: var(--width-height);
   height: var(--width-height);
-  border: 1px solid rgba(var(--reverb-light), 0.4);
-  box-shadow: 0 0 10px 0 rgba(var(--reverb-light), 0.5),
-    inset 0 0 10px 0 rgba(var(--reverb-light), 0.5);
+  border: 0.1em solid rgba(var(--reverb-light), 0.4);
+  box-shadow: 0 0 0.8em 0 rgba(var(--reverb-light), 0.5),
+    inset 0 0 0.8em 0 rgba(var(--reverb-light), 0.5);
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
   transform: rotate3d(0, 0, 0, 0);
-  font-size: 2rem;
+
   transition: transform 500ms;
   filter:hue-rotate(180deg);
 }
 
 .text {
   color: rgb(255, 255, 255);
-  text-shadow: 0 0 10px rgb(255, 255, 255);
+  text-shadow: 0 0 0.8em rgb(255, 255, 255);
   flex-direction: column;
   letter-spacing: 0;
-  font-size: 16px;
-  line-height: 14px;
+
   width: var(--width-height);
   height: var(--width-height);
   position: absolute;

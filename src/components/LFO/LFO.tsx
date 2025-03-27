@@ -70,7 +70,7 @@ export const LFO = React.memo(({ lfoNumber }: LFOProps) => {
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div>
       <div className={styles.name}>{`lfo${lfoNumber}`}</div>
       <div
         className={[
@@ -78,7 +78,11 @@ export const LFO = React.memo(({ lfoNumber }: LFOProps) => {
           lfoNumber === 1 ? styles.borderLFO1 : styles.borderLFO2,
         ].join(" ")}
       >
-        <div>
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}>
           <ul className={styles.shapes}>
             <li
               onClick={() => updateWaveformType("sine")}
@@ -122,13 +126,17 @@ export const LFO = React.memo(({ lfoNumber }: LFOProps) => {
             />
           </div>
         </div>
-        <div>
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}>
           <div className={styles.waveform}>
             <div className={styles.waveformAnimation}>
               <OscillatorWaveform oscType={settings.type || "sine"} />
             </div>
           </div>
-          <div
+          <button
             onClick={() => {
               updateSettings({
                 ...settings,
@@ -148,22 +156,22 @@ export const LFO = React.memo(({ lfoNumber }: LFOProps) => {
             ].join(" ")}
           >
             <label>sync</label>
-          </div>
+          </button>
         </div>
         <div className={styles.destinations}>
           <div className={styles.underlay}>
-            <div className={styles.selector} onClick={handleAssignClick}>
+            <button className={styles.selector} onClick={handleAssignClick}>
               <label>assign</label>
-            </div>
-            <div className={styles.selector} onClick={handleAssignClick}>
+            </button>
+            <button className={styles.selector} onClick={handleAssignClick}>
               <label>assign</label>
-            </div>
-            <div className={styles.selector} onClick={handleAssignClick}>
+            </button>
+            <button className={styles.selector} onClick={handleAssignClick}>
               <label>assign</label>
-            </div>
-            <div className={styles.selector} onClick={handleAssignClick}>
+            </button>
+            <button className={styles.selector} onClick={handleAssignClick}>
               <label>assign</label>
-            </div>
+            </button>
           </div>
           <div className={styles.targets}>
             {settings.destinations.map((d, i) => (

@@ -9,7 +9,7 @@ import { useSynthEngineStore } from "@/lib/store/settingsStore";
 import { useUiColorRGB } from "@/lib/store/uiStore";
 import { useUiStore } from "@/lib/store/uiStore";
 
-export const Keys = () => {
+export const Keys = React.memo(() => {
   const engine = useSynthEngineStore((state) => state.synthEngine);
   const [notesPressed, setNotesPressed] = useState<number[]>([]);
   // const [colorRGB, setColorRGB] = useState<string>("255, 0, 0");
@@ -99,4 +99,4 @@ export const Keys = () => {
       </div>
     </div>
   );
-};
+});

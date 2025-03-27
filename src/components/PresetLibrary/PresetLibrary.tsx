@@ -113,7 +113,12 @@ export const PresetLibrary = () => {
   };
 
   return (
-    <div className="fixed mt-4 flex justify-center left-0 top-10 w-full pointer-events-none">
+    <div className=" flex justify-center left-0  w-full pointer-events-none"
+      style={{
+        position: 'fixed',
+        top: '3.5em',
+      }}
+    >
       <div
         className={styles.wrapper}
         style={{ "--waveform-color": colorRGB } as React.CSSProperties}

@@ -1,25 +1,4 @@
-.label {
-  font-size: 24px;
-  line-height: 16px;
-  height: 68px;
-  margin-left: 10px;
-  padding-top: 8px;
-  
-}
 
-.label h3 {
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 0 10px rgba(var(--ping-pong-delay-rgb), 0.5);
-  white-space: nowrap;
-  letter-spacing: 0;
-  z-index: 10;
-  position: relative;
-}
-
-.label h3:nth-child(3) {
-  color: rgba(var(--ping-pong-delay-rgb), 0.9);
-  text-shadow: 0 0 10px rgba(var(--ping-pong-delay-rgb), 0.5);
-}
 
 .grid {
   display: grid;
@@ -30,41 +9,3 @@
   justify-items: center;
 }
 
-.drag {
-  cursor: grab;
-  position: absolute;
-  left: 0;
-  bottom: 5px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.dot {
-  height: 5px;
-  width: 5px;
-  background: rgba(var(--ping-pong-delay-light), 0.8);
-  border-radius: 100%;
-  position: relative;
-}
-
-.dot::before {
-  left: -8px;
-  position: absolute;
-  content: "";
-  height: 5px;
-  width: 5px;
-  background: inherit;
-  border-radius: 100%;
-}
-
-.dot::after {
-  left: 8px;
-  position: absolute;
-  content: "";
-  height: 5px;
-  width: 5px;
-  background: inherit;
-  border-radius: 100%;
-}

@@ -2,12 +2,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 70px;
+  height: 6em;
 }
 
-.container h3 {
+.container h4 {
   letter-spacing: normal;
-  font-size: 24px;
   animation: colorchange 2s infinite alternate;
 }
 

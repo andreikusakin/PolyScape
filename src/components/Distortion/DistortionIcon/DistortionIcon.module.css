@@ -1,14 +1,17 @@
 .container {
   letter-spacing: normal;
   text-transform: capitalize;
-  height: 70px;
+  height: 6em;
   grid-column-start: 1;
-    grid-column-end: 3;
+  grid-column-end: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .container h3 {
-  font-size: 20px;
-  letter-spacing: 1px;
+  /* font-size: 20px; */
   color: rgb(255, 119, 78);
-  text-shadow: 0 0 2px rgb(255, 38, 0), 0 0 10px rgba(var(--distortion-rgb), 1);
+  text-shadow: 0 0 0.2em rgb(255, 38, 0),
+    0 0 0.8em rgba(var(--distortion-rgb), 1);
 }

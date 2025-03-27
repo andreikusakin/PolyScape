@@ -5,4 +5,5 @@
   row-gap: var(--grid-row-gap);
   align-items: center;
   justify-items: center;
+  /* padding-top: var(--grid-row-gap); */
 }

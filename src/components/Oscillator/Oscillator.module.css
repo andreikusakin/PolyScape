@@ -19,7 +19,7 @@
 .shapes {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.6em;
   color: rgba(255, 255, 255, 0.5);
   width: 100%;
 }
@@ -35,8 +35,8 @@
 .waveform {
   display: flex;
   align-items: center;
-  height: 60px;
-  width: 60px;
+  height: 5.8em;
+  width: 5.8em;
   mask-image: linear-gradient(
     90deg,
     transparent,
@@ -49,6 +49,11 @@
 .waveformAnimation {
     animation: infinite-scroll 1s linear infinite;
     
+}
+
+.waveformAnimation svg {
+  width: 8em;
+  height: auto;
 }
 
 @keyframes infinite-scroll {

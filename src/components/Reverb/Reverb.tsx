@@ -59,10 +59,6 @@ export const Reverb = ({
       currentWet={settings[index].settings.wet}
     >
       <div className={styles.grid}>
-        {/* <div className={`${styles.label} `}>
-          <h3>rev</h3>
-          <h3>erb</h3>
-        </div> */}
         <Cube />
         <Knob
           onChange={updateMix}

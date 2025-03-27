@@ -2,10 +2,10 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    padding: 10px;
+    padding: 1em;
     width: 100%;
     display: flex;
-    min-height: 200px;
+    min-height: 8em;
 }
 
 .container {
@@ -19,7 +19,7 @@
 
 .effects {
     display: flex;
-    gap: 20px;
+    gap: 1em;
     overflow-x: scroll;
     padding: var(--section-padding);
 }
@@ -28,21 +28,20 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 0.8em;
     flex-shrink: 0;
-    border-left: 1px solid #bebebe37;
+    border-left: 0.1em solid #bebebe37;
     cursor: pointer;
-    letter-spacing: 1px;
-    height: 200px;
+    height: 16em;
     justify-content: center;
     padding: var(--section-padding);
     color: #ffffffad;
     margin: var(--section-padding) 0;
-    width: 120px;
+    width: 10em;
 }
 
 .add_effect:hover {
     color: #ffffffdd;
-    text-shadow: 0 0 10px #ffffffbc;
-    border-left: 1px solid #bebebe6f;
+    text-shadow: 0 0 0.8em #ffffffbc;
+    border-left: 0.1em solid #bebebe6f;
 }

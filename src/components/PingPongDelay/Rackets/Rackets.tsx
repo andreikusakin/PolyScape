@@ -5,13 +5,12 @@ const micro5 = localFont({ src: "./../Micro5-Regular.ttf" });
 
 export const Rackets = () => {
   return (
-    <div className={`${styles.label} ${micro5.className}`}>
+    <div className={`${micro5.className}`}>
       <div className={styles.rackets}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           version="1.1"
-          width="20"
-          height="20"
+          viewBox="0 0 24 24"
         >
           <rect width="1" height="1" x="8" y="3" fill="hsl(0, 0%, 15%)"></rect>
           <rect width="1" height="1" x="9" y="3" fill="hsl(0, 0%, 15%)"></rect>
@@ -951,8 +950,7 @@ export const Rackets = () => {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           version="1.1"
-          width="20"
-          height="20"
+          viewBox="0 0 24 24"
         >
           <rect width="1" height="1" x="8" y="4" fill="hsl(0, 0%, 0%)"></rect>
           <rect width="1" height="1" x="9" y="4" fill="hsl(0, 0%, 0%)"></rect>
@@ -1802,8 +1800,7 @@ export const Rackets = () => {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           version="1.1"
-          width="20"
-          height="20"
+          viewBox="0 0 24 24"
         >
           <rect
             width="1"
@@ -1954,8 +1951,10 @@ export const Rackets = () => {
           ></rect>
         </svg>
       </div>
-      <h3>ping pong</h3>
-      <h3>delay</h3>
+      <div className={styles.label}>
+        <h4>ping pong</h4>
+        <h4>delay</h4>
+      </div>
     </div>
   );
 };

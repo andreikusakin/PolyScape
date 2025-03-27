@@ -124,58 +124,80 @@ const PolySynth = () => {
   }, [currentPreset, setPolySynth, setEffects]);
 
   return (
-    <div className={styles.wrapper}
-    style={{
-      fontSize: `${uiSize}em`,
-    }}>
+    <div
+      className={styles.wrapper}
+      style={
+        {
+          "--font-size": `${uiSize}em`,
+        } as React.CSSProperties
+      }
+      
+    >
       {enginesReady && (
         <>
           <Header />
           <AnimatePresence>
             {isUiVisible && (
-              <div className={styles.container}>
-                <div className={styles.left_right}>
-                  <motion.div
-                    className={styles.left}
-                    initial={{ opacity: 0, x: -100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5 }}
-                    exit={{ opacity: 0, x: -100 }}
-                  >
-                    <Oscillator oscNumber={1} />
-                    <Oscillator oscNumber={2} />
-                    <Noise />
-                    <MiscParameters />
-                  </motion.div>
-                  <motion.div
-                    className={styles.right}
-                    initial={{ opacity: 0, x: 100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5 }}
-                    exit={{ opacity: 0, x: 100 }}
-                  >
-                    <div className={styles.filter_amp}>
-                      <Filter />
-                      <EnvelopeAmplitude />
-                    </div>
-                    <div className={styles.LFOs}>
-                      <LFO lfoNumber={1} />
-                      <LFO lfoNumber={2} />
-                    </div>
-                  </motion.div>
-                </div>
+              <div
+                className={styles.container}
+                key="ui-visible"
+                style={{
+                  paddingBottom: isKeyboardOpen || isFxOpen ? "22em" : "0em",
+                }}
+              >
                 <motion.div
-                  className={styles.bottom}
-                  initial={{ opacity: 0, y: 100 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  className={styles.left}
+                  initial={{ opacity: 0, x: -100 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5 }}
-                  exit={{ opacity: 0, y: 100 }}
+                  exit={{ opacity: 0, x: -100 }}
                 >
-                  {isFxOpen && <Effects />}
-                  {isKeyboardOpen && <Keyboard />}
+                  <div className={styles.osc1}>
+                    <Oscillator oscNumber={1} />
+                  </div>
+                  <div className={styles.osc2}>
+                    <Oscillator oscNumber={2} />
+                  </div>
+                  <div className={styles.noise}>
+                    <Noise />
+                  </div>
+                  <div className={styles.misc}>
+                    <MiscParameters />
+                  </div>
+                </motion.div>
+                <motion.div
+                  className={styles.right}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5 }}
+                  exit={{ opacity: 0, x: 100 }}
+                >
+                  <div className={styles.filter}>
+                    <Filter />
+                  </div>
+                  <div className={styles.envelope}>
+                    <EnvelopeAmplitude />
+                  </div>
+                  <div className={styles.lfo1}>
+                    <LFO lfoNumber={1} />
+                  </div>
+                  <div className={styles.lfo2}>
+                    <LFO lfoNumber={2} />
+                  </div>
                 </motion.div>
               </div>
             )}
+            <motion.div
+              key="ui-hidden"
+              className={styles.bottom}
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              exit={{ opacity: 0, y: 100 }}
+            >
+              {isFxOpen && <Effects />}
+              {isKeyboardOpen && <Keyboard />}
+            </motion.div>
           </AnimatePresence>
         </>
       )}

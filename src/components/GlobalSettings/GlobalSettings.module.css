@@ -1,6 +1,6 @@
 .container {
   position: absolute;
-  top: 55px;
+  top: 3.5em;
   right: 0;
   border-radius: 0.5em;
   background: radial-gradient(
@@ -9,7 +9,6 @@
     rgba(3, 3, 3, 0.3) 100%
   );
   z-index: 3;
-  /* line-height: calc(var(--main-synth-ui-font-size) - 1px); */
   box-shadow: 0 0 1.2em 0.15em rgba(255, 255, 255, 0.025),
     0 0 0 0.15em rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(30px);
