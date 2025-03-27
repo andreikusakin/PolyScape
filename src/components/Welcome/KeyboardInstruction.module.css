@@ -1,0 +1,296 @@
+.instructions {
+  --height: 16em;
+  --white-width: calc(var(--height, 100) / 4.2);
+  --black-width: calc(var(--white-width) * 0.6);
+  padding: 2em 0;
+  width: max-content;
+}
+
+.keyboard_wrapper {
+  /* padding: 1.4em 1.4em 0.5em 1.4em; */
+
+  position: relative;
+  
+}
+
+/* .keyboard_wrapper::before {
+  content: "Keys C4 - F5";
+  position: absolute;
+  top: 0;
+  left: -6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 4em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+ 
+} */
+
+.keyboard_wrapper::after {
+  content: "";
+  height: var(--height);
+  width: 100% ;
+  position: absolute;
+  top: 0;
+  border-radius: 1em;
+  box-shadow: 0 0 0 0.2em rgb(5, 5, 5), 0 0 0 0.3em rgb(60, 60, 60);
+  pointer-events: none;
+  z-index: 12;
+}
+
+.container {
+  /* display: flex;
+  max-width: calc(var(--white-width) * 48.982); */
+}
+
+.keys {
+  display: flex;
+
+  padding-bottom: 0.5em;
+  overflow-y: hidden;
+  border-radius: 1em;
+}
+
+.container::-webkit-scrollbar {
+  height: 0.8em;
+}
+
+.container::-webkit-scrollbar-track:horizontal {
+  border-radius: 1em;
+  box-shadow: inset 0 0 0 0.1em rgb(80, 80, 80);
+  background-clip: content-box;
+  border: 0.1em solid transparent;
+}
+
+.container::-webkit-scrollbar-thumb:horizontal {
+  border-radius: 1em;
+  box-shadow: inset 0 0 0 0.1em rgba(var(--color-rgb), 1),
+    inset 0 0 0.8em 0 rgba(var(--color-rgb), 1);
+  background-color: rgba(var(--color-rgb), 0.1);
+}
+
+.container::-webkit-scrollbar-thumb:horizontal:hover {
+  background-color: rgba(var(--color-rgb), 0.5);
+  cursor: grab;
+}
+
+.key {
+  min-width: var(--white-width);
+  height: var(--height);
+  border-radius: 0.4em;
+
+  position: relative;
+}
+
+.white {
+  box-shadow: inset 0 0 0 calc(var(--height) / 66.66) rgb(5, 5, 5),
+    inset 0 0 0 calc(var(--height) / 33.33) rgba(40, 40, 40, 0.5),
+    inset 0 0 calc(var(--height) / 8.33) 0 rgba(var(--color-rgb), 0.3);
+  background-color: rgba(80, 80, 80, 0.7);
+}
+
+.black {
+  position: relative;
+  box-shadow: inset 0 calc(var(--height) / -33.33) 0 calc(var(--height) / 33.33)
+      rgb(5, 5, 5),
+    inset 0 calc(var(--height) / -33.33) 0 calc(var(--height) / 25)
+      rgba(40, 40, 40, 0.5),
+    inset 0 0 calc(var(--height) / 16.66) 0 rgba(var(--color-rgb), 1);
+  min-width: var(--black-width);
+  height: calc(var(--height) * 0.6);
+  z-index: 10;
+  margin-left: calc(var(--white-width) * -0.6);
+  left: calc(var(--black-width) * 0.6);
+  background-color: rgb(60, 60, 60);
+}
+
+.black:nth-child(12n + 2) {
+  left: calc(var(--black-width) * 0.4);
+}
+
+.black:nth-child(12n + 7) {
+  left: calc(var(--black-width) * 0.4);
+}
+.black:nth-child(12n + 9) {
+  left: calc(var(--black-width) * 0.49);
+}
+.white::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  background-color: rgba(var(--color-rgb), 1);
+  height: 0.1em;
+  width: var(--white-width);
+  box-shadow: 0 0.48em 1.2em 0.08em rgba(var(--color-rgb), 1);
+}
+
+.black::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  background-color: rgba(var(--color-rgb), 1);
+  width: var(--black-width);
+  box-shadow: 0 0 0.6em 0.1em rgba(var(--color-rgb), 1);
+  z-index: 11;
+}
+
+.white::after {
+  position: absolute;
+  font-size: 1.6em;
+  bottom: 0.8em;
+  width: 100%;
+  text-align: center;
+  color: rgba(var(--color-rgb), 1)
+}
+.white:nth-child(1)::after {
+  content: "A";
+
+}
+
+.white:nth-child(3)::after {
+  content: "S";
+}
+.white:nth-child(5)::after {
+  content: "D";
+}
+.white:nth-child(6)::after {
+  content: "F";
+}
+.white:nth-child(8)::after {
+  content: "G";
+}
+.white:nth-child(10)::after {
+  content: "H";
+}
+.white:nth-child(12)::after {
+  content: "J";
+}
+.white:nth-child(13)::after {
+  content: "K";
+}
+.white:nth-child(15)::after {
+  content: "L";
+}
+.white:nth-child(17)::after {
+  content: ";";
+}
+.white:nth-child(18)::after {
+  content: "'";
+}
+
+.black::after {
+  position: absolute;
+  font-size: 1.6em;
+  opacity: 0.8;
+  bottom: 0.8em;
+  width: 100%;
+  text-align: center;
+  color: rgba(var(--color-rgb), 1)
+}
+.black:nth-child(2)::after {
+  content: "W";
+}
+
+.black:nth-child(4)::after {
+  content: "E";
+}
+.black:nth-child(7)::after {
+  content: "T";
+}
+.black:nth-child(9)::after {
+  content: "Y";
+}
+.black:nth-child(11)::after {
+  content: "U";
+}
+.black:nth-child(14)::after {
+  content: "O";
+}
+.black:nth-child(16)::after {
+  content: "P";
+}
+
+.velocity {
+  display: flex;
+  padding: 0.5em 0;
+  position: relative;
+  align-items: center;
+}
+.setting_name {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding-right: 1em;
+  width: 7em;
+}
+
+/* .velocity::before {
+  content: "Velocity";
+  position: absolute;
+  top: 0;
+  left: -6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 5em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+} */
+.settings_key {
+  text-align: center;
+  box-shadow: inset 0 0 0 3px rgb(5, 5, 5),
+  inset 0 0 0 0.35em
+    color-mix(in srgb, rgba(40, 40, 40, 0.5) 90%, rgb(var(--color-rgb))),
+  inset 0 0 52px 0 rgba(var(--color-rgb), 0.3),
+  inset 0 0 0.6em 0.5em rgba(var(--color-rgb), 0.5);
+  background-color: rgba(80, 80, 80, 0.7);
+  width: var(--white-width);
+  height: var(--white-width);
+  border-radius: 0.4em;
+  padding: 0.7em;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  color: color-mix(in srgb, rgba(var(--color-rgb), 1) 50%, rgba(255, 255, 255, 1));
+}
+
+.settings_key_velocity {
+  font-size: 1.2em;
+  font-weight: 700;
+}
+
+.octaves {
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+
+.keyboard {
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+
+/* .octaves::before {
+  content: "Octaves";
+  position: absolute;
+  top: 0;
+  left: -6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 5em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+} */
+
+@media screen and (max-width: 650px)  {
+  .instructions {
+    display: none;
+  }
+}
