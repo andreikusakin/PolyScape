@@ -116,7 +116,7 @@ export const PresetLibrary = () => {
     <div className=" flex justify-center left-0  w-full pointer-events-none"
       style={{
         position: 'fixed',
-        top: '3.5em',
+        top: '4em',
       }}
     >
       <div

@@ -1,6 +1,6 @@
 .container {
   position: absolute;
-  top: 3.5em;
+  top: 4em;
   right: 0;
   border-radius: 0.5em;
   background: radial-gradient(
@@ -62,4 +62,16 @@
   align-items: center;
   justify-content: space-between;
   
+}
+
+.visualization input[type="checkbox"]:checked {
+  background: rgb(var(--color-rgb));
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  height: 2em;
+  justify-content: space-between;
+  width: 100%;
 }
