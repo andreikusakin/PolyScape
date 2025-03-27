@@ -4,6 +4,7 @@ import { WebMidi } from "webmidi";
 import AudioKeys from "audiokeys";
 import { Preset, LFOTarget } from "../types/types";
 import { CustomVoice } from "./CustomVoice";
+import MidiManager from "./MidiManager"; 
 
 //TODO
 
@@ -48,7 +49,16 @@ export default class CustomPolySynth {
     this.loadMiscParamsFromPreset(preset);
     this.loadLFOs(preset);
     this.setupKeyboard();
-    this.setupMidi();
+    // this.setupMidi();
+    if (MidiManager.isMidiSupported && MidiManager.midiInputs.length > 0) {
+      this.midiInputs = MidiManager.midiInputs;
+      this.midiInput = MidiManager.midiInputs[this.midiInputIndex];
+      this.midiListener(this.midiInput);
+      this.isMidiSupported = true;
+    } else {
+      console.error("MIDI not supported or no devices detected");
+      this.isMidiSupported = false;
+    }
     this.osc1Fine = preset.osc1.detune;
     this.osc1Coarse = preset.osc1.transpose;
     this.osc2Fine = preset.osc2.detune;
@@ -576,10 +586,9 @@ export default class CustomPolySynth {
       lfo.LFO.dispose();
       lfo.gain?.dispose();
     });
-    if (this.isMidiSupported) {
+    if (this.isMidiSupported && this.midiInput) {
       this.midiInput.removeListener("noteon");
       this.midiInput.removeListener("noteoff");
-      this.midiInput.removeListener("controlchange");
     }
   }
 }
