@@ -49,7 +49,7 @@ export const CustomPlane = () => {
       setUniform: state.setUniform,
     }))
   );
-  console.log("uiColor", uiColor);
+
   const materialProps = useControls("Plane", {
     metalness: { value: 1, min: 0, max: 1, step: 0.001 },
     roughness: { value: 0, min: 0, max: 1, step: 0.001 },
@@ -184,7 +184,6 @@ export const CustomPlane = () => {
     uniforms.uWarpPositionFrequency.value = ((totalEnvelopeValue * filterEnvelope.baseFrequency) / 10000 + 0.2) * 0.5;
     uniforms.uColorIntensity.value = totalEnvelopeValue * 0.5;
   });
-
   return (
     <group>
       {/* <mesh>
