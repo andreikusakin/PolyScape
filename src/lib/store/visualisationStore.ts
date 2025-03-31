@@ -12,6 +12,7 @@ type VisualisationStore = {
     uWarpStrength: { value: number };
     uColorA: { value: THREE.Color };
     uColorB: { value: THREE.Color };
+    uColorIntensity: { value: number },
   };
   setUniform: (name: string, value: any) => void;
 };
@@ -25,8 +26,9 @@ export const useVisualisationStore = create<VisualisationStore>((set) => ({
     uWarpPositionFrequency: { value: 0.5 },
     uWarpTimeFrequency: { value: 0.4 },
     uWarpStrength: { value: 0.3 },
-    uColorA: { value: new THREE.Color("#ffff00") },
+    uColorA: { value: new THREE.Color("#00ffff") },
     uColorB: { value: new THREE.Color("#00ffff") },
+    uColorIntensity: { value: 0.25 },
    },
   setUniform: (name: string, value: any) =>
       set((state: { uniforms: any }) => ({
