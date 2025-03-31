@@ -4,7 +4,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    /* background-color: rgba(0, 0, 0, 0.5); */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -24,6 +24,10 @@
     font-size: 1em;
 
     padding: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    /* align-items: center; */
 }
 
 .content::before {
@@ -37,4 +41,25 @@
     z-index: -1;
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
+}
+
+.start_button {
+    font-size: 2em;
+    background-color: rgba(0, 255, 255, 0.5);
+    color: rgba(100, 255,255, 1);
+    /* width: max-content; */
+}
+
+.start_button:hover {
+    background-color: rgba(0, 255, 255, 0.7);
+    text-shadow: 0 0 0.2em rgba(100, 255,255, 1), 0 0 0.8em rgba(100, 255,255, 1);
+}
+
+.credits {
+    text-align: center;
+}
+
+.credits a {
+    color: rgba(100, 255,255, 1);
+    text-decoration: underline;
 }

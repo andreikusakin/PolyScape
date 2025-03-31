@@ -48,8 +48,8 @@ export const KeyboardInstruction = () => {
         }
       >
         <span className={styles.setting_name}>Velocity</span>
-        {velocityKeys.map((k) => (
-          <div key={k} className={styles.settings_key}>
+        {velocityKeys.map((k, i) => (
+          <div key={i} className={styles.settings_key}>
             <div className={styles.settings_key_velocity}>
               {Object.values(k)}
             </div>

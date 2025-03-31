@@ -4,6 +4,7 @@ import React from "react";
 import * as Tone from "tone/build/esm/index";
 import styles from "./Welcome.module.css";
 import { KeyboardInstruction } from "./KeyboardInstruction";
+import Link from "next/link";
 
 export const Welcome = () => {
   const { contextStarted, setContextStarted } = useAudioContextStore(
@@ -32,29 +33,27 @@ export const Welcome = () => {
       }}
       className={styles.wrapper}
     >
-      
       <div className={styles.container}>
         <div className={styles.content}>
-        <h3>PolyScape</h3>
+          <h3>PolyScape</h3>
           <p>
-            Introducing our cutting-edge 10-voice synthesizer that brings
-            studio-quality sound creation right to your desktop. With dual
-            oscillators per voice, you can layer rich timbres and create complex
-            sounds. A versatile filter section—complete with its own dedicated
-            envelope—lets you sculpt and shape your sound with precision. Two
-            low-frequency oscillators (LFOs) add dynamic modulation options,
-            perfect for evolving textures and rhythmic effects. MIDI support
-            ensures seamless integration with your hardware, while the built-in
-            virtual keyboard makes it easy to experiment even without external
-            gear. Plus, an innovative AI-powered preset generator helps you
-            discover new sounds by creating unique preset ideas tailored to your
-            creative vision. Whether you're a seasoned sound designer or just
-            starting out, this app offers a powerful and intuitive platform for
-            exploring synthesis and pushing the boundaries of your music.
+            PolyScape is a web-based synthesizer with 3D visualization. It
+            features two oscillators, two LFOs for modulation, and a number of
+            effects such as reverb, delay, and chorus. To play, use your MIDI
+            instrument or virtual keyboard. Note that MIDI is not supported in
+            Safari.
           </p>
-          
+
           <KeyboardInstruction />
-          <button onClick={handleStart}>Start</button>
+          <button onClick={handleStart} className={styles.start_button}>
+            Start
+          </button>
+          <div className={styles.credits}>
+            Made with love and passion by{" "}
+            <Link href="https://www.kusakin.dev/" target="_blank">
+              Andrew Kusakin
+            </Link>
+          </div>
         </div>
       </div>
     </div>

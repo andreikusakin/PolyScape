@@ -2,7 +2,7 @@
   --height: 16em;
   --white-width: calc(var(--height, 100) / 4.2);
   --black-width: calc(var(--white-width) * 0.6);
-  padding: 2em 0;
+
   width: max-content;
 }
 

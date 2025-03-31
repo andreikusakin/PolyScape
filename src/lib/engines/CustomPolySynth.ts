@@ -189,10 +189,9 @@ export default class CustomPolySynth {
 
   private setupMidi() {
     if (navigator.requestMIDIAccess) {
-      // Check permission status using the Permissions API (if supported)
       if (navigator.permissions) {
         navigator.permissions
-          .query({ name: "midi", sysex: false })
+          .query({ name: "midi" as PermissionName, sysex: false } as any)
           .then((result) => {
             if (result.state === "granted") {
               console.log("MIDI permission granted");
@@ -220,20 +219,24 @@ export default class CustomPolySynth {
     } else {
       console.error("Web MIDI API is not supported in this browser.");
     }
-    WebMidi.enable((err) => {
-      if (err) {
-        console.error("WebMidi could not be enabled.", err);
-      } else {
-        console.log(WebMidi.inputs);
-        
-        if (WebMidi.inputs.length < 1) {
-          console.log("No MIDI devices detected");
-          return;
+    
+    WebMidi.enable({
+      callback: (err: Error | null) => {
+        if (err) {
+          console.error("WebMidi could not be enabled.", err);
+        } else {
+          console.log(WebMidi.inputs);
+          
+          if (WebMidi.inputs.length < 1) {
+            console.log("No MIDI devices detected");
+            return;
+          }
+          this.midiInputs = WebMidi.inputs;
+          this.midiInput = WebMidi.inputs[this.midiInputIndex];
+          this.midiListener(this.midiInput);
         }
-        this.midiInputs = WebMidi.inputs;
-        this.midiInput = WebMidi.inputs[this.midiInputIndex];
-        this.midiListener(this.midiInput);
-      }
+      },
+      sysex: false
     });
   }
 
@@ -261,12 +264,12 @@ export default class CustomPolySynth {
     
   }
 
-  midiListener(input) {
-    input.addListener("noteon", "all", (e) => {
-      console.log(e);
+  midiListener(input: any) {
+    input.addListener("noteon", "all", (e: any) => {
+      // console.log(e);
       this.triggerAttack(e.note.number, Tone.now(), e.velocity);
     });
-    input.addListener("noteoff", "all", (e) => {
+    input.addListener("noteoff", "all", (e: any) => {
       this.triggerRelease(e.note.number);
     });
   }
@@ -285,17 +288,17 @@ export default class CustomPolySynth {
     } else {
       let availableVoice = null;
       for (let i = 0; i < this.voices.length; i++) {
-        // Adjust the index calculation to always be non-negative
+
         const index = (this.lastVoiceUsedIndex + i + this.voices.length) % this.voices.length;
         const candidate = this.voices[index];
-        if (!this.activeVoices.has(candidate.frequency.value)) {
+        const frequencyValue = Number(candidate.frequency.value);
+        if (!this.activeVoices.has(frequencyValue)) {
           availableVoice = candidate;
           this.lastVoiceUsedIndex = index;
           break;
         }
       }
       if (!availableVoice) {
-        // Voice stealing: release the note on the current voice to free it
         availableVoice = this.voices[this.lastVoiceUsedIndex];
         availableVoice.triggerRelease();
       }

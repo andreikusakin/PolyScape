@@ -126,7 +126,7 @@ export const GlobalSettings = () => {
             <input
               type="checkbox"
               checked={orbitControlsEnabled}
-              onChange={() => toggleOrbitControlsEnabled()}
+              onChange={() => toggleOrbitControlsEnabled(!orbitControlsEnabled)}
             />
           </div>
         </div>

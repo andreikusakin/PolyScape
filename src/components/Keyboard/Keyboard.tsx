@@ -5,12 +5,12 @@ import { Keys } from "./Keys/Keys";
 import { useEffect, useRef } from "react";
 
 export const Keyboard = () => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const handleTouchMove = (e) => {
+    const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 1) {
         e.preventDefault();
       }

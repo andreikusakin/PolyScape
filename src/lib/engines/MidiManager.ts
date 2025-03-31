@@ -21,10 +21,11 @@ class MidiManager {
         // Check permission status using the Permissions API (if supported)
         if (navigator.permissions) {
           navigator.permissions
-            .query({ name: "midi", sysex: false })
+            .query({ name: "midi" as PermissionName, sysex: false } as any)
             .then((result) => {
               if (result.state === "granted") {
-                WebMidi.enable((err) => {
+                WebMidi.enable({
+                  callback: (err: any) => {
                     if (err) {
                       console.error("WebMidi could not be enabled.", err);
                       this.isMidiSupported = false;
@@ -33,7 +34,9 @@ class MidiManager {
                       this.isMidiSupported = true;
                       this.midiInputs = WebMidi.inputs;
                     }
-                  });
+                  },
+                  sysex: false
+                });
               } else if (result.state === "prompt") {
                 console.log("MIDI permission prompt (not yet granted)");
               } else {
@@ -48,15 +51,18 @@ class MidiManager {
           navigator.requestMIDIAccess({ sysex: false })
             .then((midiAccess) => {
               console.log("MIDI access granted", midiAccess);
-              WebMidi.enable((err) => {
-                if (err) {
-                  console.error("WebMidi could not be enabled.", err);
-                  this.isMidiSupported = false;
-                } else {
-                  console.log("WebMidi enabled");
-                  this.isMidiSupported = true;
-                  this.midiInputs = WebMidi.inputs;
-                }
+              WebMidi.enable({
+                callback: (err: any) => {
+                  if (err) {
+                    console.error("WebMidi could not be enabled.", err);
+                    this.isMidiSupported = false;
+                  } else {
+                    console.log("WebMidi enabled");
+                    this.isMidiSupported = true;
+                    this.midiInputs = WebMidi.inputs;
+                  }
+                },
+                sysex: false
               });
             })
             .catch((error) => {
