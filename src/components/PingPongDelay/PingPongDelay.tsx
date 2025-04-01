@@ -85,7 +85,7 @@ export const PingPongDelay = ({
         <Knob
           label="rate"
           radius={24}
-          interactive={true}
+          
           sync={true}
           minValue={0}
           maxValue={200}
@@ -96,7 +96,7 @@ export const PingPongDelay = ({
         <Knob
           label="feedback"
           radius={24}
-          interactive={true}
+          
           minValue={0}
           maxValue={1}
           step={0.01}

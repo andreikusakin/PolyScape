@@ -82,7 +82,7 @@ export const Delay = ({
         <Knob
           label="rate"
           radius={24}
-          interactive={true}
+          
           sync={true}
           minValue={0}
           maxValue={200}
@@ -93,7 +93,7 @@ export const Delay = ({
         <Knob
           label="feedback"
           radius={24}
-          interactive={true}
+          
           minValue={0}
           maxValue={1}
           step={0.01}

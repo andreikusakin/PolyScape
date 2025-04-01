@@ -1,17 +1,21 @@
 import styles from "./EnvelopeAmplitude.module.css";
 import Knob from "../Knob/Knob";
 import { SectionWrapper } from "../SectionWrapper/SectionWrapper";
-import { useSynthEngineStore, useSynthSettingsStore } from "@/lib/store/settingsStore";
+import {
+  useSynthEngineStore,
+  useSynthSettingsStore,
+} from "@/lib/store/settingsStore";
 import { useShallow } from "zustand/react/shallow";
 import React from "react";
 
-
 export const EnvelopeAmplitude = React.memo(() => {
   const engine = useSynthEngineStore((state) => state.synthEngine);
-  const { settings, updateSettings } = useSynthSettingsStore(useShallow((state) => ({
-    settings: state.envelopeAmplitude,
-    updateSettings: state.setEnvAmplitudeParams,
-  })));
+  const { settings, updateSettings } = useSynthSettingsStore(
+    useShallow((state) => ({
+      settings: state.envelopeAmplitude,
+      updateSettings: state.setEnvAmplitudeParams,
+    }))
+  );
   const updateAttack = (attack: number) => {
     updateSettings({ ...settings, attack });
     engine?.voices.forEach((voice) => {
@@ -44,7 +48,6 @@ export const EnvelopeAmplitude = React.memo(() => {
     <SectionWrapper name={"amplitude"}>
       <div className={styles.grid}>
         <Knob
-          exponent={1}
           label={"attack"}
           unit={"s"}
           minValue={0.001}
@@ -53,10 +56,10 @@ export const EnvelopeAmplitude = React.memo(() => {
           step={0.001}
           onChange={updateAttack}
           radius={24}
-          interactive={true}
+          
+          exponent={3}
         />
         <Knob
-          exponent={1}
           label="decay"
           unit={"s"}
           minValue={0.001}
@@ -65,10 +68,10 @@ export const EnvelopeAmplitude = React.memo(() => {
           step={0.01}
           onChange={updateDecay}
           radius={24}
-          interactive={true}
+          
+          exponent={3}
         />
         <Knob
-          exponent={1}
           label="sustain"
           minValue={0}
           maxValue={1}
@@ -76,10 +79,9 @@ export const EnvelopeAmplitude = React.memo(() => {
           step={0.01}
           onChange={updateSustain}
           radius={24}
-          interactive={true}
+          
         />
         <Knob
-          exponent={1}
           label="release"
           unit={"s"}
           minValue={0}
@@ -88,7 +90,8 @@ export const EnvelopeAmplitude = React.memo(() => {
           step={0.01}
           onChange={updateRelease}
           radius={24}
-          interactive={true}
+          
+          exponent={3}
         />
       </div>
     </SectionWrapper>

@@ -65,7 +65,7 @@ export const MiscParameters = React.memo(() => {
         style={{ "--color-rgb": colorRGB } as React.CSSProperties}
       >
         <Knob
-          exponent={1}
+          
           label="Pan Spread"
           minValue={0}
           maxValue={100}
@@ -77,7 +77,7 @@ export const MiscParameters = React.memo(() => {
           onChange={updatePanSpread}
         />
         <Knob
-          exponent={1}
+          
           label="Detune"
           minValue={0}
           maxValue={100}

@@ -113,14 +113,14 @@ export const LFO = React.memo(({ lfoNumber }: LFOProps) => {
             <Knob
               radius={24}
               label={"rate"}
-              interactive={true}
+              
               minValue={0}
               maxValue={200}
               step={0.01}
               currentValue={settings.rate || 0}
               onChange={updateRate}
-              exponent={1}
-              startingPoint={"beginning"}
+              
+              
               sync={settings.sync}
               unit={settings.sync ? "" : "Hz"}
             />

@@ -72,7 +72,7 @@ export const Noise = React.memo(() => {
           </div>
         </div>
         <Knob
-          exponent={1}
+          
           label={"volume"}
           lfoParameter={"noise volume"}
           minValue={-70}
@@ -82,8 +82,8 @@ export const Noise = React.memo(() => {
           step={0.5}
           onChange={updateVolume}
           radius={24}
-          startingPoint={"middle"}
-          interactive={true}
+          
+          
         />
       </div>
     </SectionWrapper>

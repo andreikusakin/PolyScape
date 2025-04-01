@@ -20,7 +20,6 @@ export const Header = React.memo(() => {
     engine: state.synthEngine,
   }));
   const [midiInputs, setMidiInputs] = useState<typeof WebMidi.inputs>([]);
-  console.log(midiInputs);
   const [currentMidiDevice, setCurrentMidiDevice] = useState(
     "no midi devices detected"
   );

@@ -134,7 +134,7 @@ export const Filter = React.memo(() => {
         </div>
 
         <Knob
-          exponent={1}
+          exponent={3}
           label={"cutoff"}
           lfoParameter="filter cutoff"
           minValue={0}
@@ -144,10 +144,10 @@ export const Filter = React.memo(() => {
           unit={"hz"}
           onChange={updateCutoff}
           radius={24}
-          interactive={true}
+          
         />
         <Knob
-          exponent={1}
+          
           lfoParameter="filter resonance"
           label={"resonance"}
           minValue={0.01}
@@ -156,10 +156,10 @@ export const Filter = React.memo(() => {
           step={0.01}
           onChange={updateResonance}
           radius={24}
-          interactive={true}
+          
         />
         <Knob
-          exponent={1}
+          
           label={"envelope"}
           label2={"amount"}
           minValue={0}
@@ -168,10 +168,9 @@ export const Filter = React.memo(() => {
           step={0.01}
           onChange={updateEnvelopeAmount}
           radius={24}
-          interactive={true}
+          
         />
         <Knob
-          exponent={1}
           label={"attack"}
           unit={"s"}
           minValue={0.001}
@@ -180,10 +179,11 @@ export const Filter = React.memo(() => {
           step={0.001}
           onChange={updateAttack}
           radius={24}
-          interactive={true}
+          
+          exponent={3}
         />
         <Knob
-          exponent={1}
+          
           label={"decay"}
           unit={"s"}
           minValue={0.001}
@@ -192,10 +192,11 @@ export const Filter = React.memo(() => {
           step={0.001}
           onChange={updateDecay}
           radius={24}
-          interactive={true}
+          
+          exponent={3}
         />
         <Knob
-          exponent={1}
+          
           label={"sustain"}
           minValue={0}
           maxValue={1}
@@ -203,10 +204,10 @@ export const Filter = React.memo(() => {
           step={0.01}
           onChange={updateSustain}
           radius={24}
-          interactive={true}
+          
         />
         <Knob
-          exponent={1}
+          
           label={"release"}
           unit={"s"}
           minValue={0.01}
@@ -215,7 +216,8 @@ export const Filter = React.memo(() => {
           step={0.01}
           onChange={updateRelease}
           radius={24}
-          interactive={true}
+          
+          exponent={3}
         />
       </div>
     </SectionWrapper>

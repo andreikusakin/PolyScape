@@ -175,7 +175,6 @@ export const CustomPlane = () => {
         totalEnvelopeValue += voice.envelope.value / 4;
       });
     }
-    console.log(totalEnvelopeValue)
     uniforms.uStrength.value =
       ((totalEnvelopeValue * filterEnvelope.baseFrequency) / 10000 + 0.2) * 0.5;
     uniforms.uTime.value += delta / 2 + totalEnvelopeValue / 100;

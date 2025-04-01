@@ -132,7 +132,6 @@ export const Oscillator = React.memo(({ oscNumber }: OscillatorProps) => {
             </div>
           </div>
           <Knob
-            exponent={1}
             label={"pulse width"}
             lfoParameter={
               oscNumber === 1 ? "osc1 pulse width" : "osc2 pulse width"
@@ -144,12 +143,11 @@ export const Oscillator = React.memo(({ oscNumber }: OscillatorProps) => {
             step={0.01}
             onChange={updatePulseWidth}
             // lfoPercent={100}
-            startingPoint={"middle"}
+
             interactive={settings.type === "pulse" ? true : false}
           />
 
           <Knob
-            exponent={1}
             label={"coarse"}
             lfoParameter={oscNumber === 1 ? "osc1 coarse" : "osc2 coarse"}
             minValue={-24}
@@ -158,13 +156,10 @@ export const Oscillator = React.memo(({ oscNumber }: OscillatorProps) => {
             step={1}
             onChange={updateCoarse}
             radius={24}
-            startingPoint={"middle"}
-            interactive={true}
 
             // lfoAmount={lfo1?.find((lfo) => lfo.target === "osc1 coarse")?.amount}
           />
           <Knob
-            exponent={1}
             label={"fine"}
             lfoParameter={oscNumber === 1 ? "osc1 fine" : "osc2 fine"}
             minValue={-100}
@@ -173,11 +168,8 @@ export const Oscillator = React.memo(({ oscNumber }: OscillatorProps) => {
             step={1}
             onChange={updateFine}
             radius={24}
-            startingPoint={"beginning"}
-            interactive={true}
           />
           <Knob
-            exponent={1}
             label={"volume"}
             lfoParameter={oscNumber === 1 ? "osc1 volume" : "osc2 volume"}
             minValue={-70}
@@ -187,8 +179,6 @@ export const Oscillator = React.memo(({ oscNumber }: OscillatorProps) => {
             step={0.5}
             onChange={updateVolume}
             radius={24}
-            startingPoint={"middle"}
-            interactive={true}
           />
         </div>
       </div>
